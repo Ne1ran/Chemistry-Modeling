@@ -19,6 +19,11 @@ public class ChemistryModelingMainWindow implements Screen {
     private final OrthographicCamera camera;
     private final Texture background;
     private final Stage stage;
+    private final Stage stageNewUser;
+    private final Stage stageContinue;
+
+    boolean stageNewUserStartDraw = false;
+    boolean stageContinueStartDraw = false;
 
     public ChemistryModelingMainWindow(ChemistryModelingGame game) {
         this.game = game;
@@ -40,9 +45,14 @@ public class ChemistryModelingMainWindow implements Screen {
         textFieldStyle.fontColor = new Color(255, 100, 200, 1);
 
         stage = new Stage();
+
+        stageNewUser = new Stage();
+
+        stageContinue = new Stage();
+
         Gdx.input.setInputProcessor(stage);
 
-        Button startAsNewUser = new TextButton("Start", buttonStyle);
+        final Button startAsNewUser = new TextButton("Start", buttonStyle);
         stage.addActor(startAsNewUser);
         startAsNewUser.setPosition(40, 480);
 
@@ -59,23 +69,49 @@ public class ChemistryModelingMainWindow implements Screen {
         exit.setPosition(40, 360);
 
         final TextField userName = new TextField("", textFieldStyle);
-        userName.setMessageText("check");
-        userName.setPosition(355, 440);
-        stage.addActor(userName);
+        userName.setMessageText("Enter your full name");
+        userName.setPosition(345, 440);
+        stageNewUser.addActor(userName);
+
+        final TextField userPassword = new TextField("", textFieldStyle);
+        userPassword.setMessageText("Enter Password");
+        userPassword.setPosition(345, 400);
+        stageNewUser.addActor(userPassword);
+
+        final TextField userEmail = new TextField("", textFieldStyle);
+        userEmail.setMessageText("Enter Email");
+        userEmail.setPosition(345, 360);
+        stageNewUser.addActor(userEmail);
+
+        final Button confirmRegistration = new TextButton("Confirm Registration", buttonStyle);
+        confirmRegistration.setPosition(345, 320);
+        stageNewUser.addActor(confirmRegistration);
 
         startAsNewUser.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 System.out.println("You tried to start new game");
-                String test = userName.getText();
-                System.out.println(test);
+                stageNewUserStartDraw = true;
+                stageContinueStartDraw = false;
+                Gdx.input.setInputProcessor(stageNewUser);
+            }
+        });
+
+        confirmRegistration.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                System.out.println("Name " + userName.getText() + "\n Password " + userPassword.getText() + "\n Email " + userEmail.getText());
+                stageNewUserStartDraw = false;
+                Gdx.input.setInputProcessor(stage);
             }
         });
 
         startAsRegistratedUser.addListener(new ChangeListener(){
             @Override
             public void changed(ChangeEvent event, Actor actor){
-                System.out.println("You tried to continue a game");
+               System.out.println("You tried to continue a game");
+                stageNewUserStartDraw = false;
+                stageContinueStartDraw = true;
             }
         });
 
@@ -108,6 +144,13 @@ public class ChemistryModelingMainWindow implements Screen {
         game.batch.draw(background,0,0);
         game.batch.end();
         stage.draw();
+        if (stageNewUserStartDraw){
+            stageNewUser.draw();
+        }
+
+        if (stageContinueStartDraw){
+            stageContinue.draw();
+        }
     }
 
     @Override
