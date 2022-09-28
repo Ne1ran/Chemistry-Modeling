@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
 public class ChemistryModelingMainWindow implements Screen {
@@ -27,10 +28,16 @@ public class ChemistryModelingMainWindow implements Screen {
         camera.setToOrtho(false, 1280, 720);
 
         BitmapFont font = new BitmapFont();
+
         TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
         buttonStyle.font = font;
-        buttonStyle.font.getColor().set(0, 0, 255, 0);
         buttonStyle.font.getData().setScale(2);
+        buttonStyle.fontColor = new Color(255, 100, 200, 1);
+
+        TextField.TextFieldStyle textFieldStyle = new TextField.TextFieldStyle();
+        textFieldStyle.font = font;
+        textFieldStyle.font.getData().setScale(2);
+        textFieldStyle.fontColor = new Color(255, 100, 200, 1);
 
         stage = new Stage();
         Gdx.input.setInputProcessor(stage);
@@ -51,10 +58,17 @@ public class ChemistryModelingMainWindow implements Screen {
         stage.addActor(exit);
         exit.setPosition(40, 360);
 
+        final TextField userName = new TextField("", textFieldStyle);
+        userName.setMessageText("check");
+        userName.setPosition(355, 440);
+        stage.addActor(userName);
+
         startAsNewUser.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 System.out.println("You tried to start new game");
+                String test = userName.getText();
+                System.out.println(test);
             }
         });
 
