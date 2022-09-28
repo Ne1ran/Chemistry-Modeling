@@ -1,14 +1,23 @@
 package com.chemistry;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
 public class ChemistryModelingMainWindow implements Screen {
     final ChemistryModelingGame game;
 
-    private OrthographicCamera camera;
-    private Texture background;
+    private final OrthographicCamera camera;
+    private final Texture background;
+    private final Stage stage;
 
     public ChemistryModelingMainWindow(ChemistryModelingGame game) {
         this.game = game;
@@ -16,6 +25,60 @@ public class ChemistryModelingMainWindow implements Screen {
         background = new Texture("background_main.png");
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 1280, 720);
+
+        BitmapFont font = new BitmapFont();
+        TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
+        buttonStyle.font = font;
+        buttonStyle.font.getColor().set(0, 0, 255, 0);
+        buttonStyle.font.getData().setScale(2);
+
+        stage = new Stage();
+        Gdx.input.setInputProcessor(stage);
+
+        Button startAsNewUser = new TextButton("Start", buttonStyle);
+        stage.addActor(startAsNewUser);
+        startAsNewUser.setPosition(40, 480);
+
+        Button startAsRegistratedUser = new TextButton("Continue", buttonStyle);
+        stage.addActor(startAsRegistratedUser);
+        startAsRegistratedUser.setPosition(40, 440);
+
+        Button settings = new TextButton("Settings", buttonStyle);
+        stage.addActor(settings);
+        settings.setPosition(40, 400);
+
+        Button exit = new TextButton("Exit", buttonStyle);
+        stage.addActor(exit);
+        exit.setPosition(40, 360);
+
+        startAsNewUser.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                System.out.println("You tried to start new game");
+            }
+        });
+
+        startAsRegistratedUser.addListener(new ChangeListener(){
+            @Override
+            public void changed(ChangeEvent event, Actor actor){
+                System.out.println("You tried to continue a game");
+            }
+        });
+
+        settings.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                System.out.println("You pressed Settings btn");
+            }
+        });
+
+        exit.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                System.exit(1);
+            }
+        });
+
     }
 
     @Override
@@ -30,6 +93,7 @@ public class ChemistryModelingMainWindow implements Screen {
         game.batch.begin();
         game.batch.draw(background,0,0);
         game.batch.end();
+        stage.draw();
     }
 
     @Override
@@ -54,6 +118,5 @@ public class ChemistryModelingMainWindow implements Screen {
 
     @Override
     public void dispose() {
-
     }
 }
