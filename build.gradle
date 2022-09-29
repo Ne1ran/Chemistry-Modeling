@@ -1,5 +1,4 @@
 buildscript {
-    
 
     repositories {
         mavenLocal()
@@ -17,6 +16,7 @@ allprojects {
 
     version = '1.0'
     ext {
+        appName = "ChemistryModeling"
         appName = "ChemistryModeling"
         gdxVersion = '1.11.0'
         roboVMVersion = '2.3.16'
@@ -47,6 +47,7 @@ project(":desktop") {
         api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
         api "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
         api "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"
+        implementation group: 'mysql', name: 'mysql-connector-java', version: '8.0.30'
     }
 }
 
@@ -61,5 +62,6 @@ project(":core") {
         api "com.badlogicgames.ashley:ashley:$ashleyVersion"
         api "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
+        implementation group: 'mysql', name: 'mysql-connector-java', version: '8.0.30'
     }
 }

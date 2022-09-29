@@ -80,15 +80,22 @@ public class ChemistryModelingMainWindow implements Screen {
         userPassword.setMessageText("Enter Password");
         userPassword.setPosition(345, 400);
         stageNewUser.addActor(userPassword);
+        stageContinue.addActor(userPassword);
 
         final TextField userEmail = new TextField("", textFieldStyle);
         userEmail.setMessageText("Enter Email");
         userEmail.setPosition(345, 360);
         stageNewUser.addActor(userEmail);
+        stageContinue.addActor(userEmail);
 
         final Button confirmRegistration = new TextButton("Confirm Registration", buttonStyle);
         confirmRegistration.setPosition(345, 320);
         stageNewUser.addActor(confirmRegistration);
+
+        final Button authorizeBtn = new TextButton("Authorize", buttonStyle);
+        authorizeBtn.setPosition(345, 320);
+        stageContinue.addActor(authorizeBtn);
+
 
         startAsNewUser.addListener(new ChangeListener() {
             @Override
@@ -116,7 +123,24 @@ public class ChemistryModelingMainWindow implements Screen {
                 } catch (SQLException | ClassNotFoundException throwables) {
                     throwables.printStackTrace();
                 }
+                userPassword.setText("");
+                userEmail.setText("");
+                userName.setText("");
                 stageNewUserStartDraw = false;
+                Gdx.input.setInputProcessor(stage);
+            }
+        });
+
+        authorizeBtn.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                try {
+                    if (handler.authorize(userEmail.getText(), userPassword.getText())){
+                        System.out.println("Successful authorization!"); // Go to experiment window
+                    } else System.out.println("No result in authorization((");
+                } catch (SQLException | ClassNotFoundException throwables) {
+                    throwables.printStackTrace();
+                }
                 Gdx.input.setInputProcessor(stage);
             }
         });
@@ -125,7 +149,7 @@ public class ChemistryModelingMainWindow implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor){
                System.out.println("You tried to continue a game");
-                stageNewUserStartDraw = false;
+                Gdx.input.setInputProcessor(stageContinue);
                 stageContinueStartDraw = true;
             }
         });

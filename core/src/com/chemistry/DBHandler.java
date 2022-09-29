@@ -9,7 +9,6 @@ public class DBHandler extends Config{
         String connStr = "jdbc:mysql://"+ Host + ":" + Port + "/" + Name;
         Class.forName("com.mysql.cj.jdbc.Driver");
         connection = DriverManager.getConnection(connStr, User, Password);
-        System.out.println("Мы работаем?");
         return connection;
     }
 
@@ -25,6 +24,16 @@ public class DBHandler extends Config{
         prst.setString(5, user.getPassword());
         prst.executeUpdate();
         System.out.println("Added user successfully!");
+    }
+
+    public boolean authorize(String email, String password) throws SQLException, ClassNotFoundException {
+        ResultSet rset = null;
+        String select = "SELECT * FROM " + AllConstants.UserConsts.USERS_TABLE + " where " + AllConstants.UserConsts.EMAIL
+                + "='" + email + "' and " + AllConstants.UserConsts.PASSWORD + "='" + password + "'";
+        PreparedStatement prst = getConnection().prepareStatement(select);
+        rset = prst.executeQuery();
+
+        return rset != null;
     }
 
 
