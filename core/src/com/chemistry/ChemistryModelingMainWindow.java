@@ -13,8 +13,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
+import java.sql.SQLException;
+
 public class ChemistryModelingMainWindow implements Screen {
     final ChemistryModelingGame game;
+    public static DBHandler handler = new DBHandler();
 
     private final OrthographicCamera camera;
     private final Texture background;
@@ -100,7 +103,19 @@ public class ChemistryModelingMainWindow implements Screen {
         confirmRegistration.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                System.out.println("Name " + userName.getText() + "\n Password " + userPassword.getText() + "\n Email " + userEmail.getText());
+                System.out.println("Name " + userName.getText() + "\n Password " + userPassword.getText() +
+                        "\n Email " + userEmail.getText());
+                User newUser = new User();
+                newUser.setFIO(userName.getText().trim());
+                newUser.setEmail(userEmail.getText().trim());
+                newUser.setPassword(userPassword.getText().trim());
+                newUser.setCurrent_exp("1");
+                newUser.setExps_completed("0");
+                try {
+                    handler.addNewUser(newUser);
+                } catch (SQLException | ClassNotFoundException throwables) {
+                    throwables.printStackTrace();
+                }
                 stageNewUserStartDraw = false;
                 Gdx.input.setInputProcessor(stage);
             }
