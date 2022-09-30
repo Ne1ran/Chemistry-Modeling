@@ -140,7 +140,7 @@ public class ChemistryModelingMainWindow implements Screen {
                     if (handler.authorize(userEmail.getText(), userPassword.getText())){
                         System.out.println("Successful authorization!"); // Go to experiment window
 
-                        game.setScreen(new ExperimentWindow(game));
+                        game.setScreen(new ExperimentChooseWindow(game));
                         stage.dispose();
                         stageNewUser.dispose();
                         stageContinue.dispose();

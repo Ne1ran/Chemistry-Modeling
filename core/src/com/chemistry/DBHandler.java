@@ -3,6 +3,7 @@ package com.chemistry;
 import java.sql.*;
 
 import static com.chemistry.ChemistryModelingMainWindow.currentUser;
+import static com.chemistry.ExperimentChooseWindow.choosenExperiment;
 
 public class DBHandler extends Config{
     Connection connection;
@@ -47,5 +48,18 @@ public class DBHandler extends Config{
     public Integer checkAvailableExperiments() {
         int UserExperiment = Integer.parseInt(currentUser.getCurrent_exp());
         return UserExperiment;
+    }
+
+    public void setChoosenExperiment(int id) throws SQLException, ClassNotFoundException {
+        ResultSet rset = null;
+        String select = "SELECT * FROM " + AllConstants.ExpConsts.EXP_TABLE + " where " + AllConstants.ExpConsts.EXP_ID
+                + "='" + id + "'";
+        PreparedStatement prst = getConnection().prepareStatement(select);
+        rset = prst.executeQuery();
+
+        if (rset.next()){
+            choosenExperiment.setName(rset.getString(AllConstants.ExpConsts.NAME));
+            choosenExperiment.setTexture_path(rset.getString(AllConstants.ExpConsts.TEXTURE_PATH));
+        }
     }
 }

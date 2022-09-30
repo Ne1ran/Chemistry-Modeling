@@ -13,4 +13,12 @@ public class AllConstants {
         public static final String PASSWORD = "password";
     }
 
+    public static class ExpConsts{
+        public static final String EXP_TABLE = "experiments";
+
+        public static final String EXP_ID = "exp_id";
+        public static final String NAME = "name";
+        public static final String TEXTURE_PATH = "texture_path";
+    }
+
 }
