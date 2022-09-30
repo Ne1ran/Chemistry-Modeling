@@ -2,6 +2,8 @@ package com.chemistry;
 
 import java.sql.*;
 
+import static com.chemistry.ChemistryModelingMainWindow.currentUser;
+
 public class DBHandler extends Config{
     Connection connection;
 
@@ -28,13 +30,22 @@ public class DBHandler extends Config{
 
     public boolean authorize(String email, String password) throws SQLException, ClassNotFoundException {
         ResultSet rset = null;
-        String select = "SELECT * FROM " + AllConstants.UserConsts.USERS_TABLE + " where " + AllConstants.UserConsts.EMAIL
+        String select = "SELECT DISTINCT * FROM " + AllConstants.UserConsts.USERS_TABLE + " where " + AllConstants.UserConsts.EMAIL
                 + "='" + email + "' and " + AllConstants.UserConsts.PASSWORD + "='" + password + "'";
         PreparedStatement prst = getConnection().prepareStatement(select);
         rset = prst.executeQuery();
-
-        return rset != null;
+        if (rset.next()){
+            currentUser.setExps_completed(rset.getString(AllConstants.UserConsts.EXPS_COMPLETED));
+            currentUser.setCurrent_exp(rset.getString(AllConstants.UserConsts.CURRENT_EXP));
+            currentUser.setFIO(rset.getString(AllConstants.UserConsts.FIO));
+            currentUser.setPassword(rset.getString(AllConstants.UserConsts.PASSWORD));
+            currentUser.setEmail(rset.getString(AllConstants.UserConsts.EMAIL));
+            return true;
+        } else return false;
     }
 
-
+    public Integer checkAvailableExperiments() {
+        int UserExperiment = Integer.parseInt(currentUser.getCurrent_exp());
+        return UserExperiment;
+    }
 }

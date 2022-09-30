@@ -17,7 +17,7 @@ import java.sql.SQLException;
 
 public class ChemistryModelingMainWindow implements Screen {
     final ChemistryModelingGame game;
-    public static DBHandler handler = new DBHandler();
+    private DBHandler handler = new DBHandler();
 
     private final OrthographicCamera camera;
     private final Texture background;
@@ -25,10 +25,12 @@ public class ChemistryModelingMainWindow implements Screen {
     private final Stage stageNewUser;
     private final Stage stageContinue;
 
+    public static User currentUser = new User();
+
     boolean stageNewUserStartDraw = false;
     boolean stageContinueStartDraw = false;
 
-    public ChemistryModelingMainWindow(ChemistryModelingGame game) {
+    public ChemistryModelingMainWindow(final ChemistryModelingGame game) {
         this.game = game;
 
         background = new Texture("background_main.png");
@@ -137,6 +139,11 @@ public class ChemistryModelingMainWindow implements Screen {
                 try {
                     if (handler.authorize(userEmail.getText(), userPassword.getText())){
                         System.out.println("Successful authorization!"); // Go to experiment window
+
+                        game.setScreen(new ExperimentWindow(game));
+                        stage.dispose();
+                        stageNewUser.dispose();
+                        stageContinue.dispose();
                     } else System.out.println("No result in authorization((");
                 } catch (SQLException | ClassNotFoundException throwables) {
                     throwables.printStackTrace();
