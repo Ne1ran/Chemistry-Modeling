@@ -21,4 +21,24 @@ public class AllConstants {
         public static final String TEXTURE_PATH = "texture_path";
     }
 
+    public static class SubsExpConsts{
+        public static final String SUBS_EXP_TABLE = "substance_experiment";
+
+        public static final String CONN_ID = "connect_id";
+        public static final String SUBS_EXP_ID = "substance_exp_id";
+        public static final String EXP_ID = "experiment_id";
+    }
+
+    public static class SubsConsts{
+        public static final String SUBS_TABLE = "substance";
+
+        public static final String ID = "substance_id";
+        public static final String TEXTURE_PATH = "texture_path";
+        public static final String NAME = "name";
+        public static final String TEXTURE_X = "texture_x";
+        public static final String TEXTURE_Y = "texture_y";
+        public static final String FOUND_PART_NAME = "found_part_name";
+        public static final String OXID_PART_NAME = "oxid_part_name";
+    }
+
 }

@@ -72,7 +72,7 @@ public class ExperimentChooseWindow implements Screen {
                 System.out.println("Clicked");
                 if (experimentNum >= 1) {
                     try {
-                        handler.setChoosenExperiment(1);
+                        handler.setChoosenExperiment(Integer.toString(1));
                         game.setScreen(new ExperimentWindow(game));
                     } catch (SQLException | ClassNotFoundException throwables) {
                         throwables.printStackTrace();
