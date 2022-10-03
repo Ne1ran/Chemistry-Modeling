@@ -76,7 +76,6 @@ public class ExperimentWindow implements Screen {
 
         if(startSpawn){
             for (Substance subs : usedSubstances){
-                System.out.println(subs.getX() + " - " + subs.getY() + " - " + subs.getHeight() + " - " + subs.getWidth());
                 if (subs.overlaps(mouseSpawnerRect)){
                     System.out.println("Working?");
                     startSpawn = false;
