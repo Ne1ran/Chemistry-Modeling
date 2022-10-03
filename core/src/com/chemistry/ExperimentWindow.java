@@ -46,7 +46,7 @@ public class ExperimentWindow implements Screen {
                 tempSubstance.setTexture_path(new Texture(substanceItself.getString(AllConstants.SubsConsts.TEXTURE_PATH)));
                 tempSubstance.setName(substanceItself.getString(AllConstants.SubsConsts.NAME));
                 tempSubstance.setX(Float.parseFloat(substanceItself.getString(AllConstants.SubsConsts.TEXTURE_X)));
-                tempSubstance.setY(Float.parseFloat(substanceItself.getString(AllConstants.SubsConsts.TEXTURE_Y)));
+                tempSubstance.setY(720 - Float.parseFloat(substanceItself.getString(AllConstants.SubsConsts.TEXTURE_Y)) - 200);
                 tempSubstance.setFoundation(substanceItself.getString(AllConstants.SubsConsts.FOUND_PART_NAME));
                 tempSubstance.setOxid(substanceItself.getString(AllConstants.SubsConsts.OXID_PART_NAME));
                 tempSubstance.setSize(200, 200);
@@ -70,12 +70,13 @@ public class ExperimentWindow implements Screen {
         game.batch.begin();
         game.batch.draw(experimentBackground,0,0);
         for (Substance subs : usedSubstances){
-            game.batch.draw(subs.getTexture_path(), subs.getX(), subs.getY());
+            game.batch.draw(subs.getTexture_path(), subs.getX(), 720 - subs.getY() - subs.getHeight());
         }
         game.batch.end();
 
         if(startSpawn){
             for (Substance subs : usedSubstances){
+                System.out.println(subs.getX() + " - " + subs.getY() + " - " + subs.getHeight() + " - " + subs.getWidth());
                 if (subs.overlaps(mouseSpawnerRect)){
                     System.out.println("Working?");
                     startSpawn = false;
