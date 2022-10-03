@@ -1,8 +1,10 @@
 package com.chemistry;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Rectangle;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -13,15 +15,25 @@ import static com.chemistry.ExperimentChooseWindow.choosenExperiment;
 public class ExperimentWindow implements Screen {
     final ChemistryModelingGame game;
     private final Texture experimentBackground;
-    private DBHandler handler = new DBHandler();
+    private final DBHandler handler = new DBHandler();
     private final OrthographicCamera camera;
-    private ArrayList<Substance> usedSubstances = new ArrayList<>();
-
+    private final ArrayList<Substance> usedSubstances = new ArrayList<>();
+    public static Rectangle mouseSpawnerRect;
+    public static Integer x_pos;
+    public static Integer y_pos;
+    public static Boolean startSpawn = false;
     public ExperimentWindow(ChemistryModelingGame game) throws SQLException, ClassNotFoundException {
         this.game = game;
 
+        MyInputListener inputListener = new MyInputListener();
+        Gdx.input.setInputProcessor(inputListener);
+
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 1280, 720);
+
+        mouseSpawnerRect = new Rectangle(); //On a click we spawn a rectangle upon the coordinates.
+        mouseSpawnerRect.setPosition(-100,-100); //If nearby exists another rectangle - go methods.
+        mouseSpawnerRect.setSize(10, 10);
 
         experimentBackground = new Texture(choosenExperiment.getTexture_path());
 
@@ -37,6 +49,8 @@ public class ExperimentWindow implements Screen {
                 tempSubstance.setY(Float.parseFloat(substanceItself.getString(AllConstants.SubsConsts.TEXTURE_Y)));
                 tempSubstance.setFoundation(substanceItself.getString(AllConstants.SubsConsts.FOUND_PART_NAME));
                 tempSubstance.setOxid(substanceItself.getString(AllConstants.SubsConsts.OXID_PART_NAME));
+                tempSubstance.setSize(200, 200);
+                System.out.println(tempSubstance.width);
             }
             usedSubstances.add(tempSubstance);
 
@@ -59,6 +73,16 @@ public class ExperimentWindow implements Screen {
             game.batch.draw(subs.getTexture_path(), subs.getX(), subs.getY());
         }
         game.batch.end();
+
+        if(startSpawn){
+            for (Substance subs : usedSubstances){
+                if (subs.overlaps(mouseSpawnerRect)){
+                    System.out.println("Working?");
+                    startSpawn = false;
+                }
+            }
+        }
+
     }
 
     @Override
