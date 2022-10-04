@@ -15,13 +15,20 @@ import static com.chemistry.ExperimentChooseWindow.choosenExperiment;
 public class ExperimentWindow implements Screen {
     final ChemistryModelingGame game;
     private final Texture experimentBackground;
+    private final Texture inventoryTexture;
     private final DBHandler handler = new DBHandler();
     private final OrthographicCamera camera;
     private final ArrayList<Substance> usedSubstances = new ArrayList<>();
+    private final ArrayList<Integer> inventory = new ArrayList<>(3);
+
     public static Rectangle mouseSpawnerRect;
+
+    private final Rectangle exitBtn;
+
     public static Integer x_pos;
     public static Integer y_pos;
     public static Boolean startSpawn = false;
+    public static Integer choosedSubstance;
     public ExperimentWindow(ChemistryModelingGame game) throws SQLException, ClassNotFoundException {
         this.game = game;
 
@@ -35,7 +42,11 @@ public class ExperimentWindow implements Screen {
         mouseSpawnerRect.setPosition(-100,-100); //If nearby exists another rectangle - go methods.
         mouseSpawnerRect.setSize(10, 10);
 
+        exitBtn = new Rectangle();
+        exitBtn.setPosition(38, 0);
+
         experimentBackground = new Texture(choosenExperiment.getTexture_path());
+        inventoryTexture = new Texture("inventory.png");
 
         ResultSet substancesIDS = handler.getUsingSubstancesIDs(choosenExperiment.getExp_id());
 
@@ -69,16 +80,24 @@ public class ExperimentWindow implements Screen {
 
         game.batch.begin();
         game.batch.draw(experimentBackground,0,0);
+        game.batch.draw(inventoryTexture, 38, 230);
         for (Substance subs : usedSubstances){
             game.batch.draw(subs.getTexture_path(), subs.getX(), 720 - subs.getY() - subs.getHeight());
         }
         game.batch.end();
 
         if(startSpawn){
+            int i = 0;
             for (Substance subs : usedSubstances){
+                i++;
                 if (subs.overlaps(mouseSpawnerRect)){
-                    System.out.println("Working?");
+                    choosedSubstance = i;
+                    if (inventory.size() < 3){
+
+                        inventory.add(choosedSubstance);
+                    } else System.out.println("We are full!");
                     startSpawn = false;
+                    break;
                 }
             }
         }
