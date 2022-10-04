@@ -83,4 +83,23 @@ public class DBHandler extends Config{
         rset = prst.executeQuery();
         return rset;
     }
+
+    public ResultSet getUsingEquipmentIDs(String exp_id) throws SQLException, ClassNotFoundException {
+        ResultSet rset = null;
+        String select = "SELECT * FROM " + AllConstants.EquipExpConsts.EQUIP_EXP_TABLE + " where " +
+                AllConstants.EquipExpConsts.EXP4_ID + "='" + exp_id + "'";
+        System.out.println(select);
+        PreparedStatement prst = getConnection().prepareStatement(select);
+        rset = prst.executeQuery();
+        return rset;
+    }
+
+    public ResultSet getEquipmentByID(String id) throws SQLException, ClassNotFoundException {
+        ResultSet rset = null;
+        String select = "SELECT * FROM " + AllConstants.EquipConsts.EQUIP_TABLE + " where " +
+                AllConstants.EquipConsts.ID + "='" + id + "'";
+        PreparedStatement prst = getConnection().prepareStatement(select);
+        rset = prst.executeQuery();
+        return rset;
+    }
 }

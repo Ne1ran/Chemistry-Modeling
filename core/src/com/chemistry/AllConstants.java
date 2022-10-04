@@ -41,4 +41,22 @@ public class AllConstants {
         public static final String OXID_PART_NAME = "oxid_part_name";
     }
 
+    public static class EquipConsts{
+        public static final String EQUIP_TABLE = "equipment";
+
+        public static final String ID = "equip_id";
+        public static final String TEXTURE_PATH = "texture_path";
+        public static final String NAME = "name";
+        public static final String X_POS = "x_pos";
+        public static final String Y_POS = "y_pos";
+    }
+    public static class EquipExpConsts{
+        public static final String EQUIP_EXP_TABLE = "equip_experiment";
+
+        public static final String CONNECT_ID = "connect_id";
+        public static final String EQUIP_EXP_ID = "equip_exp_id";
+        public static final String EXP4_ID = "experiment_id";
+    }
+
+
 }

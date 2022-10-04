@@ -14,11 +14,16 @@ import static com.chemistry.ExperimentChooseWindow.choosenExperiment;
 
 public class ExperimentWindow implements Screen {
     final ChemistryModelingGame game;
+
     private final Texture experimentBackground;
     private final Texture inventoryTexture;
+
     private final DBHandler handler = new DBHandler();
+
     private final OrthographicCamera camera;
+
     private final ArrayList<Substance> usedSubstances = new ArrayList<>();
+    private final ArrayList<Equipment> usedEquipment = new ArrayList<>();
     private final ArrayList<Integer> inventory = new ArrayList<>(3);
 
     public static Rectangle mouseSpawnerRect;
@@ -48,7 +53,7 @@ public class ExperimentWindow implements Screen {
         experimentBackground = new Texture(choosenExperiment.getTexture_path());
         inventoryTexture = new Texture("inventory.png");
 
-        ResultSet substancesIDS = handler.getUsingSubstancesIDs(choosenExperiment.getExp_id());
+        ResultSet substancesIDS = handler.getUsingSubstancesIDs(choosenExperiment.getExp_id()); // Setting all usable substances
 
         while (substancesIDS.next()){
             ResultSet substanceItself = handler.getSubstanceByID(substancesIDS.getString(AllConstants.SubsExpConsts.SUBS_EXP_ID));
@@ -61,11 +66,28 @@ public class ExperimentWindow implements Screen {
                 tempSubstance.setFoundation(substanceItself.getString(AllConstants.SubsConsts.FOUND_PART_NAME));
                 tempSubstance.setOxid(substanceItself.getString(AllConstants.SubsConsts.OXID_PART_NAME));
                 tempSubstance.setSize(200, 200);
-                System.out.println(tempSubstance.width);
             }
             usedSubstances.add(tempSubstance);
 
         }
+
+        ResultSet equipmentIDS = handler.getUsingEquipmentIDs(choosenExperiment.getExp_id());
+
+        while (equipmentIDS.next()){
+            ResultSet equipItself = handler.getEquipmentByID(equipmentIDS.getString(AllConstants.EquipExpConsts.EQUIP_EXP_ID));
+            Equipment tempEquip = new Equipment();
+            if (equipItself.next()){
+                tempEquip.setId(equipItself.getString(AllConstants.EquipConsts.ID));
+                tempEquip.setName(equipItself.getString(AllConstants.EquipConsts.NAME));
+                tempEquip.setX(Float.parseFloat(equipItself.getString(AllConstants.EquipConsts.X_POS)));
+                tempEquip.setY(Float.parseFloat(equipItself.getString(AllConstants.EquipConsts.Y_POS))-78);
+                tempEquip.setTexture_path(new Texture(equipItself.getString(AllConstants.EquipConsts.TEXTURE_PATH)));
+                tempEquip.setSize(55, 78);
+            }
+
+            usedEquipment.add(tempEquip);
+        }
+
     }
 
         @Override
@@ -84,10 +106,22 @@ public class ExperimentWindow implements Screen {
         for (Substance subs : usedSubstances){
             game.batch.draw(subs.getTexture_path(), subs.getX(), 720 - subs.getY() - subs.getHeight());
         }
+
+        for (Equipment equip: usedEquipment) {
+            game.batch.draw(equip.getTexture_path(), equip.getX(), 720-(equip.getY()+equip.getHeight()));
+        }
         game.batch.end();
 
-        if(startSpawn){
+        if(startSpawn){  //Checking overlapsing of mouseSpawnerRect and other thingies
             int i = 0;
+            for (Equipment equip: usedEquipment) {
+                if (equip.overlaps(mouseSpawnerRect)){
+                    System.out.println("Bim");
+                    equip.setPosition(300, 720 - 150 - equip.getHeight());
+                    break;
+                }
+            }
+
             for (Substance subs : usedSubstances){
                 i++;
                 if (subs.overlaps(mouseSpawnerRect)){
