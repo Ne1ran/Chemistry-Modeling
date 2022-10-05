@@ -5,14 +5,32 @@ import com.badlogic.gdx.math.Rectangle;
 
 public class Substance extends Rectangle {
 
-    String x_pos;
-    String y_pos;
-    Texture texture_path;
-    String foundation;
-    String oxid;
-    String name;
+    private String subId;
+    private String x_pos;
+    private String y_pos;
+    private Texture texture_path;
+    private String foundation;
+    private String oxid;
+    private String name;
+    private Texture smallTexturePath;
 
     public Substance() {
+    }
+
+    public Texture getSmallTexturePath() {
+        return smallTexturePath;
+    }
+
+    public void setSmallTexturePath(Texture smallTexturePath) {
+        this.smallTexturePath = smallTexturePath;
+    }
+
+    public String getSubId() {
+        return subId;
+    }
+
+    public void setSubId(String subId) {
+        this.subId = subId;
     }
 
     public String getName() {

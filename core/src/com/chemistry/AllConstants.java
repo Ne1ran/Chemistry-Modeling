@@ -39,6 +39,7 @@ public class AllConstants {
         public static final String TEXTURE_Y = "texture_y";
         public static final String FOUND_PART_NAME = "found_part_name";
         public static final String OXID_PART_NAME = "oxid_part_name";
+        public static final String SMALL_TEXTURE = "small_texture";
     }
 
     public static class EquipConsts{

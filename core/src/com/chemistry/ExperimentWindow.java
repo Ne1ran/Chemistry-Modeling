@@ -17,6 +17,7 @@ public class ExperimentWindow implements Screen {
 
     private final Texture experimentBackground;
     private final Texture inventoryTexture;
+    private final Texture slotBasicTexture;
 
     private final DBHandler handler = new DBHandler();
 
@@ -24,7 +25,7 @@ public class ExperimentWindow implements Screen {
 
     private final ArrayList<Substance> usedSubstances = new ArrayList<>();
     private final ArrayList<Equipment> usedEquipment = new ArrayList<>();
-    private final ArrayList<Integer> inventory = new ArrayList<>(3);
+    private final ArrayList<InventorySlot> inventory = new ArrayList<>();
 
     public static Rectangle mouseSpawnerRect;
 
@@ -34,6 +35,7 @@ public class ExperimentWindow implements Screen {
     public static Integer y_pos;
     public static Boolean startSpawn = false;
     public static Integer choosedSubstance;
+
     public ExperimentWindow(ChemistryModelingGame game) throws SQLException, ClassNotFoundException {
         this.game = game;
 
@@ -53,25 +55,39 @@ public class ExperimentWindow implements Screen {
         experimentBackground = new Texture(choosenExperiment.getTexture_path());
         inventoryTexture = new Texture("inventory.png");
 
+        slotBasicTexture = new Texture("inventoryslot.png");
+
+        for (int i = 0; i<3; i++){
+            InventorySlot slot = new InventorySlot();
+            slot.setX(49F);
+            slot.setY((float) (320 + (i * 78) - 74));
+            slot.setSize(110F, 74F);
+            slot.setSlotId(i);
+            slot.setSlotTexture(slotBasicTexture);
+            inventory.add(slot);
+        }
+
         ResultSet substancesIDS = handler.getUsingSubstancesIDs(choosenExperiment.getExp_id()); // Setting all usable substances
 
         while (substancesIDS.next()){
             ResultSet substanceItself = handler.getSubstanceByID(substancesIDS.getString(AllConstants.SubsExpConsts.SUBS_EXP_ID));
             Substance tempSubstance = new Substance();
             if (substanceItself.next()){
+                tempSubstance.setSubId(substanceItself.getString(AllConstants.SubsConsts.ID));
                 tempSubstance.setTexture_path(new Texture(substanceItself.getString(AllConstants.SubsConsts.TEXTURE_PATH)));
                 tempSubstance.setName(substanceItself.getString(AllConstants.SubsConsts.NAME));
                 tempSubstance.setX(Float.parseFloat(substanceItself.getString(AllConstants.SubsConsts.TEXTURE_X)));
                 tempSubstance.setY(720 - Float.parseFloat(substanceItself.getString(AllConstants.SubsConsts.TEXTURE_Y)) - 200);
                 tempSubstance.setFoundation(substanceItself.getString(AllConstants.SubsConsts.FOUND_PART_NAME));
                 tempSubstance.setOxid(substanceItself.getString(AllConstants.SubsConsts.OXID_PART_NAME));
+                tempSubstance.setSmallTexturePath(new Texture(substanceItself.getString(AllConstants.SubsConsts.SMALL_TEXTURE)));
                 tempSubstance.setSize(200, 200);
             }
             usedSubstances.add(tempSubstance);
 
         }
 
-        ResultSet equipmentIDS = handler.getUsingEquipmentIDs(choosenExperiment.getExp_id());
+        ResultSet equipmentIDS = handler.getUsingEquipmentIDs(choosenExperiment.getExp_id()); // Setting equipment
 
         while (equipmentIDS.next()){
             ResultSet equipItself = handler.getEquipmentByID(equipmentIDS.getString(AllConstants.EquipExpConsts.EQUIP_EXP_ID));
@@ -102,38 +118,58 @@ public class ExperimentWindow implements Screen {
 
         game.batch.begin();
         game.batch.draw(experimentBackground,0,0);
-        game.batch.draw(inventoryTexture, 38, 230);
+        game.batch.draw(inventoryTexture, 38, 230); //
         for (Substance subs : usedSubstances){
             game.batch.draw(subs.getTexture_path(), subs.getX(), 720 - subs.getY() - subs.getHeight());
         }
 
         for (Equipment equip: usedEquipment) {
-            game.batch.draw(equip.getTexture_path(), equip.getX(), 720-(equip.getY()+equip.getHeight()));
+            game.batch.draw(equip.getTexture_path(), equip.getX(), 720-equip.getY()-equip.getHeight());
         }
-        game.batch.end();
 
+
+        for (InventorySlot slot : inventory){
+            game.batch.draw(slot.getSlotTexture(), slot.getX(), 720-slot.getY()-slot.getHeight());
+        }
+
+        game.batch.end();
         if(startSpawn){  //Checking overlapsing of mouseSpawnerRect and other thingies
-            int i = 0;
             for (Equipment equip: usedEquipment) {
                 if (equip.overlaps(mouseSpawnerRect)){
                     System.out.println("Bim");
                     equip.setPosition(300, 720 - 150 - equip.getHeight());
                     break;
-                }
+                } //add usage of moved one
             }
 
             for (Substance subs : usedSubstances){
-                i++;
                 if (subs.overlaps(mouseSpawnerRect)){
-                    choosedSubstance = i;
-                    if (inventory.size() < 3){
-
-                        inventory.add(choosedSubstance);
-                    } else System.out.println("We are full!");
-                    startSpawn = false;
+                    choosedSubstance = Integer.valueOf(subs.getSubId());
+                    for (InventorySlot slot : inventory){
+                        if(slot.getSubstanceIdInSlot().isEmpty()){
+                            slot.setSubstanceIdInSlot(String.valueOf(choosedSubstance));
+                            slot.setSlotTexture(subs.getSmallTexturePath());
+                            System.out.println(choosedSubstance);
+                            break;
+                        }
+                    }
                     break;
                 }
             }
+
+            for (InventorySlot slot : inventory){
+                if (slot.overlaps(mouseSpawnerRect)){
+                    if (slot.getSubstanceIdInSlot().isEmpty()){
+                        System.out.println("Empty");
+                    } else {
+                        System.out.println(slot.getSubstanceIdInSlot() + " deleted from " + slot.getSlotId());
+                        slot.setSubstanceIdInSlot("");
+                        slot.setSlotTexture(slotBasicTexture);
+                    }
+                    break;
+                }
+            }
+            startSpawn = false;
         }
 
     }
