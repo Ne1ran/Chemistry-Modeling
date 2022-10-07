@@ -1,5 +1,6 @@
 package com.chemistry;
 
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 
@@ -25,6 +26,12 @@ public class MyInputListener implements InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        if (button == Input.Buttons.LEFT){
+            System.out.println("Left");
+        } else if (button == Input.Buttons.RIGHT){
+            System.out.println("Right");
+            deleteFromInventory = true;
+        }
         x_pos = screenX - 5;
         y_pos = screenY - 5;
         mouseSpawnerRect.setX(x_pos);
@@ -41,6 +48,7 @@ public class MyInputListener implements InputProcessor {
         mouseSpawnerRect.setX(x_pos);
         mouseSpawnerRect.setY(y_pos);
         startSpawn = false;
+        deleteFromInventory = false;
         return true;
     }
 

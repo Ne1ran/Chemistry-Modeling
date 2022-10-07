@@ -34,6 +34,7 @@ public class ExperimentWindow implements Screen {
     public static Integer x_pos;
     public static Integer y_pos;
     public static Boolean startSpawn = false;
+    public static Boolean deleteFromInventory = false;
     public static Integer choosedSubstance;
 
     public ExperimentWindow(ChemistryModelingGame game) throws SQLException, ClassNotFoundException {
@@ -159,14 +160,16 @@ public class ExperimentWindow implements Screen {
 
             for (InventorySlot slot : inventory){
                 if (slot.overlaps(mouseSpawnerRect)){
-                    if (slot.getSubstanceIdInSlot().isEmpty()){
-                        System.out.println("Empty");
-                    } else {
-                        System.out.println(slot.getSubstanceIdInSlot() + " deleted from " + slot.getSlotId());
-                        slot.setSubstanceIdInSlot("");
-                        slot.setSlotTexture(slotBasicTexture);
+                    if (deleteFromInventory) {
+                        if (slot.getSubstanceIdInSlot().isEmpty()) {
+                            System.out.println("Empty");
+                        } else {
+                            System.out.println(slot.getSubstanceIdInSlot() + " deleted from " + slot.getSlotId());
+                            slot.setSubstanceIdInSlot("");
+                            slot.setSlotTexture(slotBasicTexture);
+                        }
+                        break;
                     }
-                    break;
                 }
             }
             startSpawn = false;
