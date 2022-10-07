@@ -88,7 +88,6 @@ public class ExperimentWindow implements Screen {
                 tempSubstance.setSize(200, 200);
             }
             usedSubstances.add(tempSubstance);
-
         }
 
         ResultSet equipmentIDS = handler.getUsingEquipmentIDs(choosenExperiment.getExp_id()); // Setting equipment
@@ -156,8 +155,24 @@ public class ExperimentWindow implements Screen {
                                         break;
                                     }
                                 }
-                            }
+                            } //extended functions lower incoming... \|/
                             System.out.println("We chose something in inventory and then clicked on minzurka! It was: ID " +  substanceInSlotId);
+
+                            equip.addSubstance(substanceInSlotId);
+
+//                            if (!equip.getSubstancesInside().isEmpty()){
+//                                for (String string : equip.getSubstancesInside()){
+//                                    if (string.equals(substanceInSlotId)){
+//                                        System.out.println("We already have this inside!");
+//                                    } else {
+//                                        equip.addSubstance(substanceInSlotId);
+//                                        System.out.println("We added it in array...");
+//                                    }
+//                                }
+//                            } else {
+//                                System.out.println("We added it in array... cause it was empty...");
+//                                equip.addSubstance(substanceInSlotId);
+
                         } else System.out.println("We haven't chose anything");
                     }
                 }

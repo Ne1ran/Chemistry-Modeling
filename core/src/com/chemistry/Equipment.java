@@ -3,6 +3,8 @@ package com.chemistry;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
 
+import java.util.ArrayList;
+
 public class Equipment extends Rectangle {
     private String id;
     private String name;
@@ -10,9 +12,22 @@ public class Equipment extends Rectangle {
     private String x_pos;
     private String y_pos;
     private Boolean isSetOnPlace;
+    private ArrayList<String> substancesInside = new ArrayList<>();
 
     public Equipment() {
 
+    }
+
+    public void addSubstance(String id){
+        substancesInside.add(id);
+    }
+
+    public void setSubstancesInside(ArrayList<String> substancesInside) {
+        this.substancesInside = substancesInside;
+    }
+
+    public ArrayList<String> getSubstancesInside() {
+        return substancesInside;
     }
 
     public Boolean getSetOnPlace() {
