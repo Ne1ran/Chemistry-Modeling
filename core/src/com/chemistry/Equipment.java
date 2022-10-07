@@ -9,9 +9,18 @@ public class Equipment extends Rectangle {
     private Texture  texture_path;
     private String x_pos;
     private String y_pos;
+    private Boolean isSetOnPlace;
 
     public Equipment() {
 
+    }
+
+    public Boolean getSetOnPlace() {
+        return isSetOnPlace;
+    }
+
+    public void setSetOnPlace(Boolean setOnPlace) {
+        isSetOnPlace = setOnPlace;
     }
 
     public String getId() {

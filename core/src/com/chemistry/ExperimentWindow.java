@@ -5,6 +5,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -36,6 +37,7 @@ public class ExperimentWindow implements Screen {
     public static Boolean startSpawn = false;
     public static Boolean deleteFromInventory = false;
     public static Integer choosedSubstance;
+    public static Boolean inventorySlotIsPicked = false;
 
     public ExperimentWindow(ChemistryModelingGame game) throws SQLException, ClassNotFoundException {
         this.game = game;
@@ -65,6 +67,7 @@ public class ExperimentWindow implements Screen {
             slot.setSize(110F, 74F);
             slot.setSlotId(i);
             slot.setSlotTexture(slotBasicTexture);
+            slot.setThisSlotPicked(false);
             inventory.add(slot);
         }
 
@@ -100,6 +103,7 @@ public class ExperimentWindow implements Screen {
                 tempEquip.setY(Float.parseFloat(equipItself.getString(AllConstants.EquipConsts.Y_POS))-78);
                 tempEquip.setTexture_path(new Texture(equipItself.getString(AllConstants.EquipConsts.TEXTURE_PATH)));
                 tempEquip.setSize(55, 78);
+                tempEquip.setSetOnPlace(false);
             }
 
             usedEquipment.add(tempEquip);
@@ -137,10 +141,17 @@ public class ExperimentWindow implements Screen {
         if(startSpawn){  //Checking overlapsing of mouseSpawnerRect and other thingies
             for (Equipment equip: usedEquipment) {
                 if (equip.overlaps(mouseSpawnerRect)){
-                    System.out.println("Bim");
-                    equip.setPosition(300, 720 - 150 - equip.getHeight());
-                    break;
-                } //add usage of moved one
+                    if (!equip.getSetOnPlace()){ //move for a first time
+                        System.out.println("Bim");
+                        equip.setPosition(300, 720 - 150 - equip.getHeight());
+                        equip.setSetOnPlace(true);
+                        break;
+                    } else {
+                        if (inventorySlotIsPicked){
+                            System.out.println("We chose something in inventory and then clicked on minzurka!");
+                        } else System.out.println("We haven't chose anything");
+                    }
+                }
             }
 
             for (Substance subs : usedSubstances){
@@ -167,8 +178,31 @@ public class ExperimentWindow implements Screen {
                             System.out.println(slot.getSubstanceIdInSlot() + " deleted from " + slot.getSlotId());
                             slot.setSubstanceIdInSlot("");
                             slot.setSlotTexture(slotBasicTexture);
+                            if (slot.getThisSlotPicked()){
+                                inventorySlotIsPicked = false;
+                                slot.setThisSlotPicked(false);
+                                System.out.println("We deleted selected slot!");
+                            }
                         }
                         break;
+                    } else {
+                        if (inventorySlotIsPicked && slot.getThisSlotPicked()){
+                            System.out.println("We unpicked something from inventory");
+                            inventorySlotIsPicked = false;
+                            slot.setThisSlotPicked(false);
+                        } else {
+                            int count = 0;
+                            for (InventorySlot slot2: inventory) {
+                                if (slot2.getThisSlotPicked()){
+                                    count++;
+                                }
+                            }
+                            if (count == 0){
+                                System.out.println("We chose smth in inventory");
+                                slot.setThisSlotPicked(true);
+                                inventorySlotIsPicked = true;
+                            } else System.out.println("We already have a slot choosen!");
+                        }
                     }
                 }
             }

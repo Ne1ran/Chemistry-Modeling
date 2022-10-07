@@ -7,8 +7,17 @@ public class InventorySlot extends Rectangle {
     private Integer slotId;
     private Texture slotTexture;
     private String substanceIdInSlot = "";
+    private Boolean isThisSlotPicked = false;
 
     public InventorySlot() {
+    }
+
+    public Boolean getThisSlotPicked() {
+        return isThisSlotPicked;
+    }
+
+    public void setThisSlotPicked(Boolean thisSlotPicked) {
+        isThisSlotPicked = thisSlotPicked;
     }
 
     public Integer getSlotId() {
