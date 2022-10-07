@@ -148,7 +148,16 @@ public class ExperimentWindow implements Screen {
                         break;
                     } else {
                         if (inventorySlotIsPicked){
-                            System.out.println("We chose something in inventory and then clicked on minzurka!");
+                            String substanceInSlotId = "";
+                            for (InventorySlot slot: inventory) {
+                                if (slot.getThisSlotPicked()){
+                                    if (!slot.getSubstanceIdInSlot().isEmpty()){
+                                        substanceInSlotId = slot.getSubstanceIdInSlot();
+                                        break;
+                                    }
+                                }
+                            }
+                            System.out.println("We chose something in inventory and then clicked on minzurka! It was: ID " +  substanceInSlotId);
                         } else System.out.println("We haven't chose anything");
                     }
                 }
@@ -186,14 +195,15 @@ public class ExperimentWindow implements Screen {
                         }
                         break;
                     } else {
+                        int slotTryingToPickId = slot.getSlotId();
                         if (inventorySlotIsPicked && slot.getThisSlotPicked()){
                             System.out.println("We unpicked something from inventory");
                             inventorySlotIsPicked = false;
                             slot.setThisSlotPicked(false);
                         } else {
                             int count = 0;
-                            for (InventorySlot slot2: inventory) {
-                                if (slot2.getThisSlotPicked()){
+                            for (InventorySlot slot1: inventory) {
+                                if (slot1.getThisSlotPicked()){
                                     count++;
                                 }
                             }
@@ -201,7 +211,14 @@ public class ExperimentWindow implements Screen {
                                 System.out.println("We chose smth in inventory");
                                 slot.setThisSlotPicked(true);
                                 inventorySlotIsPicked = true;
-                            } else System.out.println("We already have a slot choosen!");
+                            } else {
+                                for (InventorySlot slot2: inventory){
+                                    if (slotTryingToPickId != slot2.getSlotId()){
+                                        slot2.setThisSlotPicked(false);
+                                    } else slot2.setThisSlotPicked(true);
+                                }
+                                System.out.println("So we moved chosen to another one");
+                            }
                         }
                     }
                 }
