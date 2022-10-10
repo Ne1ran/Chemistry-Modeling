@@ -5,7 +5,6 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -21,6 +20,7 @@ public class ExperimentWindow implements Screen {
     private final Texture slotBasicTexture;
 
     private final DBHandler handler = new DBHandler();
+    private final ReactionHandler reactionHandler = new ReactionHandler();
 
     private final OrthographicCamera camera;
 
@@ -159,6 +159,16 @@ public class ExperimentWindow implements Screen {
                             System.out.println("We chose something in inventory and then clicked on minzurka! It was: ID " +  substanceInSlotId);
 
                             equip.addSubstance(substanceInSlotId);
+                            System.out.println(equip.getSubstancesInside().size());
+// Need a normal check if substance is already added
+                            if (equip.getSubstancesInside().size()>=2){
+                                try {
+                                    reactionHandler.getSubstancesFromEquipment(equip);
+                                } catch (SQLException | ClassNotFoundException throwables) {
+                                    throwables.printStackTrace();
+                                }
+                                //Reaction handler
+                            }
 
 //                            if (!equip.getSubstancesInside().isEmpty()){
 //                                for (String string : equip.getSubstancesInside()){
