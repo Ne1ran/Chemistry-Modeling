@@ -54,7 +54,6 @@ public class DBHandler extends Config{
         ResultSet rset = null;
         String select = "SELECT * FROM " + AllConstants.ExpConsts.EXP_TABLE + " where " + AllConstants.ExpConsts.EXP_ID
                 + "='" + id + "'";
-        System.out.println(select);
         PreparedStatement prst = getConnection().prepareStatement(select);
         rset = prst.executeQuery();
 
@@ -88,7 +87,6 @@ public class DBHandler extends Config{
         ResultSet rset = null;
         String select = "SELECT * FROM " + AllConstants.EquipExpConsts.EQUIP_EXP_TABLE + " where " +
                 AllConstants.EquipExpConsts.EXP4_ID + "='" + exp_id + "'";
-        System.out.println(select);
         PreparedStatement prst = getConnection().prepareStatement(select);
         rset = prst.executeQuery();
         return rset;
@@ -98,6 +96,24 @@ public class DBHandler extends Config{
         ResultSet rset = null;
         String select = "SELECT * FROM " + AllConstants.EquipConsts.EQUIP_TABLE + " where " +
                 AllConstants.EquipConsts.ID + "='" + id + "'";
+        PreparedStatement prst = getConnection().prepareStatement(select);
+        rset = prst.executeQuery();
+        return rset;
+    }
+
+    public ResultSet getFoundationByName(String foundation) throws SQLException, ClassNotFoundException {
+        ResultSet rset = null;
+        String select = "SELECT * FROM " + AllConstants.FoundConsts.FOUND_TABLE + " where " +
+                AllConstants.FoundConsts.FOUNDATION_NAME + "='" + foundation + "'";
+        PreparedStatement prst = getConnection().prepareStatement(select);
+        rset = prst.executeQuery();
+        return rset;
+    }
+
+    public ResultSet getOxidByName(String oxid) throws SQLException, ClassNotFoundException {
+        ResultSet rset = null;
+        String select = "SELECT * FROM " + AllConstants.OxidConsts.OXID_TABLE + " where " +
+                AllConstants.OxidConsts.OXIDIZER_NAME + "='" + oxid + "'";
         PreparedStatement prst = getConnection().prepareStatement(select);
         rset = prst.executeQuery();
         return rset;

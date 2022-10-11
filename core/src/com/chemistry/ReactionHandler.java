@@ -36,28 +36,42 @@ public class ReactionHandler {
         experimentPoolSetting(substances);
     }
 
-    public void experimentPoolSetting(ArrayList<Substance> substances){
-//
-//        for (Substance subs : substances){
-//            String foundation = subs.getFoundation();
-//            String oxid = subs.getOxid();
-//
-//            if (oxid.charAt(0) > 1 && oxid.charAt(0) <= 9) {
-//                int tempCount = 0;
-//                tempCount = (int) oxid.charAt(0);
-//                oxid = oxid.substring(1,oxid.length());
-//                System.out.println(oxid);
-//                pool.put(oxid, tempCount);
-//            } else pool.put(oxid, 1);
-//
-//            if (foundation.charAt(0) > 1 && foundation.charAt(0) <= 9) {
-//                int tempCount = 0;
-//                tempCount = (int) foundation.charAt(0);
-//                foundation = foundation.substring(1,foundation.length());
-//                System.out.println(foundation);
-//                pool.put(foundation, tempCount);
-//            } else pool.put(foundation, 1);
-//        }
+    public void experimentPoolSetting(ArrayList<Substance> substances) throws SQLException, ClassNotFoundException {
+        for (Substance subs : substances){
+            System.out.println(subs.getName());
+            String foundation = subs.getFoundation();
+            String oxid = subs.getOxid();
+
+            Integer found_amount = Integer.valueOf(subs.getFound_amount());
+            Integer oxid_amount = Integer.valueOf(subs.getOxid_amount());
+
+            ResultSet foundationFound = handler.getFoundationByName(foundation); // Putting a foundation with its amount in a pool
+            if (foundationFound.next()){
+                Foundation tempFoundation = new Foundation();
+                tempFoundation.setFoundation_name(foundationFound.getString(AllConstants.FoundConsts.FOUNDATION_NAME));
+                tempFoundation.setName(foundationFound.getString(AllConstants.FoundConsts.NAME));
+                tempFoundation.setFound_state_min(foundationFound.getString(AllConstants.FoundConsts.FOUND_STATE_MIN));
+                tempFoundation.setFound_state_max(foundationFound.getString(AllConstants.FoundConsts.FOUND_STATE_MAX));
+                tempFoundation.setElectrochem_pos(foundationFound.getString(AllConstants.FoundConsts.ELECTROCHEM_POSITION));
+
+                System.out.println(tempFoundation.getName() + " - колво " + found_amount);
+                foundPool.put(tempFoundation, found_amount);
+            }
+
+            ResultSet oxidFound = handler.getOxidByName(oxid);
+            if (oxidFound.next()){
+                Oxid tempOxid = new Oxid();
+
+                tempOxid.setOxid_name(oxidFound.getString(AllConstants.OxidConsts.OXIDIZER_NAME));
+                tempOxid.setName(oxidFound.getString(AllConstants.OxidConsts.NAME));
+                tempOxid.setOxid_state_min(oxidFound.getString(AllConstants.OxidConsts.OXID_STATE_MIN));
+                tempOxid.setOxid_state_max(oxidFound.getString(AllConstants.OxidConsts.OXID_STATE_MAX));
+
+                System.out.println(tempOxid.getName() + " - количво " + oxid_amount);
+                oxidPool.put(tempOxid, oxid_amount);
+            }
+
+        }
 
     }
 

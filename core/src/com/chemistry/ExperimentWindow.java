@@ -144,7 +144,7 @@ public class ExperimentWindow implements Screen {
                 if (equip.overlaps(mouseSpawnerRect)){
                     if (!equip.getSetOnPlace()){ //move for a first time
                         System.out.println("Bim");
-                        equip.setPosition(300, 720 - 150 - equip.getHeight());
+                        equip.setPosition(450, 720 - 150 - equip.getHeight());
                         equip.setSetOnPlace(true);
                         break;
                     } else {
