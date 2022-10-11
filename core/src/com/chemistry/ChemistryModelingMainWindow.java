@@ -37,15 +37,13 @@ public class ChemistryModelingMainWindow implements Screen {
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 1280, 720);
 
-        BitmapFont font = new BitmapFont();
-
         TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
-        buttonStyle.font = font;
+        buttonStyle.font = game.font;
         buttonStyle.font.getData().setScale(2);
         buttonStyle.fontColor = new Color(255, 100, 200, 1);
 
         TextField.TextFieldStyle textFieldStyle = new TextField.TextFieldStyle();
-        textFieldStyle.font = font;
+        textFieldStyle.font = game.font;
         textFieldStyle.font.getData().setScale(2);
         textFieldStyle.fontColor = new Color(255, 100, 200, 1);
 
@@ -57,7 +55,7 @@ public class ChemistryModelingMainWindow implements Screen {
 
         Gdx.input.setInputProcessor(stage);
 
-        final Button startAsNewUser = new TextButton("Start", buttonStyle);
+        final Button startAsNewUser = new TextButton("Стартуем", buttonStyle);
         stage.addActor(startAsNewUser);
         startAsNewUser.setPosition(40, 480);
 
