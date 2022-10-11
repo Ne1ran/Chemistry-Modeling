@@ -79,10 +79,27 @@ public class ReactionHandler {
         }
         int first = Integer.parseInt(foundationsFirstIteration.get(0).getElectrochem_pos());
         int second = Integer.parseInt(foundationsFirstIteration.get(1).getElectrochem_pos());
-        if (first >= 8 && second >= 8){
+        if (first <= 8 && second <= 8){
             if (first - second > 4){
-//
+                foundationsSecondIteration.add(foundationsFirstIteration.get(1));
+                foundationsSecondIteration.add(foundationsFirstIteration.get(0));
+            } else {
+                foundationsSecondIteration.add(foundationsFirstIteration.get(0));
+                foundationsSecondIteration.add(foundationsFirstIteration.get(1));
             }
+            //Dont need any ifs cause they are already in 1-2 set
+        } else {
+            if (first - second > 2){
+                foundationsSecondIteration.add(foundationsFirstIteration.get(1));
+                foundationsSecondIteration.add(foundationsFirstIteration.get(0));
+            } else {
+                foundationsSecondIteration.add(foundationsFirstIteration.get(0));
+                foundationsSecondIteration.add(foundationsFirstIteration.get(1));
+            }
+            //same here
+        }
+        for (Foundation found : foundationsSecondIteration){
+            System.out.println(found.getName());
         }
     }
 }
