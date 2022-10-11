@@ -4,9 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class ReactionHandler {
     ArrayList<Substance> substances;
@@ -16,8 +14,8 @@ public class ReactionHandler {
 
     public void getSubstancesFromEquipment(Equipment equipment) throws SQLException, ClassNotFoundException {
         substances = new ArrayList<>();
-        foundPool = new HashMap<>();
-        oxidPool = new HashMap<>();
+        foundPool = new LinkedHashMap<>();
+        oxidPool = new LinkedHashMap<>();
         for (String substanceId : equipment.getSubstancesInside()){
             Substance tempSubstance = new Substance();
             ResultSet substanceFromDB = handler.getSubstanceByID(substanceId);
@@ -38,14 +36,13 @@ public class ReactionHandler {
 
     public void experimentPoolSetting(ArrayList<Substance> substances) throws SQLException, ClassNotFoundException {
         for (Substance subs : substances){
-            System.out.println(subs.getName());
             String foundation = subs.getFoundation();
             String oxid = subs.getOxid();
 
             Integer found_amount = Integer.valueOf(subs.getFound_amount());
             Integer oxid_amount = Integer.valueOf(subs.getOxid_amount());
 
-            ResultSet foundationFound = handler.getFoundationByName(foundation); // Putting a foundation with its amount in a pool
+            ResultSet foundationFound = handler.getFoundationByName(foundation); // Putting a foundation with its amount in its pool
             if (foundationFound.next()){
                 Foundation tempFoundation = new Foundation();
                 tempFoundation.setFoundation_name(foundationFound.getString(AllConstants.FoundConsts.FOUNDATION_NAME));
@@ -54,11 +51,10 @@ public class ReactionHandler {
                 tempFoundation.setFound_state_max(foundationFound.getString(AllConstants.FoundConsts.FOUND_STATE_MAX));
                 tempFoundation.setElectrochem_pos(foundationFound.getString(AllConstants.FoundConsts.ELECTROCHEM_POSITION));
 
-                System.out.println(tempFoundation.getName() + " - колво " + found_amount);
                 foundPool.put(tempFoundation, found_amount);
             }
 
-            ResultSet oxidFound = handler.getOxidByName(oxid);
+            ResultSet oxidFound = handler.getOxidByName(oxid); // Putting a oxidizer with its amount in its pool
             if (oxidFound.next()){
                 Oxid tempOxid = new Oxid();
 
@@ -67,16 +63,27 @@ public class ReactionHandler {
                 tempOxid.setOxid_state_min(oxidFound.getString(AllConstants.OxidConsts.OXID_STATE_MIN));
                 tempOxid.setOxid_state_max(oxidFound.getString(AllConstants.OxidConsts.OXID_STATE_MAX));
 
-                System.out.println(tempOxid.getName() + " - количво " + oxid_amount);
                 oxidPool.put(tempOxid, oxid_amount);
             }
 
         }
-
+        chemicalReaction(foundPool, oxidPool);
     }
 
-    public void chemicalReaction(Map<String, Integer> pool){
-
+    public void chemicalReaction(Map<Foundation, Integer> foundPool, Map<Oxid, Integer> oxidPool){
+        ArrayList<Foundation> foundationsFirstIteration = new ArrayList<>();
+        ArrayList<Foundation> foundationsSecondIteration = new ArrayList<>();
+        for (Foundation found : foundPool.keySet()){
+            foundationsFirstIteration.add(found);
+            System.out.println(found.getName());
+        }
+        int first = Integer.parseInt(foundationsFirstIteration.get(0).getElectrochem_pos());
+        int second = Integer.parseInt(foundationsFirstIteration.get(1).getElectrochem_pos());
+        if (first >= 8 && second >= 8){
+            if (first - second > 4){
+//
+            }
+        }
     }
 }
 
