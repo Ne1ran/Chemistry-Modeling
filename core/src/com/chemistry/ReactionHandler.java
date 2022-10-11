@@ -10,11 +10,14 @@ import java.util.Map;
 
 public class ReactionHandler {
     ArrayList<Substance> substances;
-
+    Map<Foundation, Integer> foundPool;
+    Map<Oxid, Integer> oxidPool;
     DBHandler handler = new DBHandler();
 
     public void getSubstancesFromEquipment(Equipment equipment) throws SQLException, ClassNotFoundException {
         substances = new ArrayList<>();
+        foundPool = new HashMap<>();
+        oxidPool = new HashMap<>();
         for (String substanceId : equipment.getSubstancesInside()){
             Substance tempSubstance = new Substance();
             ResultSet substanceFromDB = handler.getSubstanceByID(substanceId);
@@ -25,6 +28,8 @@ public class ReactionHandler {
                 tempSubstance.setFoundation(substanceFromDB.getString(AllConstants.SubsConsts.FOUND_PART_NAME));
                 tempSubstance.setOxid(substanceFromDB.getString(AllConstants.SubsConsts.OXID_PART_NAME));
                 tempSubstance.setSmallTexturePath(new Texture(substanceFromDB.getString(AllConstants.SubsConsts.SMALL_TEXTURE)));
+                tempSubstance.setFound_amount(substanceFromDB.getString(AllConstants.SubsConsts.FOUND_AMOUNT));
+                tempSubstance.setOxid_amount(substanceFromDB.getString(AllConstants.SubsConsts.OXID_AMOUNT));
             }
             substances.add(tempSubstance);
         }
@@ -32,27 +37,27 @@ public class ReactionHandler {
     }
 
     public void experimentPoolSetting(ArrayList<Substance> substances){
-        Map<String, Integer> pool = new HashMap<>();
-        for (Substance subs : substances){
-            String foundation = subs.getFoundation();
-            String oxid = subs.getOxid();
-
-            if (oxid.charAt(0) > 1 && oxid.charAt(0) <= 9) {
-                int tempCount = 0;
-                tempCount = (int) oxid.charAt(0);
-                oxid = oxid.substring(1,oxid.length());
-                System.out.println(oxid);
-                pool.put(oxid, tempCount);
-            } else pool.put(oxid, 1);
-
-            if (foundation.charAt(0) > 1 && foundation.charAt(0) <= 9) {
-                int tempCount = 0;
-                tempCount = (int) foundation.charAt(0);
-                foundation = foundation.substring(1,foundation.length());
-                System.out.println(foundation);
-                pool.put(foundation, tempCount);
-            } else pool.put(foundation, 1);
-        }
+//
+//        for (Substance subs : substances){
+//            String foundation = subs.getFoundation();
+//            String oxid = subs.getOxid();
+//
+//            if (oxid.charAt(0) > 1 && oxid.charAt(0) <= 9) {
+//                int tempCount = 0;
+//                tempCount = (int) oxid.charAt(0);
+//                oxid = oxid.substring(1,oxid.length());
+//                System.out.println(oxid);
+//                pool.put(oxid, tempCount);
+//            } else pool.put(oxid, 1);
+//
+//            if (foundation.charAt(0) > 1 && foundation.charAt(0) <= 9) {
+//                int tempCount = 0;
+//                tempCount = (int) foundation.charAt(0);
+//                foundation = foundation.substring(1,foundation.length());
+//                System.out.println(foundation);
+//                pool.put(foundation, tempCount);
+//            } else pool.put(foundation, 1);
+//        }
 
     }
 

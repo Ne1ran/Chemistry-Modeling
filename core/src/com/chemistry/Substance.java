@@ -13,8 +13,26 @@ public class Substance extends Rectangle {
     private String oxid;
     private String name;
     private Texture smallTexturePath;
+    private String found_amount;
+    private String oxid_amount;
 
     public Substance() {
+    }
+
+    public String getFound_amount() {
+        return found_amount;
+    }
+
+    public void setFound_amount(String found_amount) {
+        this.found_amount = found_amount;
+    }
+
+    public String getOxid_amount() {
+        return oxid_amount;
+    }
+
+    public void setOxid_amount(String oxid_amount) {
+        this.oxid_amount = oxid_amount;
     }
 
     public Texture getSmallTexturePath() {
