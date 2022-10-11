@@ -59,5 +59,24 @@ public class AllConstants {
         public static final String EXP4_ID = "experiment_id";
     }
 
+    public static class FoundConsts {
+        public static final String FOUND_TABLE = "foundation";
+
+        public static final String FOUNDATION_NAME = "foundation_name";
+        public static final String NAME = "name";
+        public static final String FOUND_STATE_MIN = "found_state_min";
+        public static final String FOUND_STATE_MAX = "found_state_max";
+        public static final String ELECTROCHEM_POSITION = "electrochem_position";
+    }
+
+    public static class OxidConsts {
+        public static final String OXID_TABLE = "oxidizers";
+
+        public static final String OXIDIZER_NAME = "oxidizer_name";
+        public static final String NAME = "name";
+        public static final String OXID_STATE_MIN = "oxid_state_min";
+        public static final String OXID_STATE_MAX = "oxid_state_max";
+
+    }
 
 }

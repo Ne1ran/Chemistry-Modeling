@@ -10,6 +10,7 @@ import java.util.Map;
 
 public class ReactionHandler {
     ArrayList<Substance> substances;
+
     DBHandler handler = new DBHandler();
 
     public void getSubstancesFromEquipment(Equipment equipment) throws SQLException, ClassNotFoundException {
