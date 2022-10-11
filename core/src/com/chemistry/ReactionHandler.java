@@ -73,34 +73,29 @@ public class ReactionHandler {
     public void chemicalReaction(Map<Foundation, Integer> foundPool, Map<Oxid, Integer> oxidPool){
         ArrayList<Foundation> foundationsFirstIteration = new ArrayList<>();
         ArrayList<Foundation> foundationsSecondIteration = new ArrayList<>();
+        Map<Foundation, Integer> tempFoundPool = new HashMap<>();
+        boolean startReaction = false;
         for (Foundation found : foundPool.keySet()){
             foundationsFirstIteration.add(found);
             System.out.println(found.getName());
         }
         int first = Integer.parseInt(foundationsFirstIteration.get(0).getElectrochem_pos());
         int second = Integer.parseInt(foundationsFirstIteration.get(1).getElectrochem_pos());
-        if (first <= 8 && second <= 8){
-            if (first - second > 4){
-                foundationsSecondIteration.add(foundationsFirstIteration.get(1));
-                foundationsSecondIteration.add(foundationsFirstIteration.get(0));
-            } else {
-                foundationsSecondIteration.add(foundationsFirstIteration.get(0));
-                foundationsSecondIteration.add(foundationsFirstIteration.get(1));
-            }
-            //Dont need any ifs cause they are already in 1-2 set
-        } else {
-            if (first - second > 2){
-                foundationsSecondIteration.add(foundationsFirstIteration.get(1));
-                foundationsSecondIteration.add(foundationsFirstIteration.get(0));
-            } else {
-                foundationsSecondIteration.add(foundationsFirstIteration.get(0));
-                foundationsSecondIteration.add(foundationsFirstIteration.get(1));
-            }
-            //same here
+        if (second <= 8 && first <= 8 && (first - second > 4 || second - first > 4)){
+            startReaction = true;
+        } else if (first - second > 2 || second - first > 2){
+            startReaction = true;
         }
+
         for (Foundation found : foundationsSecondIteration){
+            tempFoundPool.put(found, foundPool.get(found));
             System.out.println(found.getName());
         }
+
+        if (startReaction){
+            System.out.println("Reaction has started!");
+        }
+
     }
 }
 
