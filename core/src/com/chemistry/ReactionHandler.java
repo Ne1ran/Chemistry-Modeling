@@ -72,7 +72,7 @@ public class ReactionHandler {
 
     public void chemicalReaction(Map<Foundation, Integer> foundPool, Map<Oxid, Integer> oxidPool){
         ArrayList<Foundation> foundationsFirstIteration = new ArrayList<>();
-        ArrayList<Foundation> foundationsSecondIteration = new ArrayList<>();
+//        ArrayList<Foundation> foundationsSecondIteration = new ArrayList<>();
         Map<Foundation, Integer> tempFoundPool = new HashMap<>();
         boolean startReaction = false;
         for (Foundation found : foundPool.keySet()){
@@ -87,15 +87,33 @@ public class ReactionHandler {
             startReaction = true;
         }
 
-        for (Foundation found : foundationsSecondIteration){
-            tempFoundPool.put(found, foundPool.get(found));
-            System.out.println(found.getName());
-        }
+//        for (Foundation found : foundationsSecondIteration){
+//            tempFoundPool.put(found, foundPool.get(found));
+//            System.out.println(found.getName());
+//        }
 
         if (startReaction){
-            System.out.println("Reaction has started!");
+            reactionStarted(foundPool, oxidPool);
         } else System.out.println("Reaction failed...");
+    }
 
+    public void reactionStarted(Map<Foundation, Integer> foundPool, Map<Oxid, Integer> oxidPool){
+        String answer = "";
+        for (Foundation foundation : foundPool.keySet()){
+            if (foundPool.get(foundation) <= 1){
+                answer += "";
+            } else answer += String.valueOf(foundPool.get(foundation));
+            answer += foundation.getFoundation_name();
+            answer += " ";
+        }
+        System.out.println(answer);
+        String[] tempArray = answer.trim().split(" ");
+        int i = tempArray.length-1;
+        for (Oxid oxid : oxidPool.keySet()){
+            tempArray[i] = tempArray[i] + oxid.getOxid_name();
+            i--;
+        }
+        System.out.println(String.join(" + ", tempArray));
     }
 }
 
