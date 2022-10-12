@@ -87,7 +87,7 @@ public class ExperimentWindow implements Screen {
                 tempSubstance.setSmallTexturePath(new Texture(substanceItself.getString(AllConstants.SubsConsts.SMALL_TEXTURE)));
                 tempSubstance.setFound_amount(substanceItself.getString(AllConstants.SubsConsts.FOUND_AMOUNT));
                 tempSubstance.setOxid_amount(substanceItself.getString(AllConstants.SubsConsts.OXID_AMOUNT));
-                tempSubstance.setSize(200, 200);
+                tempSubstance.setSize(100, 100);
             }
             usedSubstances.add(tempSubstance);
         }

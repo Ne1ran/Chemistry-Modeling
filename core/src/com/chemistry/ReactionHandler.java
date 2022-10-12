@@ -94,7 +94,7 @@ public class ReactionHandler {
 
         if (startReaction){
             System.out.println("Reaction has started!");
-        }
+        } else System.out.println("Reaction failed...");
 
     }
 }
