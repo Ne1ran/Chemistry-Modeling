@@ -25,7 +25,7 @@ public class ExperimentWindow implements Screen {
     private final OrthographicCamera camera;
 
     private final ArrayList<Substance> usedSubstances = new ArrayList<>();
-    private final ArrayList<Equipment> usedEquipment = new ArrayList<>();
+    public static ArrayList<Equipment> usedEquipment = new ArrayList<>();
     private final ArrayList<InventorySlot> inventory = new ArrayList<>();
 
     public static Rectangle mouseSpawnerRect;
