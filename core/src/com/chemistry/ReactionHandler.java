@@ -97,17 +97,88 @@ public class ReactionHandler {
 
     public void reactionStarted(Map<Foundation, Integer> foundPool, Map<Oxid, Integer> oxidPool){ // We swap foundations for oxidizers
         String answer = "";
-        for (Foundation foundation : foundPool.keySet()){
+
+        ArrayList<Oxid> oxids = new ArrayList<>();
+
+        for (Oxid oxid : oxidPool.keySet()){
+            oxids.add(oxid);
+        }
+
+        ArrayList<Foundation> foundations = new ArrayList<>();
+
+        for (Foundation found : foundPool.keySet()){
+            foundations.add(found);
+        }
+
+        String[] answerArray = new String[2];
+
+//        for (int i = 0; i<answerArray.length;i++){
+//            int oxidMinus;
+//            int oxidPlus;
+//            int foundMinus;
+//            int foundPlus;
+//            int evalOxid = 0;
+//            int evalFound = 0;
+//            boolean evalOxidBool = false;
+//            boolean evalFoundBool = false;
+//            String oxidMin = oxids.get(i).getOxid_state_min();
+//            String oxidMax = oxids.get(i).getOxid_state_max();
+//            String foundMin = foundations.get(i).getFound_state_min();
+//            String foundMax = foundations.get(i).getFound_state_max();
+//            if (oxidMin.equals(oxidMax)){
+//                evalOxid = Integer.parseInt(oxidMax) * oxidPool.get(oxids.get(i));
+//            } else evalOxidBool = true;
+//
+//            if (foundMin.equals(foundMax)){
+//                evalFound = Integer.parseInt(foundMax) * foundPool.get(foundations.get(i));
+//            } else evalFoundBool = true;
+//
+//            if (evalFoundBool && evalOxidBool) {
+//                System.out.println("Error");
+//            } else if (evalFoundBool){
+//                evalFound =
+//            } else if (evalOxidBool){
+//                System.out.println("dont know");
+//            }
+//            System.out.println(evalFound + " 111 " + evalOxid);
+//            if (-evalOxid == evalFound){
+//                System.out.println("yra!");
+//            }
+//        }
+
+
+
+        for (Foundation foundation : foundations){
             if (foundPool.get(foundation) <= 1){
                 answer += "";
             } else answer += String.valueOf(foundPool.get(foundation));
             answer += foundation.getFoundation_name();
             answer += " ";
         }
-        System.out.println(answer);
         String[] tempArray = answer.trim().split(" ");
+        System.out.println(answer);
         int i = tempArray.length-1;
-        for (Oxid oxid : oxidPool.keySet()){
+        int firstOxidEval = oxidPool.get(oxids.get(i)) * Integer.parseInt(oxids.get(i).getOxid_state_min());
+        int secondOxidEval = oxidPool.get(oxids.get(i-1)) * Integer.parseInt(oxids.get(i-1).getOxid_state_min());
+        if (firstOxidEval == secondOxidEval){
+            System.out.println("All good...");
+        } else if (firstOxidEval > secondOxidEval){
+            int tempInt = (oxidPool.get(oxids.get(i)) * Integer.parseInt(oxids.get(i).getOxid_state_min()))
+                    / Integer.parseInt(oxids.get(i-1).getOxid_state_min());
+            oxidPool.replace(oxids.get(i), (oxidPool.get(oxids.get(i-1)) * Integer.parseInt(oxids.get(i-1).getOxid_state_min()))
+                    / Integer.parseInt(oxids.get(i).getOxid_state_min()));
+            oxidPool.replace(oxids.get(i-1), tempInt);
+        } else {
+            int tempInt = (oxidPool.get(oxids.get(i-1)) * Integer.parseInt(oxids.get(i-1).getOxid_state_min()))
+                    / Integer.parseInt(oxids.get(i).getOxid_state_min());
+            oxidPool.replace(oxids.get(i-1), (oxidPool.get(oxids.get(i)) * Integer.parseInt(oxids.get(i).getOxid_state_min()))
+                    / Integer.parseInt(oxids.get(i-1).getOxid_state_min()));
+            oxidPool.replace(oxids.get(i), tempInt);
+        }
+
+        System.out.println(oxidPool.get(oxids.get(i)) + " - " + oxidPool.get(oxids.get(i-1)));
+
+        for (Oxid oxid : oxids){
             if (oxidPool.get(oxid) <= 1){
                 tempArray[i] = tempArray[i] + oxid.getOxid_name();
             } else {
@@ -116,6 +187,11 @@ public class ReactionHandler {
             i--;
         }
         System.out.println(String.join(" + ", tempArray));
+
+//        for (String string : tempArray){
+//            System.out.println(string);
+//        }
+
         clearEquipment();
     }
 
