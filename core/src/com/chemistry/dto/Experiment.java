@@ -1,4 +1,4 @@
-package com.chemistry;
+package com.chemistry.dto;
 
 public class Experiment {
     private String name;

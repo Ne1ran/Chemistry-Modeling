@@ -1,6 +1,10 @@
 package com.chemistry;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.chemistry.dto.Equipment;
+import com.chemistry.dto.Foundation;
+import com.chemistry.dto.Oxid;
+import com.chemistry.dto.Substance;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

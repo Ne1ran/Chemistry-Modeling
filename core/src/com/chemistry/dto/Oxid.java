@@ -1,4 +1,4 @@
-package com.chemistry;
+package com.chemistry.dto;
 
 public class Oxid {
     private String oxid_name;

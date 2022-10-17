@@ -1,4 +1,4 @@
-package com.chemistry;
+package com.chemistry.dto;
 
 public class Foundation {
     private String foundation_name;

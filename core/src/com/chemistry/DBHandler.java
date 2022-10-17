@@ -15,7 +15,7 @@ public class DBHandler extends Config{
         return connection;
     }
 
-    public void addNewUser(User user) throws SQLException, ClassNotFoundException {
+    public void addNewUser(com.chemistry.dto.User user) throws SQLException, ClassNotFoundException {
         String insert = "INSERT INTO " + AllConstants.UserConsts.USERS_TABLE + "(" + AllConstants.UserConsts.FIO +
                 ',' + AllConstants.UserConsts.CURRENT_EXP + ',' + AllConstants.UserConsts.EXPS_COMPLETED +
                 ',' + AllConstants.UserConsts.EMAIL + ',' + AllConstants.UserConsts.PASSWORD + ')' + "VALUES(?,?,?,?,?)";

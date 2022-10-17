@@ -5,6 +5,9 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
+import com.chemistry.dto.Equipment;
+import com.chemistry.dto.InventorySlot;
+import com.chemistry.dto.Substance;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -18,6 +21,7 @@ public class ExperimentWindow implements Screen {
     private final Texture experimentBackground;
     private final Texture inventoryTexture;
     private final Texture slotBasicTexture;
+    private final Texture chemist;
 
     private final DBHandler handler = new DBHandler();
     private final ReactionHandler reactionHandler = new ReactionHandler();
@@ -50,14 +54,14 @@ public class ExperimentWindow implements Screen {
 
         mouseSpawnerRect = new Rectangle(); //On a click we spawn a rectangle upon the coordinates.
         mouseSpawnerRect.setPosition(-100,-100); //If nearby exists another rectangle - go methods.
-        mouseSpawnerRect.setSize(10, 10);
+        mouseSpawnerRect.setSize(3, 3);
 
         exitBtn = new Rectangle();
         exitBtn.setPosition(38, 0);
 
         experimentBackground = new Texture(choosenExperiment.getTexture_path());
         inventoryTexture = new Texture("inventory.png");
-
+        chemist = new Texture("chemist.png");
         slotBasicTexture = new Texture("inventoryslot.png");
 
         for (int i = 0; i<3; i++){
@@ -124,7 +128,8 @@ public class ExperimentWindow implements Screen {
 
         game.batch.begin();
         game.batch.draw(experimentBackground,0,0);
-        game.batch.draw(inventoryTexture, 38, 230); //
+        game.batch.draw(inventoryTexture, 38, 230);
+        game.batch.draw(chemist, 1280-40-241, 0);
         for (Substance subs : usedSubstances){
             game.batch.draw(subs.getTexture_path(), subs.getX(), 720 - subs.getY() - subs.getHeight());
         }
