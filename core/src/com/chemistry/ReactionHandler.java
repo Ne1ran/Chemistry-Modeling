@@ -110,9 +110,9 @@ public class ReactionHandler {
             foundations.add(found);
         }
 
-        String[] answerArray = new String[2];
+//        String[] answerArray = new String[2];
 
-//        for (int i = 0; i<answerArray.length;i++){
+//        for (int i = 0; i<answerArray.length;i++){ if smth is reaaaaly wrong
 //            int oxidMinus;
 //            int oxidPlus;
 //            int foundMinus;
@@ -149,26 +149,24 @@ public class ReactionHandler {
 
 
         for (Foundation foundation : foundations){
-            if (foundPool.get(foundation) <= 1){
-                answer += "";
-            } else answer += String.valueOf(foundPool.get(foundation));
             answer += foundation.getFoundation_name();
             answer += " ";
         }
         String[] tempArray = answer.trim().split(" ");
         System.out.println(answer);
+
         int i = tempArray.length-1;
-        int firstOxidEval = oxidPool.get(oxids.get(i)) * Integer.parseInt(oxids.get(i).getOxid_state_min());
+        int firstOxidEval = oxidPool.get(oxids.get(i)) * Integer.parseInt(oxids.get(i).getOxid_state_min()); // params that are state * amount
         int secondOxidEval = oxidPool.get(oxids.get(i-1)) * Integer.parseInt(oxids.get(i-1).getOxid_state_min());
         if (firstOxidEval == secondOxidEval){
             System.out.println("All good...");
-        } else if (firstOxidEval > secondOxidEval){
+        } else if (firstOxidEval > secondOxidEval){ //We swap their amounts according to evals (2 with 1)
             int tempInt = (oxidPool.get(oxids.get(i)) * Integer.parseInt(oxids.get(i).getOxid_state_min()))
                     / Integer.parseInt(oxids.get(i-1).getOxid_state_min());
             oxidPool.replace(oxids.get(i), (oxidPool.get(oxids.get(i-1)) * Integer.parseInt(oxids.get(i-1).getOxid_state_min()))
                     / Integer.parseInt(oxids.get(i).getOxid_state_min()));
             oxidPool.replace(oxids.get(i-1), tempInt);
-        } else {
+        } else { // 1 with 2 2Fe(Cl)6 nerf
             int tempInt = (oxidPool.get(oxids.get(i-1)) * Integer.parseInt(oxids.get(i-1).getOxid_state_min()))
                     / Integer.parseInt(oxids.get(i).getOxid_state_min());
             oxidPool.replace(oxids.get(i-1), (oxidPool.get(oxids.get(i)) * Integer.parseInt(oxids.get(i).getOxid_state_min()))
@@ -176,7 +174,30 @@ public class ReactionHandler {
             oxidPool.replace(oxids.get(i), tempInt);
         }
 
+        System.out.println(foundPool.get(foundations.get(i-1)) / 2);
+        System.out.println(foundPool.get(foundations.get(i)) / 2);
+
+        if (oxidPool.get(oxids.get(i)) >= 6){ // nerf 2FeCl6 -> FeCl3
+            if (foundPool.get(foundations.get(i-1)) % 2 == 0 && oxidPool.get(oxids.get(i)) % 2 == 0){
+                foundPool.put(foundations.get(i-1), foundPool.get(foundations.get(i-1)) / 2);
+                oxidPool.put(oxids.get(i),oxidPool.get(oxids.get(i)) / 2);
+            }
+        } else if (oxidPool.get(oxids.get(i-1)) >= 6){
+            if (foundPool.get(foundations.get(i)) % 2 == 0 && oxidPool.get(oxids.get(i-1)) % 2 == 0){
+
+                foundPool.put(foundations.get(i), foundPool.get(foundations.get(i)) / 2);
+                oxidPool.put(oxids.get(i-1),oxidPool.get(oxids.get(i-1)) / 2);
+            }
+        }
+
         System.out.println(oxidPool.get(oxids.get(i)) + " - " + oxidPool.get(oxids.get(i-1)));
+        for (Foundation foundation : foundations){
+            if (foundPool.get(foundation) > 1){
+                tempArray[i] = foundPool.get(foundation) + "(" + tempArray[i] + ")";
+            }
+        }
+
+        i = tempArray.length-1;
 
         for (Oxid oxid : oxids){
             if (oxidPool.get(oxid) <= 1){
@@ -186,11 +207,9 @@ public class ReactionHandler {
             }
             i--;
         }
-        System.out.println(String.join(" + ", tempArray));
 
-//        for (String string : tempArray){
-//            System.out.println(string);
-//        }
+
+        System.out.println(String.join(" + ", tempArray));
 
         clearEquipment();
     }
@@ -209,6 +228,8 @@ public class ReactionHandler {
                 System.out.println("Equipment is clear now");
             }
         }
+
+
     }
 }
 
