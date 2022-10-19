@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
+import static com.chemistry.ExperimentWindow.phrase;
 import static com.chemistry.ExperimentWindow.usedEquipment;
 
 public class ReactionHandler {
@@ -199,6 +200,7 @@ public class ReactionHandler {
             if (foundPool.get(foundation) > 1){
                 tempArray[i] = foundPool.get(foundation) + "(" + tempArray[i] + ")";
             }
+            i--;
         }
 
         i = tempArray.length-1;
@@ -212,8 +214,7 @@ public class ReactionHandler {
             i--;
         }
 
-
-        System.out.println(String.join(" + ", tempArray));
+        phrase = String.join(" + ", tempArray);
 
         clearEquipment();
     }

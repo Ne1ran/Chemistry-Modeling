@@ -43,6 +43,8 @@ public class ExperimentWindow implements Screen {
     public static Integer choosedSubstance;
     public static Boolean inventorySlotIsPicked = false;
 
+    public static String phrase = "";
+
     public ExperimentWindow(ChemistryModelingGame game) throws SQLException, ClassNotFoundException {
         this.game = game;
 
@@ -130,6 +132,7 @@ public class ExperimentWindow implements Screen {
         game.batch.draw(experimentBackground,0,0);
         game.batch.draw(inventoryTexture, 38, 230);
         game.batch.draw(chemist, 1280-40-241, 0);
+        game.font.draw(this.game.batch, phrase, 300, 300);
         for (Substance subs : usedSubstances){
             game.batch.draw(subs.getTexture_path(), subs.getX(), 720 - subs.getY() - subs.getHeight());
         }
