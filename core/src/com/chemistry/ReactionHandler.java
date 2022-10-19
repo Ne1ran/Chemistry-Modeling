@@ -214,7 +214,7 @@ public class ReactionHandler {
             i--;
         }
 
-        phrase = String.join(" + ", tempArray);
+        phrase = "Какой итог мы получили: " + String.join(" + ", tempArray);
 
         clearEquipment();
     }

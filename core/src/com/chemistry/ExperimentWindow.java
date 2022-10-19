@@ -2,8 +2,11 @@ package com.chemistry;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Rectangle;
 import com.chemistry.dto.Equipment;
 import com.chemistry.dto.InventorySlot;
@@ -22,6 +25,8 @@ public class ExperimentWindow implements Screen {
     private final Texture inventoryTexture;
     private final Texture slotBasicTexture;
     private final Texture chemist;
+    private final Texture dialogBg;
+    private final BitmapFont expFont;
 
     private final DBHandler handler = new DBHandler();
     private final ReactionHandler reactionHandler = new ReactionHandler();
@@ -31,6 +36,7 @@ public class ExperimentWindow implements Screen {
     private final ArrayList<Substance> usedSubstances = new ArrayList<>();
     public static ArrayList<Equipment> usedEquipment = new ArrayList<>();
     private final ArrayList<InventorySlot> inventory = new ArrayList<>();
+    public static ArrayList<String> phraseArray = new ArrayList<>();
 
     public static Rectangle mouseSpawnerRect;
 
@@ -47,6 +53,14 @@ public class ExperimentWindow implements Screen {
 
     public ExperimentWindow(ChemistryModelingGame game) throws SQLException, ClassNotFoundException {
         this.game = game;
+
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("GOST_A.ttf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        parameter.characters = "абвгдеёжзийклмнопрстуфхцчшщъыьэюяabcdefghijklmnopqrstuvwxyzАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789][_!$%#@|\\/?-+=()*&.;:,{}\"´`'<>";
+        parameter.size = 24;
+        parameter.color = Color.BLACK;
+        expFont = generator.generateFont(parameter);
+        generator.dispose();
 
         MyInputListener inputListener = new MyInputListener();
         Gdx.input.setInputProcessor(inputListener);
@@ -65,6 +79,7 @@ public class ExperimentWindow implements Screen {
         inventoryTexture = new Texture("inventory.png");
         chemist = new Texture("chemist.png");
         slotBasicTexture = new Texture("inventoryslot.png");
+        dialogBg = new Texture("dialog.png");
 
         for (int i = 0; i<3; i++){
             InventorySlot slot = new InventorySlot();
@@ -128,11 +143,18 @@ public class ExperimentWindow implements Screen {
         game.batch.setProjectionMatrix(camera.combined);
         camera.update();
 
+        phraseProcessing();
+
         game.batch.begin();
         game.batch.draw(experimentBackground,0,0);
         game.batch.draw(inventoryTexture, 38, 230);
         game.batch.draw(chemist, 1280-40-241, 0);
-        game.font.draw(this.game.batch, phrase, 300, 300);
+        game.batch.draw(dialogBg, 1270-40-345, 270); // available space - 390-160(y) 920-1190(x)
+
+        for (int i = 0; i<=phraseArray.size()-1; i++){
+            expFont.draw(this.game.batch, phraseArray.get(i), 920, 720 - 160 - i * 35);
+        }
+
         for (Substance subs : usedSubstances){
             game.batch.draw(subs.getTexture_path(), subs.getX(), 720 - subs.getY() - subs.getHeight());
         }
@@ -151,7 +173,7 @@ public class ExperimentWindow implements Screen {
             for (Equipment equip: usedEquipment) {
                 if (equip.overlaps(mouseSpawnerRect)){
                     if (!equip.getSetOnPlace()){ //move for a first time
-                        System.out.println("Bim");
+                        phrase = "Перенес минзурку на место";
                         equip.setPosition(450, 720 - 150 - equip.getHeight());
                         equip.setSetOnPlace(true);
                         break;
@@ -166,18 +188,20 @@ public class ExperimentWindow implements Screen {
                                     }
                                 }
                             } //extended functions lower incoming... \|/
-                            System.out.println("We chose something in inventory and then clicked on minzurka! It was: ID " +  substanceInSlotId);
 
                             equip.addSubstance(substanceInSlotId);
-                            System.out.println(equip.getSubstancesInside().size());
-// Need a normal check if substance is already added
+                            for (Substance substance : usedSubstances){
+                                if (substance.getSubId().equals(substanceInSlotId)){
+                                    phrase = "Добавил " + substance.getName() + " в минзурку!";
+                                }
+                            }
+                            // Need a normal check if substance is already added
                             if (equip.getSubstancesInside().size()>=2){
                                 try {
                                     reactionHandler.getSubstancesFromEquipment(equip);
                                 } catch (SQLException | ClassNotFoundException throwables) {
                                     throwables.printStackTrace();
                                 }
-                                //Reaction handler
                             }
 
 //                            if (!equip.getSubstancesInside().isEmpty()){
@@ -193,7 +217,7 @@ public class ExperimentWindow implements Screen {
 //                                System.out.println("We added it in array... cause it was empty...");
 //                                equip.addSubstance(substanceInSlotId);
 
-                        } else System.out.println("We haven't chose anything");
+                        } else phrase = "Вы ничего не выбрали...";
                     }
                 }
             }
@@ -205,7 +229,7 @@ public class ExperimentWindow implements Screen {
                         if(slot.getSubstanceIdInSlot().isEmpty()){
                             slot.setSubstanceIdInSlot(String.valueOf(choosedSubstance));
                             slot.setSlotTexture(subs.getSmallTexturePath());
-                            System.out.println(choosedSubstance);
+                            phrase = "Добавил в инвентарь: " + subs.getName();
                             break;
                         }
                     }
@@ -217,22 +241,22 @@ public class ExperimentWindow implements Screen {
                 if (slot.overlaps(mouseSpawnerRect)){
                     if (deleteFromInventory) {
                         if (slot.getSubstanceIdInSlot().isEmpty()) {
-                            System.out.println("Empty");
+                            phrase = "Пустовато тут...";
                         } else {
-                            System.out.println(slot.getSubstanceIdInSlot() + " deleted from " + slot.getSlotId());
                             slot.setSubstanceIdInSlot("");
                             slot.setSlotTexture(slotBasicTexture);
+                            phrase = "Убрал содержимое слота номер " + slot.getSlotId();
                             if (slot.getThisSlotPicked()){
                                 inventorySlotIsPicked = false;
                                 slot.setThisSlotPicked(false);
-                                System.out.println("We deleted selected slot!");
+                                phrase += ". Этот слот был выбранным ранее! ";
                             }
                         }
                         break;
                     } else {
                         int slotTryingToPickId = slot.getSlotId();
                         if (inventorySlotIsPicked && slot.getThisSlotPicked()){
-                            System.out.println("We unpicked something from inventory");
+                            phrase = "Этот слот больше не выбран";
                             inventorySlotIsPicked = false;
                             slot.setThisSlotPicked(false);
                         } else {
@@ -243,7 +267,11 @@ public class ExperimentWindow implements Screen {
                                 }
                             }
                             if (count == 0){
-                                System.out.println("We chose smth in inventory");
+                                for (Substance substance : usedSubstances){
+                                    if (substance.getSubId().equals(slot.getSubstanceIdInSlot())){
+                                        phrase = "Этот слот теперь выбран для работы. В нем находится - " + substance.getName();
+                                    }
+                                }
                                 slot.setThisSlotPicked(true);
                                 inventorySlotIsPicked = true;
                             } else {
@@ -252,7 +280,11 @@ public class ExperimentWindow implements Screen {
                                         slot2.setThisSlotPicked(false);
                                     } else slot2.setThisSlotPicked(true);
                                 }
-                                System.out.println("So we moved chosen to another one");
+                                for (Substance substance : usedSubstances){
+                                    if (substance.getSubId().equals(slot.getSubstanceIdInSlot())){
+                                        phrase = "Выбранный слот изменен на другой, в нем находится - " + substance.getName();
+                                    }
+                                }
                             }
                         }
                     }
@@ -261,6 +293,28 @@ public class ExperimentWindow implements Screen {
             startSpawn = false;
         }
 
+    }
+
+    public void phraseProcessing(){
+        ArrayList<String> newPhraseArr = new ArrayList<>();
+        if (phrase.length() > 30){
+            String tempString = "";
+            String[] tempArray = phrase.trim().split(" ");
+            for (int i = 0; i<=tempArray.length-1; i++){
+                if (tempString.length() + tempArray[i].length()<31){
+                    tempString += tempArray[i] + " ";
+                } else {
+                    newPhraseArr.add(tempString);
+                    tempString = "";
+                    i--;
+                }
+            }
+            newPhraseArr.add(tempString);
+        } else newPhraseArr.add(phrase);
+        if (newPhraseArr.size() > 8){
+            newPhraseArr = new ArrayList<>();
+        }
+        phraseArray = newPhraseArr;
     }
 
     @Override
