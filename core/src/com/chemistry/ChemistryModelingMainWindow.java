@@ -33,7 +33,7 @@ public class ChemistryModelingMainWindow implements Screen {
     public ChemistryModelingMainWindow(final ChemistryModelingGame game) {
         this.game = game;
 
-        background = new Texture("background_main.png");
+        background = new Texture("main_bg.jpg");
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 1280, 720);
 
@@ -55,44 +55,44 @@ public class ChemistryModelingMainWindow implements Screen {
 
         Gdx.input.setInputProcessor(stage);
 
-        final Button startAsNewUser = new TextButton("Стартуем", buttonStyle);
+        final Button startAsNewUser = new TextButton("Зарегистрироваться", buttonStyle);
         stage.addActor(startAsNewUser);
         startAsNewUser.setPosition(40, 480);
 
-        Button startAsRegistratedUser = new TextButton("Continue", buttonStyle);
+        Button startAsRegistratedUser = new TextButton("Продолжить", buttonStyle);
         stage.addActor(startAsRegistratedUser);
         startAsRegistratedUser.setPosition(40, 440);
 
-        Button settings = new TextButton("Settings", buttonStyle);
+        Button settings = new TextButton("Настройки", buttonStyle);
         stage.addActor(settings);
         settings.setPosition(40, 400);
 
-        Button exit = new TextButton("Exit", buttonStyle);
+        Button exit = new TextButton("Выход", buttonStyle);
         stage.addActor(exit);
         exit.setPosition(40, 360);
 
         final TextField userName = new TextField("", textFieldStyle);
-        userName.setMessageText("Enter your full name");
+        userName.setMessageText("Введите ваше ФИО");
         userName.setPosition(345, 440);
         stageNewUser.addActor(userName);
 
         final TextField userPassword = new TextField("", textFieldStyle);
-        userPassword.setMessageText("Enter Password");
+        userPassword.setMessageText("Введите пароль");
         userPassword.setPosition(345, 400);
         stageNewUser.addActor(userPassword);
         stageContinue.addActor(userPassword);
 
         final TextField userEmail = new TextField("", textFieldStyle);
-        userEmail.setMessageText("Enter Email");
+        userEmail.setMessageText("Введите электронную почту");
         userEmail.setPosition(345, 360);
         stageNewUser.addActor(userEmail);
         stageContinue.addActor(userEmail);
 
-        final Button confirmRegistration = new TextButton("Confirm Registration", buttonStyle);
+        final Button confirmRegistration = new TextButton("Подтвердить регистрацию?", buttonStyle);
         confirmRegistration.setPosition(345, 320);
         stageNewUser.addActor(confirmRegistration);
 
-        final Button authorizeBtn = new TextButton("Authorize", buttonStyle);
+        final Button authorizeBtn = new TextButton("Авторизироваться", buttonStyle);
         authorizeBtn.setPosition(345, 320);
         stageContinue.addActor(authorizeBtn);
 

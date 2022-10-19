@@ -22,7 +22,8 @@ public class ChemistryModelingGame extends Game {
 		FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
 		parameter.characters = "абвгдеёжзийклмнопрстуфхцчшщъыьэюяabcdefghijklmnopqrstuvwxyzАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789][_!$%#@|\\/?-+=()*&.;:,{}\"´`'<>";
 		parameter.size = 20;
-		parameter.color = Color.WHITE;
+		parameter.color = Color.BLACK;
+		parameter.borderWidth = 1;
 		font = generator.generateFont(parameter);
 		generator.dispose();
 		this.setScreen(new ChemistryModelingMainWindow(this));

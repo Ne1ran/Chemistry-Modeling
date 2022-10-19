@@ -37,13 +37,13 @@ public class ExperimentChooseWindow implements Screen {
             e.printStackTrace();
         }
 
-        background = new Texture("background_main.png");
+        background = new Texture("main_bg.jpg");
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 1280, 720);
         mainStage = new Stage();
 
 
-        BitmapFont font = new BitmapFont();
+        BitmapFont font = game.font;
 
         TextField.TextFieldStyle textFieldStyle = new TextField.TextFieldStyle();
         textFieldStyle.font = font;
@@ -59,11 +59,13 @@ public class ExperimentChooseWindow implements Screen {
 //        messageToUser.setPosition(150, 400);
 //        mainStage.addActor(messageToUser);
 
-        final TextButton firstExperiment = new TextButton("First Experiment", buttonStyle);
+
+        // In future realises add a for cycle to get experiments we need (and text for them)
+        final TextButton firstExperiment = new TextButton("Первый эксперимент", buttonStyle);
         firstExperiment.setPosition(150, 360);
         mainStage.addActor(firstExperiment);
 
-        final TextButton secondExperiment = new TextButton("Second Experiment", buttonStyle);
+        final TextButton secondExperiment = new TextButton("Второй эксперимент", buttonStyle);
         secondExperiment.setPosition(150, 320);
         mainStage.addActor(secondExperiment);
 

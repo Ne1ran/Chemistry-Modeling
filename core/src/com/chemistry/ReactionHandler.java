@@ -95,7 +95,7 @@ public class ReactionHandler {
         if (startReaction){
             reactionStarted(foundPool, oxidPool);
         } else {
-            System.out.println("Reaction failed...");
+            phrase = "Реакция не пошла...";
             clearEquipment();
         }
     }
