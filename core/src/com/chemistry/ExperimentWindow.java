@@ -27,6 +27,7 @@ public class ExperimentWindow implements Screen {
     private final Texture chemist;
     private final Texture dialogBg;
     private final BitmapFont expFont;
+    private final Texture choosedSlotTexture;
 
     private final DBHandler handler = new DBHandler();
     private final ReactionHandler reactionHandler = new ReactionHandler();
@@ -80,6 +81,7 @@ public class ExperimentWindow implements Screen {
         chemist = new Texture("chemist.png");
         slotBasicTexture = new Texture("inventoryslot.png");
         dialogBg = new Texture("dialog.png");
+        choosedSlotTexture = new Texture("choosedSlot.png");
 
         for (int i = 0; i<3; i++){
             InventorySlot slot = new InventorySlot();
@@ -165,6 +167,9 @@ public class ExperimentWindow implements Screen {
 
 
         for (InventorySlot slot : inventory){
+            if (slot.getThisSlotPicked()){
+                game.batch.draw(choosedSlotTexture, slot.getX()-3, 720-slot.getY()-slot.getHeight()-2);
+            }
             game.batch.draw(slot.getSlotTexture(), slot.getX(), 720-slot.getY()-slot.getHeight());
         }
 
@@ -256,7 +261,7 @@ public class ExperimentWindow implements Screen {
                     } else {
                         int slotTryingToPickId = slot.getSlotId();
                         if (inventorySlotIsPicked && slot.getThisSlotPicked()){
-                            phrase = "Этот слот больше не выбран";
+                            phrase = slot.getSlotId() + " слот больше не выбран";
                             inventorySlotIsPicked = false;
                             slot.setThisSlotPicked(false);
                         } else {
@@ -267,13 +272,15 @@ public class ExperimentWindow implements Screen {
                                 }
                             }
                             if (count == 0){
-                                for (Substance substance : usedSubstances){
-                                    if (substance.getSubId().equals(slot.getSubstanceIdInSlot())){
-                                        phrase = "Этот слот теперь выбран для работы. В нем находится - " + substance.getName();
+                                if (!slot.getSubstanceIdInSlot().equals("")) {
+                                    for (Substance substance : usedSubstances) {
+                                        if (substance.getSubId().equals(slot.getSubstanceIdInSlot())) {
+                                            phrase = "Этот слот теперь выбран для работы. В нем находится - " + substance.getName();
+                                        }
                                     }
-                                }
-                                slot.setThisSlotPicked(true);
-                                inventorySlotIsPicked = true;
+                                    slot.setThisSlotPicked(true);
+                                    inventorySlotIsPicked = true;
+                                } else phrase = "Вы не можете выбрать пустой слот для работы!";
                             } else {
                                 for (InventorySlot slot2: inventory){
                                     if (slotTryingToPickId != slot2.getSlotId()){
