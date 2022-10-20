@@ -52,6 +52,8 @@ public class AllConstants {
         public static final String NAME = "name";
         public static final String X_POS = "x_pos";
         public static final String Y_POS = "y_pos";
+        public static final String X_AFTER = "x_afterclick";
+        public static final String Y_AFTER = "y_afterclick";
     }
     public static class EquipExpConsts{
         public static final String EQUIP_EXP_TABLE = "equip_experiment";

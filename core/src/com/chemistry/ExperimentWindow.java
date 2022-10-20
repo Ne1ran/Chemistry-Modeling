@@ -135,6 +135,8 @@ public class ExperimentWindow implements Screen {
                 tempEquip.setTexture_path(new Texture(equipItself.getString(AllConstants.EquipConsts.TEXTURE_PATH)));
                 tempEquip.setSize(55, 78);
                 tempEquip.setSetOnPlace(false);
+                tempEquip.setxAfter(equipItself.getString(AllConstants.EquipConsts.X_AFTER));
+                tempEquip.setyAfter(equipItself.getString(AllConstants.EquipConsts.Y_AFTER));
             }
 
             usedEquipment.add(tempEquip);
@@ -186,8 +188,9 @@ public class ExperimentWindow implements Screen {
             for (Equipment equip: usedEquipment) {
                 if (equip.overlaps(mouseSpawnerRect)){
                     if (!equip.getSetOnPlace()){ //move for a first time
-                        phrase = "Перенес минзурку на место";
-                        equip.setPosition(450, 720 - 150 - equip.getHeight());
+                        phrase = equip.getName() + " теперь на месте";
+                        equip.setPosition(Float.parseFloat(equip.getxAfter()), 720 - Float.parseFloat(equip.getyAfter()));
+//                        equip.setPosition(450, 720 - 150 - equip.getHeight());
                         equip.setSetOnPlace(true);
                         break;
                     } else {

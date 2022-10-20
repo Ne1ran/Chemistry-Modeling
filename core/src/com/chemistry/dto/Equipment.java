@@ -8,11 +8,13 @@ import java.util.ArrayList;
 public class Equipment extends Rectangle {
     private String id;
     private String name;
-    private Texture  texture_path;
+    private Texture texture_path;
     private String x_pos;
     private String y_pos;
     private Boolean isSetOnPlace;
     private ArrayList<String> substancesInside = new ArrayList<>();
+    private String xAfter;
+    private String yAfter;
 
     public Equipment() {
 
@@ -36,6 +38,22 @@ public class Equipment extends Rectangle {
 
     public void setSetOnPlace(Boolean setOnPlace) {
         isSetOnPlace = setOnPlace;
+    }
+
+    public String getxAfter() {
+        return xAfter;
+    }
+
+    public void setxAfter(String xAfter) {
+        this.xAfter = xAfter;
+    }
+
+    public String getyAfter() {
+        return yAfter;
+    }
+
+    public void setyAfter(String yAfter) {
+        this.yAfter = yAfter;
     }
 
     public String getId() {
