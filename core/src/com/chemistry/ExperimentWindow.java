@@ -117,7 +117,7 @@ public class ExperimentWindow implements Screen {
                 tempSubstance.setSmallTexturePath(substanceItself.getString(AllConstants.SubsConsts.SMALL_TEXTURE));
                 tempSubstance.setFound_amount(substanceItself.getString(AllConstants.SubsConsts.FOUND_AMOUNT));
                 tempSubstance.setOxid_amount(substanceItself.getString(AllConstants.SubsConsts.OXID_AMOUNT));
-                tempSubstance.setSize(100, 100);
+                tempSubstance.setSize(tempSubstance.getTexture_path().getWidth(), tempSubstance.getTexture_path().getHeight());
             }
             usedSubstances.add(tempSubstance);
         }
@@ -133,7 +133,7 @@ public class ExperimentWindow implements Screen {
                 tempEquip.setX(Float.parseFloat(equipItself.getString(AllConstants.EquipConsts.X_POS)));
                 tempEquip.setY(Float.parseFloat(equipItself.getString(AllConstants.EquipConsts.Y_POS))-78);
                 tempEquip.setTexture_path(new Texture(equipItself.getString(AllConstants.EquipConsts.TEXTURE_PATH)));
-                tempEquip.setSize(55, 78);
+                tempEquip.setSize(tempEquip.getTexture_path().getWidth(), tempEquip.getTexture_path().getHeight());
                 tempEquip.setSetOnPlace(false);
                 tempEquip.setxAfter(equipItself.getString(AllConstants.EquipConsts.X_AFTER));
                 tempEquip.setyAfter(equipItself.getString(AllConstants.EquipConsts.Y_AFTER));
