@@ -12,7 +12,7 @@ public class Substance extends Rectangle {
     private String foundation;
     private String oxid;
     private String name;
-    private Texture smallTexturePath;
+    private String smallTexturePath;
     private String found_amount;
     private String oxid_amount;
 
@@ -35,11 +35,11 @@ public class Substance extends Rectangle {
         this.oxid_amount = oxid_amount;
     }
 
-    public Texture getSmallTexturePath() {
+    public String getSmallTexturePath() {
         return smallTexturePath;
     }
 
-    public void setSmallTexturePath(Texture smallTexturePath) {
+    public void setSmallTexturePath(String smallTexturePath) {
         this.smallTexturePath = smallTexturePath;
     }
 

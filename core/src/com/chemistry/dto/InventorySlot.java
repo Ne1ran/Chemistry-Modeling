@@ -5,7 +5,7 @@ import com.badlogic.gdx.math.Rectangle;
 
 public class InventorySlot extends Rectangle {
     private Integer slotId;
-    private Texture slotTexture;
+    private String slotTexture;
     private String substanceIdInSlot = "";
     private Boolean isThisSlotPicked = false;
 
@@ -36,11 +36,11 @@ public class InventorySlot extends Rectangle {
         this.substanceIdInSlot = substanceIdInSlot;
     }
 
-    public Texture getSlotTexture() {
+    public String getSlotTexture() {
         return slotTexture;
     }
 
-    public void setSlotTexture(Texture slotTexture) {
+    public void setSlotTexture(String slotTexture) {
         this.slotTexture = slotTexture;
     }
 }

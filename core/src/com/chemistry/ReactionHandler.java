@@ -32,7 +32,7 @@ public class ReactionHandler {
                 tempSubstance.setName(substanceFromDB.getString(AllConstants.SubsConsts.NAME));
                 tempSubstance.setFoundation(substanceFromDB.getString(AllConstants.SubsConsts.FOUND_PART_NAME));
                 tempSubstance.setOxid(substanceFromDB.getString(AllConstants.SubsConsts.OXID_PART_NAME));
-                tempSubstance.setSmallTexturePath(new Texture(substanceFromDB.getString(AllConstants.SubsConsts.SMALL_TEXTURE)));
+                tempSubstance.setSmallTexturePath(substanceFromDB.getString(AllConstants.SubsConsts.SMALL_TEXTURE));
                 tempSubstance.setFound_amount(substanceFromDB.getString(AllConstants.SubsConsts.FOUND_AMOUNT));
                 tempSubstance.setOxid_amount(substanceFromDB.getString(AllConstants.SubsConsts.OXID_AMOUNT));
             }

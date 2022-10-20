@@ -23,10 +23,10 @@ public class ExperimentWindow implements Screen {
 
     private final Texture experimentBackground;
     private final Texture inventoryTexture;
-    private final Texture slotBasicTexture;
     private final Texture chemist;
     private final Texture dialogBg;
     private final BitmapFont expFont;
+    private final BitmapFont slotTextFont;
     private final Texture choosedSlotTexture;
 
     private final DBHandler handler = new DBHandler();
@@ -63,6 +63,14 @@ public class ExperimentWindow implements Screen {
         expFont = generator.generateFont(parameter);
         generator.dispose();
 
+        FreeTypeFontGenerator generator1 = new FreeTypeFontGenerator(Gdx.files.internal("GOST_A.ttf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter parameter1 = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        parameter1.characters = "абвгдеёжзийклмнопрстуфхцчшщъыьэюяabcdefghijklmnopqrstuvwxyzАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789][_!$%#@|\\/?-+=()*&.;:,{}\"´`'<>";
+        parameter1.size = 28;
+        parameter1.color = Color.BLACK;
+        slotTextFont = generator1.generateFont(parameter1);
+        generator1.dispose();
+
         MyInputListener inputListener = new MyInputListener();
         Gdx.input.setInputProcessor(inputListener);
 
@@ -79,7 +87,6 @@ public class ExperimentWindow implements Screen {
         experimentBackground = new Texture(choosenExperiment.getTexture_path());
         inventoryTexture = new Texture("inventory.png");
         chemist = new Texture("chemist.png");
-        slotBasicTexture = new Texture("inventoryslot.png");
         dialogBg = new Texture("dialog.png");
         choosedSlotTexture = new Texture("choosedSlot.png");
 
@@ -89,7 +96,7 @@ public class ExperimentWindow implements Screen {
             slot.setY((float) (320 + (i * 78) - 74));
             slot.setSize(110F, 74F);
             slot.setSlotId(i);
-            slot.setSlotTexture(slotBasicTexture);
+            slot.setSlotTexture("");
             slot.setThisSlotPicked(false);
             inventory.add(slot);
         }
@@ -107,7 +114,7 @@ public class ExperimentWindow implements Screen {
                 tempSubstance.setY(720 - Float.parseFloat(substanceItself.getString(AllConstants.SubsConsts.TEXTURE_Y)) - 200);
                 tempSubstance.setFoundation(substanceItself.getString(AllConstants.SubsConsts.FOUND_PART_NAME));
                 tempSubstance.setOxid(substanceItself.getString(AllConstants.SubsConsts.OXID_PART_NAME));
-                tempSubstance.setSmallTexturePath(new Texture(substanceItself.getString(AllConstants.SubsConsts.SMALL_TEXTURE)));
+                tempSubstance.setSmallTexturePath(substanceItself.getString(AllConstants.SubsConsts.SMALL_TEXTURE));
                 tempSubstance.setFound_amount(substanceItself.getString(AllConstants.SubsConsts.FOUND_AMOUNT));
                 tempSubstance.setOxid_amount(substanceItself.getString(AllConstants.SubsConsts.OXID_AMOUNT));
                 tempSubstance.setSize(100, 100);
@@ -170,7 +177,8 @@ public class ExperimentWindow implements Screen {
             if (slot.getThisSlotPicked()){
                 game.batch.draw(choosedSlotTexture, slot.getX()-3, 720-slot.getY()-slot.getHeight()-2);
             }
-            game.batch.draw(slot.getSlotTexture(), slot.getX(), 720-slot.getY()-slot.getHeight());
+            slotTextFont.draw(this.game.batch,slot.getSlotTexture(), slot.getX()+5, 720-slot.getY()-25);
+            //game.batch.draw(slot.getSlotTexture(), slot.getX(), 720-slot.getY()-slot.getHeight());
         }
 
         game.batch.end();
@@ -237,6 +245,7 @@ public class ExperimentWindow implements Screen {
                             phrase = "Добавил в инвентарь: " + subs.getName();
                             break;
                         }
+                        phrase = "Инвентарь заполнен...";
                     }
                     break;
                 }
@@ -249,8 +258,8 @@ public class ExperimentWindow implements Screen {
                             phrase = "Пустовато тут...";
                         } else {
                             slot.setSubstanceIdInSlot("");
-                            slot.setSlotTexture(slotBasicTexture);
-                            phrase = "Убрал содержимое слота номер " + slot.getSlotId();
+                            slot.setSlotTexture("");
+                            phrase = "Убрал содержимое слота номер " + slot.getSlotId()+1;
                             if (slot.getThisSlotPicked()){
                                 inventorySlotIsPicked = false;
                                 slot.setThisSlotPicked(false);
@@ -261,7 +270,7 @@ public class ExperimentWindow implements Screen {
                     } else {
                         int slotTryingToPickId = slot.getSlotId();
                         if (inventorySlotIsPicked && slot.getThisSlotPicked()){
-                            phrase = slot.getSlotId() + " слот больше не выбран";
+                            phrase = slot.getSlotId()+1 + " слот больше не выбран";
                             inventorySlotIsPicked = false;
                             slot.setThisSlotPicked(false);
                         } else {
