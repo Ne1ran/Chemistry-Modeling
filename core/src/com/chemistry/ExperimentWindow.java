@@ -41,8 +41,6 @@ public class ExperimentWindow implements Screen {
 
     public static Rectangle mouseSpawnerRect;
 
-    private final Rectangle exitBtn;
-
     public static Integer x_pos;
     public static Integer y_pos;
     public static Boolean startSpawn = false;
@@ -81,9 +79,6 @@ public class ExperimentWindow implements Screen {
         mouseSpawnerRect = new Rectangle(); //On a click we spawn a rectangle upon the coordinates.
         mouseSpawnerRect.setPosition(-100,-100); //If nearby exists another rectangle - go methods.
         mouseSpawnerRect.setSize(3, 3);
-
-        exitBtn = new Rectangle();
-        exitBtn.setPosition(38, 0);
 
         experimentBackground = new Texture(choosenExperiment.getTexture_path());
         inventoryTexture = new Texture("inventory.png");

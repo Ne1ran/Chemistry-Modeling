@@ -71,7 +71,7 @@ public class ReactionHandler {
                 tempOxid.setOxid_state_max(oxidFound.getString(AllConstants.OxidConsts.OXID_STATE_MAX));
 
                 oxidPool.put(tempOxid, oxid_amount);
-            } else if (oxid_amount == 0 || oxid.equals("")){
+            } else if (oxid_amount == 0 || oxid.equals("0")){
                 Oxid tempOxid = new Oxid();
                 tempOxid.setOxid_name("");
                 tempOxid.setOxid_state_min("1");
@@ -177,8 +177,10 @@ public class ReactionHandler {
         i = tempArray.length-1;
 
         for (Oxid oxid : oxids){
-            if (oxidPool.get(oxid) <= 1){
-                tempArray[i] = tempArray[i] + oxid.getOxid_name();
+            if (oxidPool.get(oxid) == 1){
+                if (!tempArray[i].contains("H")){
+                    tempArray[i] = tempArray[i] + oxid.getOxid_name();
+                }
             } else {
                 tempArray[i] = tempArray[i] + "(" + oxid.getOxid_name() + ")" + oxidPool.get(oxid);
             }
