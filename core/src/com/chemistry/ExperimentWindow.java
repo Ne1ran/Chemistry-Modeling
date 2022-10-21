@@ -49,8 +49,9 @@ public class ExperimentWindow implements Screen {
     public static Boolean deleteFromInventory = false;
     public static Integer choosedSubstance;
     public static Boolean inventorySlotIsPicked = false;
+    public static Boolean closeWindow = false;
 
-    public static String phrase = "";
+    public static String phrase = "Для выхода на главный экран нажмите Esc";
 
     public ExperimentWindow(ChemistryModelingGame game) throws SQLException, ClassNotFoundException {
         this.game = game;
@@ -154,6 +155,18 @@ public class ExperimentWindow implements Screen {
         game.batch.setProjectionMatrix(camera.combined);
         camera.update();
 
+        if (closeWindow){
+            game.setScreen(new ChemistryModelingMainWindow(game));
+            closeWindow = false;
+            phrase = "";
+            startSpawn = false;
+            deleteFromInventory = false;
+            inventorySlotIsPicked = false;
+            closeWindow = false;
+            usedEquipment = new ArrayList<>();
+            phraseArray = new ArrayList<>();
+        }
+
         phraseProcessing();
 
         game.batch.begin();
@@ -180,7 +193,6 @@ public class ExperimentWindow implements Screen {
                 game.batch.draw(choosedSlotTexture, slot.getX()-3, 720-slot.getY()-slot.getHeight()-2);
             }
             slotTextFont.draw(this.game.batch,slot.getSlotTexture(), slot.getX()+5, 720-slot.getY()-25);
-            //game.batch.draw(slot.getSlotTexture(), slot.getX(), 720-slot.getY()-slot.getHeight());
         }
 
         game.batch.end();
@@ -190,7 +202,6 @@ public class ExperimentWindow implements Screen {
                     if (!equip.getSetOnPlace()){ //move for a first time
                         phrase = equip.getName() + " теперь на месте";
                         equip.setPosition(Float.parseFloat(equip.getxAfter()), 720 - Float.parseFloat(equip.getyAfter()));
-//                        equip.setPosition(450, 720 - 150 - equip.getHeight());
                         equip.setSetOnPlace(true);
                         break;
                     } else {
@@ -219,20 +230,6 @@ public class ExperimentWindow implements Screen {
                                     throwables.printStackTrace();
                                 }
                             }
-
-//                            if (!equip.getSubstancesInside().isEmpty()){
-//                                for (String string : equip.getSubstancesInside()){
-//                                    if (string.equals(substanceInSlotId)){
-//                                        System.out.println("We already have this inside!");
-//                                    } else {
-//                                        equip.addSubstance(substanceInSlotId);
-//                                        System.out.println("We added it in array...");
-//                                    }
-//                                }
-//                            } else {
-//                                System.out.println("We added it in array... cause it was empty...");
-//                                equip.addSubstance(substanceInSlotId);
-
                         } else phrase = "Вы ничего не выбрали...";
                     }
                 }

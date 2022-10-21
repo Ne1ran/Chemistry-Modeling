@@ -11,7 +11,11 @@ public class MyInputListener implements InputProcessor {
 
     @Override
     public boolean keyDown(int keycode) {
-        return false;
+        System.out.println(keycode);
+        if (keycode == 111){
+            closeWindow = true;
+        }
+        return true;
     }
 
     @Override

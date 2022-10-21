@@ -71,6 +71,13 @@ public class ReactionHandler {
                 tempOxid.setOxid_state_max(oxidFound.getString(AllConstants.OxidConsts.OXID_STATE_MAX));
 
                 oxidPool.put(tempOxid, oxid_amount);
+            } else if (oxid_amount == 0 || oxid.equals("")){
+                Oxid tempOxid = new Oxid();
+                tempOxid.setOxid_name("");
+                tempOxid.setOxid_state_min("1");
+                oxid_amount=1;
+
+                oxidPool.put(tempOxid, oxid_amount);
             }
 
         }
@@ -95,7 +102,7 @@ public class ReactionHandler {
         if (startReaction){
             reactionStarted(foundPool, oxidPool);
         } else {
-            phrase = "Реакция не пошла...";
+            phrase = "Реакция не пошла... Емкость очищена.";
             clearEquipment();
         }
     }
@@ -115,44 +122,6 @@ public class ReactionHandler {
             foundations.add(found);
         }
 
-//        String[] answerArray = new String[2];
-
-//        for (int i = 0; i<answerArray.length;i++){ if smth is reaaaaly wrong
-//            int oxidMinus;
-//            int oxidPlus;
-//            int foundMinus;
-//            int foundPlus;
-//            int evalOxid = 0;
-//            int evalFound = 0;
-//            boolean evalOxidBool = false;
-//            boolean evalFoundBool = false;
-//            String oxidMin = oxids.get(i).getOxid_state_min();
-//            String oxidMax = oxids.get(i).getOxid_state_max();
-//            String foundMin = foundations.get(i).getFound_state_min();
-//            String foundMax = foundations.get(i).getFound_state_max();
-//            if (oxidMin.equals(oxidMax)){
-//                evalOxid = Integer.parseInt(oxidMax) * oxidPool.get(oxids.get(i));
-//            } else evalOxidBool = true;
-//
-//            if (foundMin.equals(foundMax)){
-//                evalFound = Integer.parseInt(foundMax) * foundPool.get(foundations.get(i));
-//            } else evalFoundBool = true;
-//
-//            if (evalFoundBool && evalOxidBool) {
-//                System.out.println("Error");
-//            } else if (evalFoundBool){
-//                evalFound =
-//            } else if (evalOxidBool){
-//                System.out.println("dont know");
-//            }
-//            System.out.println(evalFound + " 111 " + evalOxid);
-//            if (-evalOxid == evalFound){
-//                System.out.println("yra!");
-//            }
-//        }
-
-
-
         for (Foundation foundation : foundations){
             answer += foundation.getFoundation_name();
             answer += " ";
@@ -164,7 +133,6 @@ public class ReactionHandler {
         int firstOxidEval = oxidPool.get(oxids.get(i)) * Integer.parseInt(oxids.get(i).getOxid_state_min()); // params that are state * amount
         int secondOxidEval = oxidPool.get(oxids.get(i-1)) * Integer.parseInt(oxids.get(i-1).getOxid_state_min());
         if (firstOxidEval == secondOxidEval){
-            System.out.println("All good...");
         } else if (firstOxidEval > secondOxidEval){ //We swap their amounts according to evals (2 with 1)
             int tempInt = (oxidPool.get(oxids.get(i)) * Integer.parseInt(oxids.get(i).getOxid_state_min()))
                     / Integer.parseInt(oxids.get(i-1).getOxid_state_min());
@@ -200,6 +168,9 @@ public class ReactionHandler {
             if (foundPool.get(foundation) > 1){
                 tempArray[i] = foundPool.get(foundation) + "(" + tempArray[i] + ")";
             }
+            if (tempArray[i].equals("H")){ // Only for water for now
+                tempArray[i] = "(" + tempArray[i] + ")" + "2";
+            }
             i--;
         }
 
@@ -214,7 +185,7 @@ public class ReactionHandler {
             i--;
         }
 
-        phrase = "Какой итог мы получили: " + String.join(" + ", tempArray);
+        phrase = "Какой итог мы получили: " + String.join(" + ", tempArray) + ". Емкость очищена";
 
         clearEquipment();
     }
