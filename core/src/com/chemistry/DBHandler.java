@@ -26,7 +26,6 @@ public class DBHandler extends Config{
         prst.setString(4, user.getEmail());
         prst.setString(5, user.getPassword());
         prst.executeUpdate();
-        System.out.println("Added user successfully!");
     }
 
     public boolean authorize(String email, String password) throws SQLException, ClassNotFoundException {

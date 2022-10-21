@@ -5,6 +5,8 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
@@ -24,28 +26,40 @@ public class ChemistryModelingMainWindow implements Screen {
     private final Stage stage;
     private final Stage stageNewUser;
     private final Stage stageContinue;
+    public String message = "";
 
     public static User currentUser = new User();
 
     boolean stageNewUserStartDraw = false;
     boolean stageContinueStartDraw = false;
 
+    private BitmapFont startingScreenFont;
+
     public ChemistryModelingMainWindow(final ChemistryModelingGame game) {
         this.game = game;
+
+        startingScreenFont = new BitmapFont();
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("GOST_A.ttf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        parameter.characters = "абвгдеёжзийклмнопрстуфхцчшщъыьэюяabcdefghijklmnopqrstuvwxyzАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789][_!$%#@|\\/?-+=()*&.;:,{}\"´`'<>";
+        parameter.size = 24;
+        parameter.color = new Color(0, 1, 0.9F, 0.7F);
+        parameter.borderWidth = 0.5F;
+        startingScreenFont = generator.generateFont(parameter);
+        generator.dispose();
 
         background = new Texture("main_bg.jpg");
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 1280, 720);
 
         TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
-        buttonStyle.font = game.font;
+        buttonStyle.font = startingScreenFont;
         buttonStyle.font.getData().setScale(2);
-        buttonStyle.fontColor = new Color(255, 100, 200, 1);
 
         TextField.TextFieldStyle textFieldStyle = new TextField.TextFieldStyle();
-        textFieldStyle.font = game.font;
+        textFieldStyle.font = startingScreenFont;
+        textFieldStyle.fontColor = new Color(0.7f, 0.7f, 0.7f, 1);
         textFieldStyle.font.getData().setScale(2);
-        textFieldStyle.fontColor = new Color(255, 100, 200, 1);
 
         stage = new Stage();
 
@@ -54,6 +68,14 @@ public class ChemistryModelingMainWindow implements Screen {
         stageContinue = new Stage();
 
         Gdx.input.setInputProcessor(stage);
+
+        final Button cancelContinue = new TextButton("Отменить?", buttonStyle);
+        stageContinue.addActor(cancelContinue);
+        cancelContinue.setPosition(400, 360);
+
+        final Button cancelStart = new TextButton("Отменить?", buttonStyle);
+        stageNewUser.addActor(cancelStart);
+        cancelStart.setPosition(400, 320);
 
         final Button startAsNewUser = new TextButton("Зарегистрироваться", buttonStyle);
         stage.addActor(startAsNewUser);
@@ -73,34 +95,47 @@ public class ChemistryModelingMainWindow implements Screen {
 
         final TextField userName = new TextField("", textFieldStyle);
         userName.setMessageText("Введите ваше ФИО");
-        userName.setPosition(345, 440);
+        userName.setPosition(400, 480);
+        userName.setWidth(450F);
         stageNewUser.addActor(userName);
 
         final TextField userPassword = new TextField("", textFieldStyle);
         userPassword.setMessageText("Введите пароль");
-        userPassword.setPosition(345, 400);
+        userPassword.setPosition(400, 440);
+        userPassword.setWidth(450);
         stageNewUser.addActor(userPassword);
-        stageContinue.addActor(userPassword);
 
         final TextField userEmail = new TextField("", textFieldStyle);
         userEmail.setMessageText("Введите электронную почту");
-        userEmail.setPosition(345, 360);
+        userEmail.setPosition(400, 400);
+        userEmail.setWidth(450);
         stageNewUser.addActor(userEmail);
-        stageContinue.addActor(userEmail);
+
+        final TextField userEmailContinue = new TextField("", textFieldStyle);
+        userEmailContinue.setMessageText("Введите электронную почту");
+        userEmailContinue.setPosition(400, 480);
+        userEmailContinue.setWidth(450);
+        stageContinue.addActor(userEmailContinue);
+
+        final TextField userPasswordContinue = new TextField("", textFieldStyle);
+        userPasswordContinue.setMessageText("Введите пароль");
+        userPasswordContinue.setPosition(400, 440);
+        userPasswordContinue.setWidth(450);
+        stageContinue.addActor(userPasswordContinue);
 
         final Button confirmRegistration = new TextButton("Подтвердить регистрацию?", buttonStyle);
-        confirmRegistration.setPosition(345, 320);
+        confirmRegistration.setPosition(400, 360);
         stageNewUser.addActor(confirmRegistration);
 
         final Button authorizeBtn = new TextButton("Авторизироваться", buttonStyle);
-        authorizeBtn.setPosition(345, 320);
+        authorizeBtn.setPosition(400, 400);
         stageContinue.addActor(authorizeBtn);
 
 
         startAsNewUser.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                System.out.println("You tried to start new game");
+                message = "Введите ваши персональные данные";
                 stageNewUserStartDraw = true;
                 stageContinueStartDraw = false;
                 Gdx.input.setInputProcessor(stageNewUser);
@@ -120,6 +155,7 @@ public class ChemistryModelingMainWindow implements Screen {
                 newUser.setExps_completed("0");
                 try {
                     handler.addNewUser(newUser);
+                    message = "Вы успешно зарегистрировались!";
                 } catch (SQLException | ClassNotFoundException throwables) {
                     throwables.printStackTrace();
                 }
@@ -135,34 +171,33 @@ public class ChemistryModelingMainWindow implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 try {
-                    if (handler.authorize(userEmail.getText(), userPassword.getText())){
-                        System.out.println("Successful authorization!"); // Go to experiment window
-
+                    if (handler.authorize(userEmailContinue.getText().trim(), userPasswordContinue.getText().trim())){
                         game.setScreen(new ExperimentChooseWindow(game));
                         stage.dispose();
                         stageNewUser.dispose();
                         stageContinue.dispose();
-                    } else System.out.println("No result in authorization((");
+                    } else message = "Пользователь не найден";
                 } catch (SQLException | ClassNotFoundException throwables) {
                     throwables.printStackTrace();
                 }
-                Gdx.input.setInputProcessor(stage);
+
             }
         });
 
         startAsRegistratedUser.addListener(new ChangeListener(){
             @Override
             public void changed(ChangeEvent event, Actor actor){
-               System.out.println("You tried to continue a game");
-                Gdx.input.setInputProcessor(stageContinue);
-                stageContinueStartDraw = true;
+                message = "Вы попытались продолжить работу";
+               stageContinueStartDraw = true;
+               stageNewUserStartDraw = false;
+               Gdx.input.setInputProcessor(stageContinue);
             }
         });
 
         settings.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                System.out.println("You pressed Settings btn");
+                message = "Кнопка Настройки пока не работает";
             }
         });
 
@@ -170,6 +205,24 @@ public class ChemistryModelingMainWindow implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 System.exit(1);
+            }
+        });
+
+        cancelContinue.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                stageContinueStartDraw = false;
+                stageNewUserStartDraw = false;
+                Gdx.input.setInputProcessor(stage);
+            }
+        });
+
+        cancelStart.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                stageContinueStartDraw = false;
+                stageNewUserStartDraw = false;
+                Gdx.input.setInputProcessor(stage);
             }
         });
 
@@ -186,12 +239,12 @@ public class ChemistryModelingMainWindow implements Screen {
         camera.update();
         game.batch.begin();
         game.batch.draw(background,0,0);
+        startingScreenFont.draw(game.batch, message, 400, 300);
         game.batch.end();
         stage.draw();
         if (stageNewUserStartDraw){
             stageNewUser.draw();
         }
-
         if (stageContinueStartDraw){
             stageContinue.draw();
         }
