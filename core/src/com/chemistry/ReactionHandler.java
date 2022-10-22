@@ -162,13 +162,13 @@ public class ReactionHandler {
             }
         }
 
-        if (foundPool.get(foundations.get(i)) * Integer.parseInt(foundations.get(i).getFound_state_min()) !=
-            oxidPool.get(oxids.get(i)) * -Integer.parseInt(oxids.get(i).getOxid_state_min())){
+        if (foundPool.get(foundations.get(i)) * Integer.parseInt(foundations.get(i).getFound_state_max()) !=
+            oxidPool.get(oxids.get(i-1)) * -Integer.parseInt(oxids.get(i-1).getOxid_state_min())){
             foundPool.replace(foundations.get(i-1), -Integer.parseInt(oxids.get(i-1).getOxid_state_min()));
         }
 
-        if (foundPool.get(foundations.get(i-1)) * Integer.parseInt(foundations.get(i-1).getFound_state_min()) !=
-                oxidPool.get(oxids.get(i-1)) * -Integer.parseInt(oxids.get(i-1).getOxid_state_min())){
+        if (foundPool.get(foundations.get(i-1)) * Integer.parseInt(foundations.get(i-1).getFound_state_max()) !=
+                oxidPool.get(oxids.get(i)) * -Integer.parseInt(oxids.get(i).getOxid_state_min())){
             foundPool.replace(foundations.get(i), -Integer.parseInt(oxids.get(i).getOxid_state_min()));
         }
 
