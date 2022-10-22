@@ -150,17 +150,26 @@ public class ReactionHandler {
         System.out.println(foundPool.get(foundations.get(i-1)) / 2);
         System.out.println(foundPool.get(foundations.get(i)) / 2);
 
-        if (oxidPool.get(oxids.get(i)) >= 6){ // nerf 2FeCl6 -> FeCl3
-            if (foundPool.get(foundations.get(i-1)) % 2 == 0 && oxidPool.get(oxids.get(i)) % 2 == 0){
-                foundPool.put(foundations.get(i-1), foundPool.get(foundations.get(i-1)) / 2);
-                oxidPool.put(oxids.get(i),oxidPool.get(oxids.get(i)) / 2);
-            }
+        // nerf 2FeCl6 -> FeCl3
+        if (foundPool.get(foundations.get(i-1)) % 2 == 0 && oxidPool.get(oxids.get(i)) % 2 == 0){
+            foundPool.put(foundations.get(i-1), foundPool.get(foundations.get(i-1)) / 2);
+            oxidPool.put(oxids.get(i),oxidPool.get(oxids.get(i)) / 2);
         } else if (oxidPool.get(oxids.get(i-1)) >= 6){
             if (foundPool.get(foundations.get(i)) % 2 == 0 && oxidPool.get(oxids.get(i-1)) % 2 == 0){
 
                 foundPool.put(foundations.get(i), foundPool.get(foundations.get(i)) / 2);
                 oxidPool.put(oxids.get(i-1),oxidPool.get(oxids.get(i-1)) / 2);
             }
+        }
+
+        if (foundPool.get(foundations.get(i)) * Integer.parseInt(foundations.get(i).getFound_state_min()) !=
+            oxidPool.get(oxids.get(i)) * -Integer.parseInt(oxids.get(i).getOxid_state_min())){
+            foundPool.replace(foundations.get(i-1), -Integer.parseInt(oxids.get(i-1).getOxid_state_min()));
+        }
+
+        if (foundPool.get(foundations.get(i-1)) * Integer.parseInt(foundations.get(i-1).getFound_state_min()) !=
+                oxidPool.get(oxids.get(i-1)) * -Integer.parseInt(oxids.get(i-1).getOxid_state_min())){
+            foundPool.replace(foundations.get(i), -Integer.parseInt(oxids.get(i).getOxid_state_min()));
         }
 
         System.out.println(oxidPool.get(oxids.get(i)) + " - " + oxidPool.get(oxids.get(i-1)));
@@ -177,8 +186,8 @@ public class ReactionHandler {
         i = tempArray.length-1;
 
         for (Oxid oxid : oxids){
-            if (oxidPool.get(oxid) == 1){
-                if (!tempArray[i].contains("H")){
+            if (oxidPool.get(oxid) <= 1){
+                if (!tempArray[i].equals("H")){
                     tempArray[i] = tempArray[i] + oxid.getOxid_name();
                 }
             } else {

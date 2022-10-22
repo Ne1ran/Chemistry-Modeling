@@ -54,18 +54,18 @@ public class ExperimentWindow implements Screen {
     public ExperimentWindow(ChemistryModelingGame game) throws SQLException, ClassNotFoundException {
         this.game = game;
 
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("GOST_A.ttf"));
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("appetite.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter.characters = "абвгдеёжзийклмнопрстуфхцчшщъыьэюяabcdefghijklmnopqrstuvwxyzАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789][_!$%#@|\\/?-+=()*&.;:,{}\"´`'<>";
-        parameter.size = 24;
+        parameter.size = 18;
         parameter.color = Color.BLACK;
         expFont = generator.generateFont(parameter);
         generator.dispose();
 
-        FreeTypeFontGenerator generator1 = new FreeTypeFontGenerator(Gdx.files.internal("GOST_A.ttf"));
+        FreeTypeFontGenerator generator1 = new FreeTypeFontGenerator(Gdx.files.internal("appetite.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter1 = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter1.characters = "абвгдеёжзийклмнопрстуфхцчшщъыьэюяabcdefghijklmnopqrstuvwxyzАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789][_!$%#@|\\/?-+=()*&.;:,{}\"´`'<>";
-        parameter1.size = 28;
+        parameter1.size = 20;
         parameter1.color = Color.BLACK;
         slotTextFont = generator1.generateFont(parameter1);
         generator1.dispose();

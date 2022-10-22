@@ -45,12 +45,10 @@ public class ExperimentChooseWindow implements Screen {
 
         TextField.TextFieldStyle textFieldStyle = new TextField.TextFieldStyle();
         textFieldStyle.font = font;
-        textFieldStyle.font.getData().setScale(2);
         textFieldStyle.fontColor = new Color(255, 100, 200, 1);
 
         TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
         buttonStyle.font = font;
-        buttonStyle.font.getData().setScale(2);
         buttonStyle.fontColor = new Color(255, 100, 200, 1);
 
 //        final TextArea messageToUser = new TextArea("Select Experiment", textFieldStyle);

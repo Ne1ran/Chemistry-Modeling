@@ -18,12 +18,11 @@ public class ChemistryModelingGame extends Game {
 	public void create () {
 		batch = new SpriteBatch();
 		font = new BitmapFont();
-		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("GOST_A.ttf"));
+		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("appetite.ttf"));
 		FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
 		parameter.characters = "абвгдеёжзийклмнопрстуфхцчшщъыьэюяabcdefghijklmnopqrstuvwxyzАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789][_!$%#@|\\/?-+=()*&.;:,{}\"´`'<>";
-		parameter.size = 20;
-		parameter.color = Color.BLACK;
-		parameter.borderWidth = 0.5F;
+		parameter.size = 30;
+		parameter.color = new Color(0, 0.5F, 0.9F, 1);
 		font = generator.generateFont(parameter);
 		generator.dispose();
 		this.setScreen(new ChemistryModelingMainWindow(this));

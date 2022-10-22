@@ -39,11 +39,11 @@ public class ChemistryModelingMainWindow implements Screen {
         this.game = game;
 
         startingScreenFont = new BitmapFont();
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("GOST_A.ttf"));
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("appetite.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter.characters = "абвгдеёжзийклмнопрстуфхцчшщъыьэюяabcdefghijklmnopqrstuvwxyzАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789][_!$%#@|\\/?-+=()*&.;:,{}\"´`'<>";
-        parameter.size = 24;
-        parameter.color = new Color(0, 1, 0.9F, 0.7F);
+        parameter.size = 30;
+        parameter.color = new Color(0, 0.5F, 0.9F, 1);
         parameter.borderWidth = 0.5F;
         startingScreenFont = generator.generateFont(parameter);
         generator.dispose();
@@ -54,12 +54,10 @@ public class ChemistryModelingMainWindow implements Screen {
 
         TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
         buttonStyle.font = startingScreenFont;
-        buttonStyle.font.getData().setScale(2);
 
         TextField.TextFieldStyle textFieldStyle = new TextField.TextFieldStyle();
         textFieldStyle.font = startingScreenFont;
         textFieldStyle.fontColor = new Color(0.7f, 0.7f, 0.7f, 1);
-        textFieldStyle.font.getData().setScale(2);
 
         stage = new Stage();
 
@@ -211,6 +209,7 @@ public class ChemistryModelingMainWindow implements Screen {
         cancelContinue.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                message = "";
                 stageContinueStartDraw = false;
                 stageNewUserStartDraw = false;
                 Gdx.input.setInputProcessor(stage);
@@ -220,6 +219,7 @@ public class ChemistryModelingMainWindow implements Screen {
         cancelStart.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                message = "";
                 stageContinueStartDraw = false;
                 stageNewUserStartDraw = false;
                 Gdx.input.setInputProcessor(stage);
