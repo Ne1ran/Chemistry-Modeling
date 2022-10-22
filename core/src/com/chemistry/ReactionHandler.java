@@ -73,8 +73,8 @@ public class ReactionHandler {
                 oxidPool.put(tempOxid, oxid_amount);
             } else if (oxid_amount == 0 || oxid.equals("0")){
                 Oxid tempOxid = new Oxid();
-                tempOxid.setOxid_name("");
-                tempOxid.setOxid_state_min("1");
+                tempOxid.setOxid_name(" ");
+                tempOxid.setOxid_state_min("-1");
                 oxid_amount=1;
 
                 oxidPool.put(tempOxid, oxid_amount);
@@ -186,6 +186,9 @@ public class ReactionHandler {
         i = tempArray.length-1;
 
         for (Oxid oxid : oxids){
+            if (oxid.getOxid_name().equals("0")){ // For solo elem work
+                continue;
+            }
             if (oxidPool.get(oxid) <= 1){
                 if (!tempArray[i].equals("H")){
                     tempArray[i] = tempArray[i] + oxid.getOxid_name();
