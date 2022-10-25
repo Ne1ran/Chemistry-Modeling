@@ -45,7 +45,8 @@ public class ReactionHandler {
         for (Substance subs : substances){
             String foundation = subs.getFoundation();
             String oxid = subs.getOxid();
-
+            System.out.println(foundation);
+            System.out.println(oxid);
             Integer found_amount = Integer.valueOf(subs.getFound_amount());
             Integer oxid_amount = Integer.valueOf(subs.getOxid_amount());
 
@@ -69,13 +70,6 @@ public class ReactionHandler {
                 tempOxid.setName(oxidFound.getString(AllConstants.OxidConsts.NAME));
                 tempOxid.setOxid_state_min(oxidFound.getString(AllConstants.OxidConsts.OXID_STATE_MIN));
                 tempOxid.setOxid_state_max(oxidFound.getString(AllConstants.OxidConsts.OXID_STATE_MAX));
-
-                oxidPool.put(tempOxid, oxid_amount);
-            } else if (oxid_amount == 0 || oxid.equals("0")){
-                Oxid tempOxid = new Oxid();
-                tempOxid.setOxid_name(" ");
-                tempOxid.setOxid_state_min("-1");
-                oxid_amount=1;
 
                 oxidPool.put(tempOxid, oxid_amount);
             }
@@ -129,55 +123,104 @@ public class ReactionHandler {
         String[] tempArray = answer.trim().split(" ");
         System.out.println(answer);
 
+        //also need a method to every substance to check for their actual state (not min or max, just one possible, according to another evaluation) p.s. for future
+
         int i = tempArray.length-1;
         int firstOxidEval = oxidPool.get(oxids.get(i)) * Integer.parseInt(oxids.get(i).getOxid_state_min()); // params that are state * amount
-        int secondOxidEval = oxidPool.get(oxids.get(i-1)) * Integer.parseInt(oxids.get(i-1).getOxid_state_min());
-        if (firstOxidEval == secondOxidEval){
+        int secondOxidEval = oxidPool.get(oxids.get(i-1)) * Integer.parseInt(oxids.get(i-1).getOxid_state_min()); // also names should be different first is second substance etc
+        if (firstOxidEval == secondOxidEval){ //This check should be working fine. All it does:
         } else if (firstOxidEval > secondOxidEval){ //We swap their amounts according to evals (2 with 1)
             int tempInt = (oxidPool.get(oxids.get(i)) * Integer.parseInt(oxids.get(i).getOxid_state_min()))
                     / Integer.parseInt(oxids.get(i-1).getOxid_state_min());
-            oxidPool.replace(oxids.get(i), (oxidPool.get(oxids.get(i-1)) * Integer.parseInt(oxids.get(i-1).getOxid_state_min()))
-                    / Integer.parseInt(oxids.get(i).getOxid_state_min()));
+
+            if (tempInt == 0){ //probably useless, but for now I will leave it
+                tempInt++;
+            }
+
+            int tempInt2 = (oxidPool.get(oxids.get(i-1)) * Integer.parseInt(oxids.get(i-1).getOxid_state_min()))
+                    / Integer.parseInt(oxids.get(i).getOxid_state_min());
+            System.out.println(tempInt2 + " ti2");
+
+            if (tempInt2 == 0){ //probably useless, but for now I will leave it
+                tempInt2++;
+            }
+
+            oxidPool.replace(oxids.get(i), tempInt2);
             oxidPool.replace(oxids.get(i-1), tempInt);
         } else { // 1 with 2 2Fe(Cl)6 nerf
             int tempInt = (oxidPool.get(oxids.get(i-1)) * Integer.parseInt(oxids.get(i-1).getOxid_state_min()))
                     / Integer.parseInt(oxids.get(i).getOxid_state_min());
-            oxidPool.replace(oxids.get(i-1), (oxidPool.get(oxids.get(i)) * Integer.parseInt(oxids.get(i).getOxid_state_min()))
-                    / Integer.parseInt(oxids.get(i-1).getOxid_state_min()));
+
+            if (tempInt == 0){
+                tempInt++;
+            }
+
+            int tempInt2 = (oxidPool.get(oxids.get(i)) * Integer.parseInt(oxids.get(i).getOxid_state_min()))
+                    / Integer.parseInt(oxids.get(i-1).getOxid_state_min());
+
+            if (tempInt2 == 0){ //probably useless, but for now I will leave it
+                tempInt2++;
+            }
+            System.out.println(tempInt2 + " ti2");
+            oxidPool.replace(oxids.get(i-1), tempInt2);
             oxidPool.replace(oxids.get(i), tempInt);
         }
 
-        System.out.println(foundPool.get(foundations.get(i-1)) / 2);
-        System.out.println(foundPool.get(foundations.get(i)) / 2);
+//        System.out.println(foundPool.get(foundations.get(i-1)) / 2); // 1/2=0 cause int
+//        System.out.println(foundPool.get(foundations.get(i)) / 2);
 
         // nerf 2FeCl6 -> FeCl3
         if (foundPool.get(foundations.get(i-1)) % 2 == 0 && oxidPool.get(oxids.get(i)) % 2 == 0){
-            foundPool.put(foundations.get(i-1), foundPool.get(foundations.get(i-1)) / 2);
-            oxidPool.put(oxids.get(i),oxidPool.get(oxids.get(i)) / 2);
-        } else if (oxidPool.get(oxids.get(i-1)) >= 6){
+            foundPool.replace(foundations.get(i-1), foundPool.get(foundations.get(i-1)) / 2);
+            oxidPool.replace(oxids.get(i),oxidPool.get(oxids.get(i)) / 2);
+        } else if (oxidPool.get(oxids.get(i-1)) >= 6){ // 2->4 still exists (not nerfed)
             if (foundPool.get(foundations.get(i)) % 2 == 0 && oxidPool.get(oxids.get(i-1)) % 2 == 0){
-
-                foundPool.put(foundations.get(i), foundPool.get(foundations.get(i)) / 2);
-                oxidPool.put(oxids.get(i-1),oxidPool.get(oxids.get(i-1)) / 2);
+                foundPool.replace(foundations.get(i), foundPool.get(foundations.get(i)) / 2);
+                oxidPool.replace(oxids.get(i-1),oxidPool.get(oxids.get(i-1)) / 2);
             }
         }
 
-        if (foundPool.get(foundations.get(i)) * Integer.parseInt(foundations.get(i).getFound_state_max()) !=
-            oxidPool.get(oxids.get(i-1)) * -Integer.parseInt(oxids.get(i-1).getOxid_state_min())){
-            foundPool.replace(foundations.get(i-1), -Integer.parseInt(oxids.get(i-1).getOxid_state_min()));
+        //At upper code there was NO replacements in oxids/founds arrays. BUT it swapped their amounts already!
+
+        boolean nullOxidizer = oxids.get(i).getOxid_name().equals("0") || oxids.get(i - 1).getOxid_name().equals("0");
+
+        if (nullOxidizer){
+            //code for substance where oxid is null (only foundation aka Na)
+        } else {
+            //for all substances
+            int firstSFoundEval = foundPool.get(foundations.get(i-1)) * Integer.parseInt(foundations.get(i-1).getFound_state_max());
+            int firstSOxidEval = -oxidPool.get(oxids.get(i)) * Integer.parseInt(oxids.get(i).getOxid_state_min());
+            int secondSFoundEval = foundPool.get(foundations.get(i)) * Integer.parseInt(foundations.get(i).getFound_state_max());
+            int secondSOxidEval = -oxidPool.get(oxids.get(i-1)) * Integer.parseInt(oxids.get(i-1).getOxid_state_min());
+            System.out.println(firstSFoundEval + " - " + firstSOxidEval);
+            System.out.println(secondSFoundEval + " - " + secondSOxidEval);
+
+            if (firstSOxidEval > firstSFoundEval){
+                foundPool.replace(foundations.get(i), firstSOxidEval / Integer.parseInt(foundations.get(i-1).getFound_state_max()));
+                System.out.println(foundPool.get(foundations.get(i)));
+            }
+            if (secondSOxidEval > secondSFoundEval){
+                foundPool.replace(foundations.get(i-1), secondSOxidEval / Integer.parseInt(foundations.get(i).getFound_state_max()));
+                System.out.println(foundPool.get(foundations.get(i-1)));
+            }
         }
 
-        if (foundPool.get(foundations.get(i-1)) * Integer.parseInt(foundations.get(i-1).getFound_state_max()) !=
-                oxidPool.get(oxids.get(i)) * -Integer.parseInt(oxids.get(i).getOxid_state_min())){
-            foundPool.replace(foundations.get(i), -Integer.parseInt(oxids.get(i).getOxid_state_min()));
-        }
+//        if (foundPool.get(foundations.get(i)) * Integer.parseInt(foundations.get(i).getFound_state_max()) !=
+//                oxidPool.get(oxids.get(i-1)) * -Integer.parseInt(oxids.get(i-1).getOxid_state_min())){
+//            foundPool.replace(foundations.get(i-1), -Integer.parseInt(oxids.get(i-1).getOxid_state_min()));
+//        }
+//
+//        if (foundPool.get(foundations.get(i-1)) * Integer.parseInt(foundations.get(i-1).getFound_state_max()) !=
+//                oxidPool.get(oxids.get(i)) * -Integer.parseInt(oxids.get(i).getOxid_state_min())){
+//            foundPool.replace(foundations.get(i), -Integer.parseInt(oxids.get(i).getOxid_state_min()));
+//        }
 
         System.out.println(oxidPool.get(oxids.get(i)) + " - " + oxidPool.get(oxids.get(i-1)));
         for (Foundation foundation : foundations){
             if (foundPool.get(foundation) > 1){
                 tempArray[i] = foundPool.get(foundation) + "(" + tempArray[i] + ")";
             }
-            if (tempArray[i].equals("H")){ // Only for water for now
+            if (tempArray[i].equals("H")){ // Only for water for now. Non-single hydrogen works incorrect.
                 tempArray[i] = "(" + tempArray[i] + ")" + "2";
             }
             i--;
@@ -186,7 +229,7 @@ public class ReactionHandler {
         i = tempArray.length-1;
 
         for (Oxid oxid : oxids){
-            if (oxid.getOxid_name().equals("0")){ // For solo elem work
+            if (oxid.getOxid_name().equals("0")){ // For solo elem work, to not print their amounts
                 continue;
             }
             if (oxidPool.get(oxid) <= 1){
