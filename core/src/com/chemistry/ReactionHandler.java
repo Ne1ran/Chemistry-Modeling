@@ -141,7 +141,7 @@ public class ReactionHandler {
                     / Integer.parseInt(oxids.get(i).getOxid_state_min());
             System.out.println(tempInt2 + " ti2");
 
-            if (tempInt2 == 0){ //probably useless, but for now I will leave it
+            if (tempInt2 == 0){
                 tempInt2++;
             }
 
@@ -158,7 +158,7 @@ public class ReactionHandler {
             int tempInt2 = (oxidPool.get(oxids.get(i)) * Integer.parseInt(oxids.get(i).getOxid_state_min()))
                     / Integer.parseInt(oxids.get(i-1).getOxid_state_min());
 
-            if (tempInt2 == 0){ //probably useless, but for now I will leave it
+            if (tempInt2 == 0){
                 tempInt2++;
             }
             System.out.println(tempInt2 + " ti2");
@@ -170,14 +170,14 @@ public class ReactionHandler {
 //        System.out.println(foundPool.get(foundations.get(i)) / 2);
 
         // nerf 2FeCl6 -> FeCl3
+        // 2->4 still exists (not nerfed)
         if (foundPool.get(foundations.get(i-1)) % 2 == 0 && oxidPool.get(oxids.get(i)) % 2 == 0){
             foundPool.replace(foundations.get(i-1), foundPool.get(foundations.get(i-1)) / 2);
             oxidPool.replace(oxids.get(i),oxidPool.get(oxids.get(i)) / 2);
-        } else if (oxidPool.get(oxids.get(i-1)) >= 6){ // 2->4 still exists (not nerfed)
-            if (foundPool.get(foundations.get(i)) % 2 == 0 && oxidPool.get(oxids.get(i-1)) % 2 == 0){
+        }
+        if (foundPool.get(foundations.get(i)) % 2 == 0 && oxidPool.get(oxids.get(i-1)) % 2 == 0){
                 foundPool.replace(foundations.get(i), foundPool.get(foundations.get(i)) / 2);
                 oxidPool.replace(oxids.get(i-1),oxidPool.get(oxids.get(i-1)) / 2);
-            }
         }
 
         //At upper code there was NO replacements in oxids/founds arrays. BUT it swapped their amounts already!
@@ -216,6 +216,17 @@ public class ReactionHandler {
 //        }
 
         System.out.println(oxidPool.get(oxids.get(i)) + " - " + oxidPool.get(oxids.get(i-1)));
+
+//        boolean singleCheck = false;
+//        if (oxids.get(i).getOxid_name().equals("0")){
+//            System.out.println("Catch single found");
+//            singleCheck = true;
+//        }
+//        if (oxids.get(i-1).getOxid_name().equals("0")){
+//            System.out.println("Catch single found");
+//            singleCheck = true;
+//        }
+
         for (Foundation foundation : foundations){
             if (foundPool.get(foundation) > 1){
                 tempArray[i] = foundPool.get(foundation) + "(" + tempArray[i] + ")";
@@ -229,7 +240,7 @@ public class ReactionHandler {
         i = tempArray.length-1;
 
         for (Oxid oxid : oxids){
-            if (oxid.getOxid_name().equals("0")){ // For solo elem work, to not print their amounts
+            if (oxid.getOxid_name().equals("0")){ // For solo elem work, to not print anything else
                 continue;
             }
             if (oxidPool.get(oxid) <= 1){
