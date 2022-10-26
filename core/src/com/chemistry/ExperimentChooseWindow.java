@@ -52,32 +52,31 @@ public class ExperimentChooseWindow implements Screen {
 //        mainStage.addActor(messageToUser);
 
         int possibleExperiments = Integer.parseInt(currentUser.getCurrent_exp()) + 1;
-        int y_start = 400;
+        int y_start = 500;
         int x_start = 150;
         for (int i = 1; i <= possibleExperiments; i++){
             TextButton tempBtn = null;
             try {
                 tempBtn = new TextButton(handler.getExperimentNameById(i), buttonStyle);
+                tempBtn.setPosition(x_start, y_start - (i * 40));
+                mainStage.addActor(tempBtn);
+                expButtons.add(tempBtn);
+                final String exp_id = String.valueOf(i);
+                tempBtn.addListener(new ChangeListener() {
+                    @Override
+                    public void changed(ChangeEvent event, Actor actor) {
+                        try {
+                            handler.setChoosenExperiment(exp_id);
+                            game.setScreen(new ExperimentWindow(game));
+                        } catch (SQLException | ClassNotFoundException throwables) {
+                            throwables.printStackTrace();
+                        }
+                    }
+                });
             } catch (SQLException | ClassNotFoundException throwables) {
                 throwables.printStackTrace();
             }
-            tempBtn.setPosition(x_start, y_start - (i * 40));
-            mainStage.addActor(tempBtn);
-            expButtons.add(tempBtn);
 
-            final String exp_id = String.valueOf(i);
-
-            tempBtn.addListener(new ChangeListener() {
-                @Override
-                public void changed(ChangeEvent event, Actor actor) {
-                    try {
-                        handler.setChoosenExperiment(exp_id);
-                        game.setScreen(new ExperimentWindow(game));
-                    } catch (SQLException | ClassNotFoundException throwables) {
-                        throwables.printStackTrace();
-                    }
-                }
-            });
         }
 
         // In future realises add a for cycle to get experiments we need (and text for them)

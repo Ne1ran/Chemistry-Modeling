@@ -38,15 +38,7 @@ public class ChemistryModelingMainWindow implements Screen {
     public ChemistryModelingMainWindow(final ChemistryModelingGame game) {
         this.game = game;
 
-        startingScreenFont = new BitmapFont();
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("appetite.ttf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.characters = "абвгдеёжзийклмнопрстуфхцчшщъыьэюяabcdefghijklmnopqrstuvwxyzАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789][_!$%#@|\\/?-+=()*&.;:,{}\"´`'<>";
-        parameter.size = 30;
-        parameter.color = new Color(0, 0.5F, 0.9F, 1);
-        parameter.borderWidth = 0.5F;
-        startingScreenFont = generator.generateFont(parameter);
-        generator.dispose();
+        startingScreenFont = game.font;
 
         background = new Texture("main_bg.jpg");
         camera = new OrthographicCamera();

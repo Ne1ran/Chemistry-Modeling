@@ -23,6 +23,8 @@ public class ChemistryModelingGame extends Game {
 		parameter.characters = "абвгдеёжзийклмнопрстуфхцчшщъыьэюяabcdefghijklmnopqrstuvwxyzАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789][_!$%#@|\\/?-+=()*&.;:,{}\"´`'<>";
 		parameter.size = 30;
 		parameter.color = new Color(0, 0.5F, 0.9F, 1);
+		parameter.borderColor = new Color(Color.BLACK);
+		parameter.borderWidth = 1F;
 		font = generator.generateFont(parameter);
 		generator.dispose();
 		this.setScreen(new ChemistryModelingMainWindow(this));
