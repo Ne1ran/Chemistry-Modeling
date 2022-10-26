@@ -269,7 +269,7 @@ public class ReactionHandler {
 
         for (Oxid oxid : oxids){
             if (oxidPool.get(oxid) <= 1){
-                if (!tempArray[i].equals("(H)2")){
+                if (!tempArray[i].equals("(H)2") && !tempArray[i].equals("NH4")){
                     tempArray[i] = tempArray[i] + oxid.getOxid_name();
                 }
             } else {
