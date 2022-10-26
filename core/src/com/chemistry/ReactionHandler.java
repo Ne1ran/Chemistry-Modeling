@@ -81,9 +81,10 @@ public class ReactionHandler {
     public void chemicalReaction(Map<Foundation, Integer> foundPool, Map<Oxid, Integer> oxidPool){
         ArrayList<Foundation> foundationsFirstIteration = new ArrayList<>();
         boolean startReaction = false;
+        boolean containsNullOxid = false;
+        int nullOxidsAmount = 0;
         for (Foundation found : foundPool.keySet()){
             foundationsFirstIteration.add(found);
-            System.out.println(found.getName());
         }
         int first = Integer.parseInt(foundationsFirstIteration.get(0).getElectrochem_pos());
         int second = Integer.parseInt(foundationsFirstIteration.get(1).getElectrochem_pos());
@@ -91,6 +92,24 @@ public class ReactionHandler {
             startReaction = true;
         } else if (first - second > 2 || second - first > 2){
             startReaction = true;
+        }
+        for (Oxid oxid : oxidPool.keySet()){
+            if (oxid.getOxid_name().equals("0")){
+                containsNullOxid = true;
+                nullOxidsAmount++;
+            }
+        }
+
+        for (Substance substance : substances) {
+            if (substance.getSmallTexturePath().equals("H2O")) {
+                if (containsNullOxid){
+                    startReaction = true;
+                    break;
+                } else startReaction = false;
+            }
+        }
+        if (nullOxidsAmount == 2){
+            startReaction = false;
         }
 
         if (startReaction){
@@ -225,6 +244,15 @@ public class ReactionHandler {
 //        if (oxids.get(i-1).getOxid_name().equals("0")){
 //            System.out.println("Catch single found");
 //            singleCheck = true;
+//        }
+//        int indexOfNullOxid = 0;
+//        int j = 0;
+//        for (Oxid oxid : oxids){
+//            if (oxid.getOxid_name().equals("0")){
+//                indexOfNullOxid = j++;
+//                break;
+//            }
+//            j++;
 //        }
 
         for (Foundation foundation : foundations){
