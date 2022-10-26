@@ -44,10 +44,10 @@ public class DBHandler extends Config{
         } else return false;
     }
 
-    public Integer checkAvailableExperiments() {
-        int UserExperiment = Integer.parseInt(currentUser.getCurrent_exp());
-        return UserExperiment;
-    }
+//    public Integer checkAvailableExperiments() {
+//        int UserExperiment = Integer.parseInt(currentUser.getCurrent_exp());
+//        return UserExperiment;
+//    }
 
     public void setChoosenExperiment(String id) throws SQLException, ClassNotFoundException {
         ResultSet rset = null;
@@ -116,5 +116,17 @@ public class DBHandler extends Config{
         PreparedStatement prst = getConnection().prepareStatement(select);
         rset = prst.executeQuery();
         return rset;
+    }
+
+    public String getExperimentNameById(int id) throws SQLException, ClassNotFoundException {
+        ResultSet rset = null;
+        String select = "SELECT name FROM " + AllConstants.ExpConsts.EXP_TABLE + " where " +
+                AllConstants.ExpConsts.EXP_ID + "='" + id + "'";
+        PreparedStatement preparedStatement = getConnection().prepareStatement(select);
+        rset = preparedStatement.executeQuery();
+        if (rset.next()){
+            return rset.getString(AllConstants.ExpConsts.NAME);
+        }
+        return "Name not detected...";
     }
 }

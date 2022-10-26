@@ -12,8 +12,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.chemistry.dto.Experiment;
-
 import java.sql.SQLException;
+import java.util.ArrayList;
+
+import static com.chemistry.ChemistryModelingMainWindow.currentUser;
 
 public class ExperimentChooseWindow implements Screen {
     final ChemistryModelingGame game;
@@ -21,19 +23,13 @@ public class ExperimentChooseWindow implements Screen {
     private final OrthographicCamera camera;
     private final Texture background;
     private final Stage mainStage;
-    private Integer experimentNum;
-    private DBHandler handler = new DBHandler();
+    private final Integer experimentNum = 1;
+    private final DBHandler handler = new DBHandler();
     public static Experiment choosenExperiment = new Experiment();
+    private final ArrayList<TextButton> expButtons = new ArrayList<>();
 
-    public ExperimentChooseWindow(final ChemistryModelingGame game){
+    public ExperimentChooseWindow(final ChemistryModelingGame game) {
         this.game = game;
-
-        try {
-            experimentNum = handler.checkAvailableExperiments(); //What experiment is available
-            System.out.println(experimentNum);
-        } catch (Exception e){
-            e.printStackTrace();
-        }
 
         background = new Texture("main_bg.jpg");
         camera = new OrthographicCamera();
@@ -55,40 +51,67 @@ public class ExperimentChooseWindow implements Screen {
 //        messageToUser.setPosition(150, 400);
 //        mainStage.addActor(messageToUser);
 
+        int possibleExperiments = Integer.parseInt(currentUser.getCurrent_exp()) + 1;
+        int y_start = 400;
+        int x_start = 150;
+        for (int i = 1; i <= possibleExperiments; i++){
+            TextButton tempBtn = null;
+            try {
+                tempBtn = new TextButton(handler.getExperimentNameById(i), buttonStyle);
+            } catch (SQLException | ClassNotFoundException throwables) {
+                throwables.printStackTrace();
+            }
+            tempBtn.setPosition(x_start, y_start - (i * 40));
+            mainStage.addActor(tempBtn);
+            expButtons.add(tempBtn);
 
-        // In future realises add a for cycle to get experiments we need (and text for them)
-        final TextButton firstExperiment = new TextButton("Первый эксперимент", buttonStyle);
-        firstExperiment.setPosition(150, 360);
-        mainStage.addActor(firstExperiment);
+            final String exp_id = String.valueOf(i);
 
-        final TextButton secondExperiment = new TextButton("Второй эксперимент", buttonStyle);
-        secondExperiment.setPosition(150, 320);
-        mainStage.addActor(secondExperiment);
-
-        firstExperiment.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                System.out.println("Clicked");
-                if (experimentNum >= 1) {
+            tempBtn.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
                     try {
-                        handler.setChoosenExperiment(Integer.toString(1));
+                        handler.setChoosenExperiment(exp_id);
                         game.setScreen(new ExperimentWindow(game));
                     } catch (SQLException | ClassNotFoundException throwables) {
                         throwables.printStackTrace();
                     }
-                    System.out.println("WE can go further");
-                } else System.out.println("???");
-            }
-        });
+                }
+            });
+        }
 
-        secondExperiment.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                if (experimentNum >= 2){
-                    System.out.println("Another one");
-                } else System.out.println("That's how it should be");
-            }
-        });
+        // In future realises add a for cycle to get experiments we need (and text for them)
+//        final TextButton firstExperiment = new TextButton("Первый эксперимент", buttonStyle);
+//        firstExperiment.setPosition(150, 360);
+//        mainStage.addActor(firstExperiment);
+//
+//        final TextButton secondExperiment = new TextButton("Второй эксперимент", buttonStyle);
+//        secondExperiment.setPosition(150, 320);
+//        mainStage.addActor(secondExperiment);
+//
+//        firstExperiment.addListener(new ChangeListener() {
+//            @Override
+//            public void changed(ChangeEvent event, Actor actor) {
+//                System.out.println("Clicked");
+//                if (experimentNum >= 1) {
+//                    try {
+//                        handler.setChoosenExperiment(Integer.toString(1));
+//                        game.setScreen(new ExperimentWindow(game));
+//                    } catch (SQLException | ClassNotFoundException throwables) {
+//                        throwables.printStackTrace();
+//                    }
+//                } else System.out.println("Something went wrong");
+//            }
+//        });
+//
+//        secondExperiment.addListener(new ChangeListener() {
+//            @Override
+//            public void changed(ChangeEvent event, Actor actor) {
+//                if (experimentNum >= 2){
+//                    System.out.println("Another one");
+//                } else System.out.println("That's how it should be");
+//            }
+//        });
     }
 
     @Override
