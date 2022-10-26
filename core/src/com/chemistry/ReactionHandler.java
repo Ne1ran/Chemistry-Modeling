@@ -268,11 +268,8 @@ public class ReactionHandler {
         i = tempArray.length-1;
 
         for (Oxid oxid : oxids){
-            if (oxid.getOxid_name().equals("0")){ // For solo elem work, to not print anything else
-                continue;
-            }
             if (oxidPool.get(oxid) <= 1){
-                if (!tempArray[i].equals("H")){
+                if (!tempArray[i].equals("(H)2")){
                     tempArray[i] = tempArray[i] + oxid.getOxid_name();
                 }
             } else {
