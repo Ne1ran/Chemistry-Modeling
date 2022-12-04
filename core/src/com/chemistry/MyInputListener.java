@@ -2,7 +2,6 @@ package com.chemistry;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
 
 import static com.chemistry.ExperimentWindow.*;
 
