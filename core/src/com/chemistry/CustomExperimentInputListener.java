@@ -10,7 +10,6 @@ public class CustomExperimentInputListener implements InputProcessor {
 
     @Override
     public boolean keyDown(int keycode) {
-        System.out.println(keycode);
         if (keycode == 111){
             closeWindow = true;
         }
@@ -33,7 +32,6 @@ public class CustomExperimentInputListener implements InputProcessor {
             System.out.println("Left");
         } else if (button == Input.Buttons.RIGHT){
             System.out.println("Right");
-//            deleteFromInventory = true;
         }
         x_pos = screenX - 5;
         y_pos = screenY - 5;
@@ -51,7 +49,6 @@ public class CustomExperimentInputListener implements InputProcessor {
         mouseSpawnerRect.setX(x_pos);
         mouseSpawnerRect.setY(y_pos);
         startSpawn = false;
-//        deleteFromInventory = false;
         return true;
     }
 

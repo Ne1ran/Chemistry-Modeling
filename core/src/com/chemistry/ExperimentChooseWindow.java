@@ -84,7 +84,11 @@ public class ExperimentChooseWindow implements Screen {
         customExp.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                game.setScreen(new CustomExperimentWindow(game));
+                try {
+                    game.setScreen(new CustomExperimentWindow(game));
+                } catch (SQLException | ClassNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
             }
         });
         mainStage.addActor(customExp);

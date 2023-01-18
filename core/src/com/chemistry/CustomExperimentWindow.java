@@ -2,18 +2,32 @@ package com.chemistry;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.Array;
 
 import com.chemistry.dto.MenuSlot;
+import com.chemistry.dto.Substance;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+
+import static com.chemistry.ExperimentChooseWindow.choosenExperiment;
 
 
 public class CustomExperimentWindow implements Screen {
     final ChemistryModelingGame game;
     private final OrthographicCamera camera;
+
+    private final BitmapFont labelFont;
     private final Texture background;
     private final Texture dialogBg;
     private final Texture menu;
@@ -32,10 +46,18 @@ public class CustomExperimentWindow implements Screen {
 
     public static Boolean closeWindow = false;
 
+    private final Array<Substance> possibleSubstancesInMenu;
+
     private final Array<MenuSlot> substancesMenu;
 
+    private final Label.LabelStyle labelStyle;
 
-    public CustomExperimentWindow(ChemistryModelingGame game) {
+    public static Integer choosedSlotId;
+
+    public static Boolean isSomethingPicked;
+
+
+    public CustomExperimentWindow(ChemistryModelingGame game) throws SQLException, ClassNotFoundException {
         this.game = game;
 
         background = new Texture("exp1_bg.jpg");
@@ -67,6 +89,21 @@ public class CustomExperimentWindow implements Screen {
 
         substancesMenu = new Array<>();
 
+        choosedSlotId = 0;
+        isSomethingPicked = false;
+
+        possibleSubstancesInMenu = new Array<>();
+
+        ArrayList<String> substances = handler.getAllSubstancesNames(); // Getting all substances' names
+
+        Array<Array<String>> subtancesInMenu = new Array<>();
+
+        int substancesAmount = substances.size();
+        int rows = Math.round(substancesAmount / 6f);
+        if (substancesAmount % 6 > 0){
+            rows++;
+        }
+        System.out.println(substancesAmount + "   " + rows);
 //        Array<String> tempArray1 = new Array<>();
 //        tempArray1.add("NaOH");
 //        tempArray1.add("NaCl");
@@ -87,23 +124,25 @@ public class CustomExperimentWindow implements Screen {
 
         for (int i = 0; i < 6; i++){
             MenuSlot substance = new MenuSlot();
-            substance.setX(140 + i * 166 + 2);
-            substance.setY(0);
+            substance.setX(138 + i * 166);
             substance.setSize(166, 120);
-            substance.setSlotId(i);
-            substance.setSlotTexture("bob"); //name
+            substance.setY(715-substance.getHeight());
+            substance.setSlotId(i+1);
+            substance.setSlotTexture("testName"); //name
             substance.setThisSlotPicked(false);
             substancesMenu.add(substance);
         }
 
-//        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("appetite.ttf"));
-//        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-//        parameter.characters = "абвгдеёжзийклмнопрстуфхцчшщъыьэюяabcdefghijklmnopqrstuvwxyzАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789][_!$%#@|\\/?-+=()*&.;:,{}\"´`'<>";
-//        parameter.size = 18;
-//        parameter.color = Color.BLACK;
-//        BitmapFont selectBoxFont = generator.generateFont(parameter);
-//        generator.dispose();
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("appetite.ttf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        parameter.characters = "абвгдеёжзийклмнопрстуфхцчшщъыьэюяabcdefghijklmnopqrstuvwxyzАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789][_!$%#@|\\/?-+=()*&.;:,{}\"´`'<>";
+        parameter.size = 16;
+        parameter.color = Color.BLACK;
+        labelFont = generator.generateFont(parameter);
+        generator.dispose();
 
+        labelStyle = new Label.LabelStyle();
+        labelStyle.font = labelFont;
         //can not do right now
 
 //        SelectBox.SelectBoxStyle selectBoxStyle = new SelectBox.SelectBoxStyle();
@@ -139,20 +178,38 @@ public class CustomExperimentWindow implements Screen {
 
         for (MenuSlot slot : substancesMenu){
             if (slot.getThisSlotPicked()){
-                game.batch.draw(menuSlotChoosen, slot.getX()-3, 720-slot.getY()-slot.getHeight()-2);
-                System.out.println("slotchoosen");
-            }
-            game.font.draw(this.game.batch,slot.getSlotTexture(), slot.getX(), slot.getY() + 5 + slot.getHeight());
+                game.batch.draw(menuSlotChoosen, slot.getX()+3, 5);
+            } else game.batch.draw(menuSlotTexture, slot.getX()+3, 5);
+            Label textInSlot = new Label(slot.getSlotTexture(), labelStyle);
+            textInSlot.setPosition(slot.getX() + 5, 5);
+            textInSlot.setSize(164, 110);
+            textInSlot.setAlignment(1);
+            textInSlot.draw(this.game.batch, 1f);
+//            game.font.draw(this.game.batch, slot.getSlotTexture(), slot.getX() + 5, 720-slot.getY()-slot.getHeight()/2 + 5);
         }
 
 //        mainStage.draw();
         game.batch.end();
 
-        if (arrowRight.overlaps(mouseSpawnerRect)){
-            System.out.println("bobor");
-        }
-        if (arrowLeft.overlaps(mouseSpawnerRect)){
-            System.out.println("bobol");
+        if(startSpawn) {
+
+            if (arrowRight.overlaps(mouseSpawnerRect)) {
+                System.out.println("Right");
+            }
+            if (arrowLeft.overlaps(mouseSpawnerRect)) {
+                System.out.println("Left");
+            }
+
+            for (MenuSlot slot : substancesMenu) {
+                if (slot.overlaps(mouseSpawnerRect)) {
+                    slot.setThisSlotPicked(true);
+                    choosedSlotId = slot.getSlotId();
+                    isSomethingPicked = true;
+                    System.out.println("Pressed slot with " + slot.getSlotTexture());
+                }
+            }
+
+            startSpawn = false;
         }
     }
 

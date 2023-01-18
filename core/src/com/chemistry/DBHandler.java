@@ -1,6 +1,7 @@
 package com.chemistry;
 
 import java.sql.*;
+import java.util.ArrayList;
 
 import static com.chemistry.ChemistryModelingMainWindow.currentUser;
 import static com.chemistry.ExperimentChooseWindow.choosenExperiment;
@@ -128,5 +129,17 @@ public class DBHandler extends Config{
             return rset.getString(AllConstants.ExpConsts.NAME);
         }
         return "Name not detected...";
+    }
+
+    public ArrayList<String> getAllSubstancesNames() throws SQLException, ClassNotFoundException {
+        ArrayList<String> substancesNames = new ArrayList<>();
+        ResultSet rset = null;
+        String select = "SELECT small_texture FROM " + AllConstants.SubsConsts.SUBS_TABLE;
+        PreparedStatement prst = getConnection().prepareStatement(select);
+        rset = prst.executeQuery();
+        while (rset.next()){
+            substancesNames.add(rset.getString(1));
+        }
+        return substancesNames;
     }
 }
