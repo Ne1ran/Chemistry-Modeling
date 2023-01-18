@@ -7,5 +7,5 @@ public class Config {
     protected String User = "root";
     protected String Password = "root";
     protected String Name = "chemistry";
-
 }
+

@@ -79,6 +79,16 @@ public class ExperimentChooseWindow implements Screen {
 
         }
 
+        TextButton customExp = new TextButton("Создать свой эксперимент", buttonStyle);
+        customExp.setPosition(650, 400);
+        customExp.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                game.setScreen(new CustomExperimentWindow(game));
+            }
+        });
+        mainStage.addActor(customExp);
+
         // In future realises add a for cycle to get experiments we need (and text for them)
 //        final TextButton firstExperiment = new TextButton("Первый эксперимент", buttonStyle);
 //        firstExperiment.setPosition(150, 360);

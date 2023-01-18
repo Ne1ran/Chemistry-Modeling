@@ -70,7 +70,7 @@ public class ExperimentWindow implements Screen {
         slotTextFont = generator1.generateFont(parameter1);
         generator1.dispose();
 
-        MyInputListener inputListener = new MyInputListener();
+        ExperimentWindowInputListener inputListener = new ExperimentWindowInputListener();
         Gdx.input.setInputProcessor(inputListener);
 
         camera = new OrthographicCamera();

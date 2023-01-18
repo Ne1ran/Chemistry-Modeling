@@ -6,7 +6,7 @@ import com.badlogic.gdx.InputProcessor;
 import static com.chemistry.ExperimentWindow.*;
 
 
-public class MyInputListener implements InputProcessor {
+public class ExperimentWindowInputListener implements InputProcessor {
 
     @Override
     public boolean keyDown(int keycode) {
