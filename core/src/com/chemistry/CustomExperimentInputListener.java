@@ -30,7 +30,10 @@ public class CustomExperimentInputListener implements InputProcessor {
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         if (button == Input.Buttons.LEFT){
             System.out.println("Left");
+            rightClick = false;
         } else if (button == Input.Buttons.RIGHT){
+            unpickFromMenu = true;
+            rightClick = true;
             System.out.println("Right");
         }
         x_pos = screenX - 5;

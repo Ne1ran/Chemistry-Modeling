@@ -16,6 +16,7 @@ import com.badlogic.gdx.utils.Array;
 import com.chemistry.dto.MenuSlot;
 import com.chemistry.dto.Substance;
 
+import java.awt.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -40,6 +41,8 @@ public class CustomExperimentWindow implements Screen {
     private final Rectangle arrowLeft;
     public static Rectangle mouseSpawnerRect;
 
+    private final Rectangle placeSpace;
+
     public static Integer x_pos;
     public static Integer y_pos;
     public static Boolean startSpawn = false;
@@ -55,6 +58,10 @@ public class CustomExperimentWindow implements Screen {
     public static Integer choosedSlotId;
 
     public static Boolean isSomethingPicked;
+    public static Boolean unpickFromMenu;
+    public static Boolean rightClick;
+
+    private final Array<Substance> substancesPlaced;
 
 
     public CustomExperimentWindow(ChemistryModelingGame game) throws SQLException, ClassNotFoundException {
@@ -82,15 +89,23 @@ public class CustomExperimentWindow implements Screen {
         mouseSpawnerRect.setPosition(-100,-100);
         mouseSpawnerRect.setSize(3, 3);
 
+        placeSpace = new Rectangle();
+        placeSpace.setPosition(40, 121);
+        placeSpace.setSize(123,123); //dodelat
+
         CustomExperimentInputListener inputListener = new CustomExperimentInputListener();
         Gdx.input.setInputProcessor(inputListener);
 
 //        Array<Array<String>> substances = new Array<>();
 
+        substancesPlaced = new Array<>();
+
         substancesMenu = new Array<>();
 
         choosedSlotId = 0;
         isSomethingPicked = false;
+        unpickFromMenu = false;
+        rightClick = false;
 
         possibleSubstancesInMenu = new Array<>();
 
@@ -100,27 +115,20 @@ public class CustomExperimentWindow implements Screen {
 
         int substancesAmount = substances.size();
         int rows = Math.round(substancesAmount / 6f);
-        if (substancesAmount % 6 > 0){
+        int ostatok = substancesAmount % 6;
+        if (ostatok % 6 > 0){
             rows++;
         }
-        System.out.println(substancesAmount + "   " + rows);
-//        Array<String> tempArray1 = new Array<>();
-//        tempArray1.add("NaOH");
-//        tempArray1.add("NaCl");
-//        tempArray1.add("FeSO4");
-//        tempArray1.add("2Al(SO4)3");
-//        tempArray1.add("NH4(OH)");
-//        tempArray1.add("NH4(OH)");
-//        substances.add(tempArray1);
-//
-//        Array<String> tempArray2 = new Array<>();
-//        tempArray2.add("NaCl");
-//        tempArray2.add("NaOH");
-//        tempArray2.add("FeSO4");
-//        tempArray2.add("2Al(SO4)3");
-//        tempArray2.add("NH4(OH)");
-//        tempArray2.add("2Al(SO4)3");
-//        substances.add(tempArray2);
+
+        for (int i = 0; i < rows; i++){
+            Array<String> tempArr = new Array<>();
+            for (int j = 0; j < 6; j++){
+                if (ostatok <= j){
+                    tempArr.add(substances.get(j * (i + 1)));
+                } else tempArr.add("Nothing");
+            }
+            subtancesInMenu.add(tempArr);
+        }
 
         for (int i = 0; i < 6; i++){
             MenuSlot substance = new MenuSlot();
@@ -128,9 +136,16 @@ public class CustomExperimentWindow implements Screen {
             substance.setSize(166, 120);
             substance.setY(715-substance.getHeight());
             substance.setSlotId(i+1);
-            substance.setSlotTexture("testName"); //name
+            substance.setSlotTexture(subtancesInMenu.get(0).get(i)); //name
             substance.setThisSlotPicked(false);
             substancesMenu.add(substance);
+        }
+        try {
+            for (int i = 0; i < 6; i++) { //setting substances names in menu
+                substancesMenu.get(i).setSlotTexture(substances.get(i));
+            }
+        } catch (Exception e){
+            e.printStackTrace();
         }
 
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("appetite.ttf"));
@@ -163,23 +178,20 @@ public class CustomExperimentWindow implements Screen {
 //        TextButton coloredbtn = new TextButton("skinnn", buttonStyle);
 //
 //        mainStage.addActor(coloredbtn);
-
-
-
     }
 
     @Override
     public void render(float delta) {
         game.batch.begin();
-        game.batch.draw(background, 0,0);
-        game.batch.draw(chemist, 1280-40-241, 0);
-        game.batch.draw(dialogBg, 1270-40-345, 270);
+        game.batch.draw(background, 0, 0);
+        game.batch.draw(chemist, 1280 - 40 - 241, 0);
+        game.batch.draw(dialogBg, 1270 - 40 - 345, 270);
         game.batch.draw(menu, 38, 0);
 
-        for (MenuSlot slot : substancesMenu){
-            if (slot.getThisSlotPicked()){
-                game.batch.draw(menuSlotChoosen, slot.getX()+3, 5);
-            } else game.batch.draw(menuSlotTexture, slot.getX()+3, 5);
+        for (MenuSlot slot : substancesMenu) {
+            if (slot.getThisSlotPicked()) {
+                game.batch.draw(menuSlotChoosen, slot.getX() + 3, 5);
+            } else game.batch.draw(menuSlotTexture, slot.getX() + 3, 5);
             Label textInSlot = new Label(slot.getSlotTexture(), labelStyle);
             textInSlot.setPosition(slot.getX() + 5, 5);
             textInSlot.setSize(164, 110);
@@ -188,10 +200,10 @@ public class CustomExperimentWindow implements Screen {
 //            game.font.draw(this.game.batch, slot.getSlotTexture(), slot.getX() + 5, 720-slot.getY()-slot.getHeight()/2 + 5);
         }
 
-//        mainStage.draw();
+//      mainStage.draw();
         game.batch.end();
 
-        if(startSpawn) {
+        if (startSpawn) {
 
             if (arrowRight.overlaps(mouseSpawnerRect)) {
                 System.out.println("Right");
@@ -202,14 +214,35 @@ public class CustomExperimentWindow implements Screen {
 
             for (MenuSlot slot : substancesMenu) {
                 if (slot.overlaps(mouseSpawnerRect)) {
-                    slot.setThisSlotPicked(true);
-                    choosedSlotId = slot.getSlotId();
-                    isSomethingPicked = true;
-                    System.out.println("Pressed slot with " + slot.getSlotTexture());
+                    if (!unpickFromMenu && isSomethingPicked && !slot.getThisSlotPicked()){ // if something is picked and we want to swap
+                        substancesMenu.get(choosedSlotId-1).setThisSlotPicked(false);
+                        choosedSlotId = slot.getSlotId();
+                        slot.setThisSlotPicked(true);
+                        System.out.println("Repicked slot with id: " + slot.getSlotId());
+                    } else if (!isSomethingPicked && !rightClick && !slot.getThisSlotPicked()){ // if nothing is picked
+                        slot.setThisSlotPicked(true);
+                        choosedSlotId = slot.getSlotId();
+                        System.out.println("Picked slot with id: " + slot.getSlotId());
+                        isSomethingPicked = true;
+                        rightClick = false;
+                    } else { //we unpick if right-click
+                        if (slot.getThisSlotPicked() && rightClick){
+                            choosedSlotId = 0;
+                            slot.setThisSlotPicked(false);
+                            System.out.println("Unpicked slot with id: " + slot.getSlotId());
+                            isSomethingPicked = false;
+                            unpickFromMenu = false;
+                        } else { //for right click on not picked and then lmbc on picked
+                            unpickFromMenu = false; //flag change cause else if you
+                        }
+                    }
                 }
+                startSpawn = false;
             }
 
-            startSpawn = false;
+            if (isSomethingPicked){
+
+            }
         }
     }
 
