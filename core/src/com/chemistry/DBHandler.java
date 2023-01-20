@@ -160,4 +160,8 @@ public class DBHandler extends Config{
         rset = prst.executeQuery();
         return rset;
     }
+
+    public ResultSet getEquipmentByIDInEquipExpTable(String string) {
+        //finish
+    }
 }

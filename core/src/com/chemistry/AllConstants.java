@@ -65,6 +65,8 @@ public class AllConstants {
         public static final String CONNECT_ID = "connect_id";
         public static final String EQUIP_EXP_ID = "equip_exp_id";
         public static final String EXP4_ID = "experiment_id";
+        public static final String EQUIP_X = "equip_x";
+        public static final String EQUIP_Y = "equip_y";
     }
 
     public static class FoundConsts {

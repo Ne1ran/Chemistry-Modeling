@@ -129,13 +129,14 @@ public class ExperimentWindow implements Screen {
             if (equipItself.next()){
                 tempEquip.setId(equipItself.getString(AllConstants.EquipConsts.ID));
                 tempEquip.setName(equipItself.getString(AllConstants.EquipConsts.NAME));
-                tempEquip.setX(Float.parseFloat(equipItself.getString(AllConstants.EquipConsts.X_POS)));
-                tempEquip.setY(Float.parseFloat(equipItself.getString(AllConstants.EquipConsts.Y_POS))-78);
                 tempEquip.setTexture_path(new Texture(equipItself.getString(AllConstants.EquipConsts.TEXTURE_PATH)));
                 tempEquip.setSize(tempEquip.getTexture_path().getWidth(), tempEquip.getTexture_path().getHeight());
                 tempEquip.setSetOnPlace(false);
-                tempEquip.setxAfter(equipItself.getString(AllConstants.EquipConsts.X_AFTER));
-                tempEquip.setyAfter(equipItself.getString(AllConstants.EquipConsts.Y_AFTER));
+                ResultSet equipExpConn = handler.getEquipmentByIDInEquipExpTable(equipItself.getString(AllConstants.EquipConsts.ID));
+                if (equipExpConn.next()){
+                    tempEquip.setX(Float.parseFloat(equipExpConn.getString(AllConstants.SubsExpConsts.SUBS_X)));
+                    tempEquip.setY(720 - Float.parseFloat(equipExpConn.getString(AllConstants.SubsExpConsts.SUBS_Y)) - 200);
+                }
             }
 
             usedEquipment.add(tempEquip);
@@ -197,39 +198,31 @@ public class ExperimentWindow implements Screen {
         if(startSpawn){  //Checking overlapsing of mouseSpawnerRect and other thingies
             for (Equipment equip: usedEquipment) {
                 if (equip.overlaps(mouseSpawnerRect)){
-                    if (!equip.getSetOnPlace()){ //move for a first time
-                        phrase = equip.getName() + " теперь на месте";
-                        equip.setPosition(Float.parseFloat(equip.getxAfter()), 720 - Float.parseFloat(equip.getyAfter()));
-                        equip.setSetOnPlace(true);
-                        break;
-                    } else {
-                        if (inventorySlotIsPicked){
-                            String substanceInSlotId = "";
-                            for (InventorySlot slot: inventory) {
-                                if (slot.getThisSlotPicked()){
-                                    if (!slot.getSubstanceIdInSlot().isEmpty()){
-                                        substanceInSlotId = slot.getSubstanceIdInSlot();
-                                        break;
-                                    }
-                                }
-                            } //extended functions lower incoming... \|/
-
-                            equip.addSubstance(substanceInSlotId);
-                            for (Substance substance : usedSubstances){
-                                if (substance.getSubId().equals(substanceInSlotId)){
-                                    phrase = "Добавил " + substance.getName() + " в минзурку!";
+                    if (inventorySlotIsPicked){
+                        String substanceInSlotId = "";
+                        for (InventorySlot slot: inventory) {
+                            if (slot.getThisSlotPicked()){
+                                if (!slot.getSubstanceIdInSlot().isEmpty()){
+                                    substanceInSlotId = slot.getSubstanceIdInSlot();
+                                    break;
                                 }
                             }
-                            // Need a normal check if substance is already added
-                            if (equip.getSubstancesInside().size()>=2){
-                                try {
-                                    reactionHandler.getSubstancesFromEquipment(equip);
-                                } catch (SQLException | ClassNotFoundException throwables) {
-                                    throwables.printStackTrace();
-                                }
+                        } //extended functions lower incoming... \|/
+                        equip.addSubstance(substanceInSlotId);
+                        for (Substance substance : usedSubstances){
+                            if (substance.getSubId().equals(substanceInSlotId)){
+                                phrase = "Добавил " + substance.getName() + " в минзурку!";
                             }
-                        } else phrase = "Вы ничего не выбрали...";
-                    }
+                        }
+                        // Need a normal check if substance is already added
+                        if (equip.getSubstancesInside().size()>=2){
+                            try {
+                                reactionHandler.getSubstancesFromEquipment(equip);
+                            } catch (SQLException | ClassNotFoundException throwables) {
+                                throwables.printStackTrace();
+                            }
+                        }
+                    } else phrase = "Вы ничего не выбрали...";
                 }
             }
 

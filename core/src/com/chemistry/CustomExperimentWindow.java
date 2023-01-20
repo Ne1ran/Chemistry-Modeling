@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.Array;
@@ -60,7 +61,9 @@ public class CustomExperimentWindow implements Screen {
     public static Boolean rightClick;
 
     private final Array<Substance> substancesPlaced;
+    private final Label saveButtonLabel;
 
+    private final Rectangle saveRect;
     private Substance substancePicked;
 
 
@@ -91,7 +94,8 @@ public class CustomExperimentWindow implements Screen {
 
         placeSpace = new Rectangle();
         placeSpace.setPosition(40, 0);
-        placeSpace.setSize(850,600);
+        placeSpace.setSize(850,550);
+
 
         CustomExperimentInputListener inputListener = new CustomExperimentInputListener();
         Gdx.input.setInputProcessor(inputListener);
@@ -158,26 +162,15 @@ public class CustomExperimentWindow implements Screen {
 
         labelStyle = new Label.LabelStyle();
         labelStyle.font = labelFont;
-        //can not do right now
 
-//        SelectBox.SelectBoxStyle selectBoxStyle = new SelectBox.SelectBoxStyle();
-//        selectBoxStyle.font = selectBoxFont;
-//
-//        Skin mySkin = new Skin(Gdx.files.internal("metal/skin/metal-ui.json"));
-//
-//        SelectBox<String> chooseSubstance = new SelectBox<String>(mySkin.get("default", SelectBox.SelectBoxStyle.class));
-//
-//        TextButton button = new TextButton("bob", mySkin, "default");
-//        button.setPosition(150, 150);
-//
-//        mainStage.addActor(button);
-//        mainStage.addActor(chooseSubstance);
-//
-//        TextButton.TextButtonStyle buttonStyle = mySkin.get("default", TextButton.TextButtonStyle.class);
-//
-//        TextButton coloredbtn = new TextButton("skinnn", buttonStyle);
-//
-//        mainStage.addActor(coloredbtn);
+        saveButtonLabel = new Label("Сохранить?", labelStyle);
+        saveButtonLabel.setSize(100,30);
+        saveButtonLabel.setAlignment(1);
+        saveButtonLabel.setPosition(1050, 200);
+
+        saveRect = new Rectangle();
+        saveRect.setSize(saveButtonLabel.getWidth(), saveButtonLabel.getHeight());
+        saveRect.setPosition(saveButtonLabel.getX(), 720-saveButtonLabel.getY()-saveButtonLabel.getHeight());
     }
 
     @Override
@@ -187,7 +180,7 @@ public class CustomExperimentWindow implements Screen {
         game.batch.draw(chemist, 1280 - 40 - 241, 0);
         game.batch.draw(dialogBg, 1270 - 40 - 345, 270);
         game.batch.draw(menu, 38, 0);
-
+        saveButtonLabel.draw(this.game.batch, 1f);
         for (MenuSlot slot : substancesMenu) {
             if (slot.getThisSlotPicked()) {
                 game.batch.draw(menuSlotChoosen, slot.getX() + 3, 5);
@@ -197,19 +190,19 @@ public class CustomExperimentWindow implements Screen {
             textInSlot.setSize(164, 110);
             textInSlot.setAlignment(1);
             textInSlot.draw(this.game.batch, 1f);
-//            game.font.draw(this.game.batch, slot.getSlotTexture(), slot.getX() + 5, 720-slot.getY()-slot.getHeight()/2 + 5);
         }
 
         for (Substance substance : substancesPlaced) {
             game.batch.draw(substance.getTexture_path(), substance.getX(),
                     720 - substance.getY() - substance.getHeight());
         }
-
-//      mainStage.draw();
         game.batch.end();
 
         if (startSpawn) {
             if (!rightClick) {
+                if (saveRect.overlaps(mouseSpawnerRect)){
+                    System.out.println("Save");
+                }
                 if (arrowRight.overlaps(mouseSpawnerRect)) {
                     System.out.println("Right");
                 }
@@ -277,18 +270,19 @@ public class CustomExperimentWindow implements Screen {
                             setSubstanceOnTheSpace();
                         }
                     } else System.out.println("You can't place an object here!");
-                } else System.out.println("You didn't pick anything!");
+                }
             } else {
                 if (placeSpace.overlaps(mouseSpawnerRect)) {
                     if (substancesPlaced.size > 0) {
                         try {
                             for (int i = 0; i < substancesPlaced.size; i++) {
                                 if (substancesPlaced.get(i).overlaps(mouseSpawnerRect)) {
-                                    substancesPlaced.removeIndex(i);
                                     System.out.println("Deleted substance with name " + substancesPlaced.get(i).getName());
+                                    substancesPlaced.removeIndex(i);
                                 }
                             }
                         } catch (Exception e) {
+                            e.printStackTrace();
                             System.out.println("Some troubles with deleting");
                         }
                     }
@@ -317,8 +311,6 @@ public class CustomExperimentWindow implements Screen {
             substancePicked.setSubId(foundSubstance.getString(AllConstants.SubsConsts.ID));
             substancePicked.setTexture_path(new Texture(foundSubstance.getString(AllConstants.SubsConsts.TEXTURE_PATH)));
             substancePicked.setName(foundSubstance.getString(AllConstants.SubsConsts.NAME));
-//            substancePicked.setX(Float.parseFloat(foundSubstance.getString(AllConstants.SubsConsts.TEXTURE_X)));
-//            substancePicked.setY(720 - Float.parseFloat(foundSubstance.getString(AllConstants.SubsConsts.TEXTURE_Y)));
             substancePicked.setFoundation(foundSubstance.getString(AllConstants.SubsConsts.FOUND_PART_NAME));
             substancePicked.setOxid(foundSubstance.getString(AllConstants.SubsConsts.OXID_PART_NAME));
             substancePicked.setSmallTexturePath(foundSubstance.getString(AllConstants.SubsConsts.SMALL_TEXTURE));
