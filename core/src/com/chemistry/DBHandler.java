@@ -142,4 +142,22 @@ public class DBHandler extends Config{
         }
         return substancesNames;
     }
+
+    public ResultSet findSubstanceByName(String substanceName) throws SQLException, ClassNotFoundException {
+        ResultSet rset = null;
+        String select = "SELECT * FROM " + AllConstants.SubsConsts.SUBS_TABLE + " Where "
+                + AllConstants.SubsConsts.SMALL_TEXTURE + " ='" + substanceName + "'";
+        PreparedStatement prst = getConnection().prepareStatement(select);
+        rset = prst.executeQuery();
+        return rset;
+    }
+
+    public ResultSet getSubstanceByIDInSubsExpsTable(String subsId) throws SQLException, ClassNotFoundException {
+        ResultSet rset = null;
+        String select = "SELECT * FROM " + AllConstants.SubsExpConsts.SUBS_EXP_TABLE + " Where "
+                + AllConstants.SubsExpConsts.SUBS_EXP_ID + " ='" + subsId + "'";
+        PreparedStatement prst = getConnection().prepareStatement(select);
+        rset = prst.executeQuery();
+        return rset;
+    }
 }

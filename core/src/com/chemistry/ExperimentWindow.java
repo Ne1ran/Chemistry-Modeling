@@ -106,14 +106,17 @@ public class ExperimentWindow implements Screen {
                 tempSubstance.setSubId(substanceItself.getString(AllConstants.SubsConsts.ID));
                 tempSubstance.setTexture_path(new Texture(substanceItself.getString(AllConstants.SubsConsts.TEXTURE_PATH)));
                 tempSubstance.setName(substanceItself.getString(AllConstants.SubsConsts.NAME));
-                tempSubstance.setX(Float.parseFloat(substanceItself.getString(AllConstants.SubsConsts.TEXTURE_X)));
-                tempSubstance.setY(720 - Float.parseFloat(substanceItself.getString(AllConstants.SubsConsts.TEXTURE_Y)) - 200);
                 tempSubstance.setFoundation(substanceItself.getString(AllConstants.SubsConsts.FOUND_PART_NAME));
                 tempSubstance.setOxid(substanceItself.getString(AllConstants.SubsConsts.OXID_PART_NAME));
                 tempSubstance.setSmallTexturePath(substanceItself.getString(AllConstants.SubsConsts.SMALL_TEXTURE));
                 tempSubstance.setFound_amount(substanceItself.getString(AllConstants.SubsConsts.FOUND_AMOUNT));
                 tempSubstance.setOxid_amount(substanceItself.getString(AllConstants.SubsConsts.OXID_AMOUNT));
                 tempSubstance.setSize(tempSubstance.getTexture_path().getWidth(), tempSubstance.getTexture_path().getHeight());
+                ResultSet substanceExpConn = handler.getSubstanceByIDInSubsExpsTable(substanceItself.getString(AllConstants.SubsConsts.ID));
+                if (substanceExpConn.next()){
+                    tempSubstance.setX(Float.parseFloat(substanceExpConn.getString(AllConstants.SubsExpConsts.SUBS_X)));
+                    tempSubstance.setY(720 - Float.parseFloat(substanceExpConn.getString(AllConstants.SubsExpConsts.SUBS_Y)) - 200);
+                }
             }
             usedSubstances.add(tempSubstance);
         }

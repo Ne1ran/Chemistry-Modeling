@@ -49,8 +49,6 @@ public class CustomExperimentWindow implements Screen {
 
     public static Boolean closeWindow = false;
 
-    private final Array<Substance> possibleSubstancesInMenu;
-
     private final Array<MenuSlot> substancesMenu;
 
     private final Label.LabelStyle labelStyle;
@@ -62,6 +60,8 @@ public class CustomExperimentWindow implements Screen {
     public static Boolean rightClick;
 
     private final Array<Substance> substancesPlaced;
+
+    private Substance substancePicked;
 
 
     public CustomExperimentWindow(ChemistryModelingGame game) throws SQLException, ClassNotFoundException {
@@ -90,8 +90,8 @@ public class CustomExperimentWindow implements Screen {
         mouseSpawnerRect.setSize(3, 3);
 
         placeSpace = new Rectangle();
-        placeSpace.setPosition(40, 121);
-        placeSpace.setSize(123,123); //dodelat
+        placeSpace.setPosition(40, 0);
+        placeSpace.setSize(850,600);
 
         CustomExperimentInputListener inputListener = new CustomExperimentInputListener();
         Gdx.input.setInputProcessor(inputListener);
@@ -107,7 +107,7 @@ public class CustomExperimentWindow implements Screen {
         unpickFromMenu = false;
         rightClick = false;
 
-        possibleSubstancesInMenu = new Array<>();
+        substancePicked = new Substance();
 
         ArrayList<String> substances = handler.getAllSubstancesNames(); // Getting all substances' names
 
@@ -200,49 +200,137 @@ public class CustomExperimentWindow implements Screen {
 //            game.font.draw(this.game.batch, slot.getSlotTexture(), slot.getX() + 5, 720-slot.getY()-slot.getHeight()/2 + 5);
         }
 
+        for (Substance substance : substancesPlaced) {
+            game.batch.draw(substance.getTexture_path(), substance.getX(),
+                    720 - substance.getY() - substance.getHeight());
+        }
+
 //      mainStage.draw();
         game.batch.end();
 
         if (startSpawn) {
+            if (!rightClick) {
+                if (arrowRight.overlaps(mouseSpawnerRect)) {
+                    System.out.println("Right");
+                }
+                if (arrowLeft.overlaps(mouseSpawnerRect)) {
+                    System.out.println("Left");
+                }
+                for (Substance substance : substancesPlaced) {
+                    if (substance.overlaps(mouseSpawnerRect)) {
+                        mouseSpawnerRect.setPosition(-100, -100);
+                    }
+                }
 
-            if (arrowRight.overlaps(mouseSpawnerRect)) {
-                System.out.println("Right");
-            }
-            if (arrowLeft.overlaps(mouseSpawnerRect)) {
-                System.out.println("Left");
-            }
+                for (MenuSlot slot : substancesMenu) {
+                    if (slot.overlaps(mouseSpawnerRect)) {
+                        if (!unpickFromMenu && isSomethingPicked && !slot.getThisSlotPicked()) { // if something is picked and we want to swap
+                            substancesMenu.get(choosedSlotId - 1).setThisSlotPicked(false);
+                            choosedSlotId = slot.getSlotId();
+                            slot.setThisSlotPicked(true);
+                            System.out.println("Repicked slot with id: " + slot.getSlotId());
+                            mouseSpawnerRect.setPosition(-100, -100);
+                            try {
+                                setChoosedSubstance(slot.getSlotTexture());
+                            } catch (SQLException | ClassNotFoundException e) {
+                                throw new RuntimeException(e);
+                            }
+                        } else if (!isSomethingPicked && !rightClick && !slot.getThisSlotPicked()) { // if nothing is picked
+                            slot.setThisSlotPicked(true);
+                            choosedSlotId = slot.getSlotId();
+                            System.out.println("Picked slot with id: " + slot.getSlotId());
+                            isSomethingPicked = true;
+                            rightClick = false;
+                            try {
+                                setChoosedSubstance(slot.getSlotTexture());
+                            } catch (SQLException | ClassNotFoundException e) {
+                                throw new RuntimeException(e);
+                            }
+                        } else { //we unpick if right-click
+                            if (slot.getThisSlotPicked()) {
+                                choosedSlotId = 0;
+                                slot.setThisSlotPicked(false);
+                                System.out.println("Unpicked slot with id: " + slot.getSlotId());
+                                isSomethingPicked = false;
+                                unpickFromMenu = false;
+                                substancePicked = new Substance();
+                            } else { //for right click on not picked and then lmbc on picked
+                                unpickFromMenu = false; //flag change cause else if you
+                            }
+                        }
+                    }
+                    startSpawn = false;
+                }
 
-            for (MenuSlot slot : substancesMenu) {
-                if (slot.overlaps(mouseSpawnerRect)) {
-                    if (!unpickFromMenu && isSomethingPicked && !slot.getThisSlotPicked()){ // if something is picked and we want to swap
-                        substancesMenu.get(choosedSlotId-1).setThisSlotPicked(false);
-                        choosedSlotId = slot.getSlotId();
-                        slot.setThisSlotPicked(true);
-                        System.out.println("Repicked slot with id: " + slot.getSlotId());
-                    } else if (!isSomethingPicked && !rightClick && !slot.getThisSlotPicked()){ // if nothing is picked
-                        slot.setThisSlotPicked(true);
-                        choosedSlotId = slot.getSlotId();
-                        System.out.println("Picked slot with id: " + slot.getSlotId());
-                        isSomethingPicked = true;
-                        rightClick = false;
-                    } else { //we unpick if right-click
-                        if (slot.getThisSlotPicked() && rightClick){
-                            choosedSlotId = 0;
-                            slot.setThisSlotPicked(false);
-                            System.out.println("Unpicked slot with id: " + slot.getSlotId());
-                            isSomethingPicked = false;
-                            unpickFromMenu = false;
-                        } else { //for right click on not picked and then lmbc on picked
-                            unpickFromMenu = false; //flag change cause else if you
+                if (isSomethingPicked && !rightClick) {
+                    if (placeSpace.overlaps(mouseSpawnerRect)) {
+                        if (substancesPlaced.size > 0) {
+                            for (Substance substance : substancesPlaced) {
+                                if (substance.overlaps(mouseSpawnerRect)) {
+                                    System.out.println("You can't place an object here. It's too narrow!");
+                                } else {
+                                    setSubstanceOnTheSpace();
+                                    break;
+                                }
+                            }
+                        } else {
+                            setSubstanceOnTheSpace();
+                        }
+                    } else System.out.println("You can't place an object here!");
+                } else System.out.println("You didn't pick anything!");
+            } else {
+                if (placeSpace.overlaps(mouseSpawnerRect)) {
+                    if (substancesPlaced.size > 0) {
+                        try {
+                            for (int i = 0; i < substancesPlaced.size; i++) {
+                                if (substancesPlaced.get(i).overlaps(mouseSpawnerRect)) {
+                                    substancesPlaced.removeIndex(i);
+                                    System.out.println("Deleted substance with name " + substancesPlaced.get(i).getName());
+                                }
+                            }
+                        } catch (Exception e) {
+                            System.out.println("Some troubles with deleting");
                         }
                     }
                 }
-                startSpawn = false;
-            }
-
-            if (isSomethingPicked){
 
             }
+        }
+    }
+
+
+    public void setSubstanceOnTheSpace() {
+        float substancePlaceX = mouseSpawnerRect.getX();
+        float substancePlaceY = mouseSpawnerRect.getY();
+        substancePicked.setX(substancePlaceX - substancePicked.getWidth() / 2 - 3);
+        substancePicked.setY(substancePlaceY - substancePicked.getHeight() / 2);
+        substancesPlaced.add(substancePicked);
+        isSomethingPicked = false;
+        substancesMenu.get(choosedSlotId - 1).setThisSlotPicked(false);
+        substancePicked = new Substance();
+    }
+
+
+    public void setChoosedSubstance(String substanceName) throws SQLException, ClassNotFoundException {
+        ResultSet foundSubstance = handler.findSubstanceByName(substanceName); // Finding substance with name (small_texture)
+        if (foundSubstance.next()) {
+            substancePicked.setSubId(foundSubstance.getString(AllConstants.SubsConsts.ID));
+            substancePicked.setTexture_path(new Texture(foundSubstance.getString(AllConstants.SubsConsts.TEXTURE_PATH)));
+            substancePicked.setName(foundSubstance.getString(AllConstants.SubsConsts.NAME));
+//            substancePicked.setX(Float.parseFloat(foundSubstance.getString(AllConstants.SubsConsts.TEXTURE_X)));
+//            substancePicked.setY(720 - Float.parseFloat(foundSubstance.getString(AllConstants.SubsConsts.TEXTURE_Y)));
+            substancePicked.setFoundation(foundSubstance.getString(AllConstants.SubsConsts.FOUND_PART_NAME));
+            substancePicked.setOxid(foundSubstance.getString(AllConstants.SubsConsts.OXID_PART_NAME));
+            substancePicked.setSmallTexturePath(foundSubstance.getString(AllConstants.SubsConsts.SMALL_TEXTURE));
+            substancePicked.setFound_amount(foundSubstance.getString(AllConstants.SubsConsts.FOUND_AMOUNT));
+            substancePicked.setOxid_amount(foundSubstance.getString(AllConstants.SubsConsts.OXID_AMOUNT));
+            substancePicked.setSize(substancePicked.getTexture_path().getWidth(), substancePicked.getTexture_path().getHeight());
+            ResultSet substanceExpConn = handler.getSubstanceByIDInSubsExpsTable(foundSubstance.getString(AllConstants.SubsConsts.ID));
+            if (substanceExpConn.next()){
+                substancePicked.setX(Float.parseFloat(substanceExpConn.getString(AllConstants.SubsExpConsts.SUBS_X)));
+                substancePicked.setY(720 - Float.parseFloat(substanceExpConn.getString(AllConstants.SubsExpConsts.SUBS_Y)) - 200);
+            }
+            System.out.println("Resetted substance with name " + substancePicked.getSmallTexturePath());
         }
     }
 

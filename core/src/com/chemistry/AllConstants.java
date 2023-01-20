@@ -27,6 +27,10 @@ public class AllConstants {
         public static final String CONN_ID = "connect_id";
         public static final String SUBS_EXP_ID = "substance_exp_id";
         public static final String EXP_ID = "experiment_id";
+
+        public static final String SUBS_X = "subs_x";
+
+        public static final String SUBS_Y = "subs_y";
     }
 
     public static class SubsConsts{
