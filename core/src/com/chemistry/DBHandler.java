@@ -1,6 +1,9 @@
 package com.chemistry;
 
+import com.badlogic.gdx.utils.Array;
+import com.chemistry.dto.Equipment;
 import com.chemistry.dto.Experiment;
+import com.chemistry.dto.Substance;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -193,13 +196,27 @@ public class DBHandler extends Config{
         return rset;
     }
 
-    public void saveNewExperiment(Experiment thisExperiment) throws SQLException, ClassNotFoundException {
+    public String saveNewExperiment(Experiment thisExperiment) throws SQLException, ClassNotFoundException {
         String insert = "INSERT INTO " + AllConstants.ExpConsts.EXP_TABLE + "(" + AllConstants.ExpConsts.NAME +
-                ',' + AllConstants.ExpConsts.TEXTURE_PATH + ')' + "VALUES(?,?)";
+                ',' + AllConstants.ExpConsts.TEXTURE_PATH +
+                ',' + AllConstants.ExpConsts.CREATOR + ')' + "VALUES(?,?,?)";
         PreparedStatement prst = getConnection().prepareStatement(insert);
         prst.setString(1, thisExperiment.getName());
         prst.setString(2, thisExperiment.getTexture_path());
+        prst.setString(3, currentUser.getFIO());
         prst.executeUpdate();
+
+        ResultSet rset = null;
+        String select = "SELECT exp_id FROM " + AllConstants.ExpConsts.EXP_TABLE + " Where "
+                + AllConstants.ExpConsts.NAME + " ='" + thisExperiment.getName() + "'"
+                + "AND " + AllConstants.ExpConsts.TEXTURE_PATH + " ='" + thisExperiment.getTexture_path() + "'" ;
+        PreparedStatement prst2 = getConnection().prepareStatement(select);
+        rset = prst2.executeQuery();
+
+        if (rset.next()){
+            return rset.getString(1);
+        }
+        return "";
     }
 
     public int findSystemExperiments() throws SQLException, ClassNotFoundException {
@@ -256,5 +273,26 @@ public class DBHandler extends Config{
             num++;
         }
         return num;
+    }
+
+    public void saveSubstances(Array<Substance> substancesPlaced, String expId) throws SQLException, ClassNotFoundException {
+        for (Substance substance : substancesPlaced) {
+            String insert = "INSERT INTO " + AllConstants.SubsExpConsts.SUBS_EXP_TABLE + "("
+                    + AllConstants.SubsExpConsts.SUBS_EXP_ID + ','
+                    + AllConstants.SubsExpConsts.EXP_ID + ','
+                    + AllConstants.SubsExpConsts.SUBS_X + ','
+                    + AllConstants.SubsExpConsts.SUBS_Y + ')'
+                    + "VALUES(?,?,?,?)";
+            PreparedStatement prst = getConnection().prepareStatement(insert);
+            prst.setString(1, substance.getSubId());
+            prst.setString(2, expId);
+            prst.setString(3, String.valueOf(substance.getX()));
+            prst.setString(4, String.valueOf(substance.getY()));
+            prst.executeUpdate();
+            System.out.println("added subs_exp");
+        }
+    }
+
+    public void saveEquipment(Array<Equipment> equipmentPlaced) {
     }
 }

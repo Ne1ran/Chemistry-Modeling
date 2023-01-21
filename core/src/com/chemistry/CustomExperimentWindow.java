@@ -281,7 +281,9 @@ public class CustomExperimentWindow implements Screen {
                         thisExperiment.setName("Testname");
                         thisExperiment.setTexture_path("exp1_bg.jpg");
                         try {
-                            handler.saveNewExperiment(thisExperiment);
+                            String expId = handler.saveNewExperiment(thisExperiment);
+                            handler.saveSubstances(substancesPlaced,expId);
+//                            handler.saveEquipment(equipmentPlaced);
                         } catch (SQLException | ClassNotFoundException e) {
                             throw new RuntimeException(e);
                         }
