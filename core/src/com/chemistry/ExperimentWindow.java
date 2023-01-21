@@ -134,8 +134,8 @@ public class ExperimentWindow implements Screen {
                 tempEquip.setSetOnPlace(false);
                 ResultSet equipExpConn = handler.getEquipmentByIDInEquipExpTable(equipItself.getString(AllConstants.EquipConsts.ID));
                 if (equipExpConn.next()){
-                    tempEquip.setX(Float.parseFloat(equipExpConn.getString(AllConstants.SubsExpConsts.SUBS_X)));
-                    tempEquip.setY(720 - Float.parseFloat(equipExpConn.getString(AllConstants.SubsExpConsts.SUBS_Y)) - 200);
+                    tempEquip.setX(Float.parseFloat(equipExpConn.getString(AllConstants.EquipExpConsts.EQUIP_X)));
+                    tempEquip.setY(720 - Float.parseFloat(equipExpConn.getString(AllConstants.EquipExpConsts.EQUIP_Y)) - tempEquip.getHeight());
                 }
             }
 

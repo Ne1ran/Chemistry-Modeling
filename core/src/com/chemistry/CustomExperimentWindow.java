@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.Array;
 
+import com.chemistry.dto.Equipment;
 import com.chemistry.dto.MenuSlot;
 import com.chemistry.dto.Substance;
 
@@ -36,49 +37,50 @@ public class CustomExperimentWindow implements Screen {
     private final Texture chemist;
     private final Texture menuSlotTexture;
     private final Texture menuSlotChoosen;
-    private final Stage mainStage;
+    private final Texture equipMenu;
+    private final Texture equipMenuSlot;
+    private final Texture equipMenuSlotChoosed;
     private final DBHandler handler = new DBHandler();
     private final Rectangle arrowRight;
     private final Rectangle arrowLeft;
+    private final Rectangle arrowSubstanceMenuRight;
+    private final Rectangle arrowSubstanceMenuLeft;
+    private final MenuSlot equipSlot;
     public static Rectangle mouseSpawnerRect;
-
     private final Rectangle placeSpace;
-
     public static Integer x_pos;
     public static Integer y_pos;
     public static Boolean startSpawn = false;
-
     public static Boolean closeWindow = false;
-
     private final Array<MenuSlot> substancesMenu;
-
+//    private final Array<Equipment> equipmentMenu;
+//    private final Array<String> equipmentMenuNames;
     private final Label.LabelStyle labelStyle;
-
     public static Integer choosedSlotId;
-
     public static Boolean isSomethingPicked;
     public static Boolean unpickFromMenu;
     public static Boolean rightClick;
+    private Array<Substance> substancesPlaced;
 
-    private final Array<Substance> substancesPlaced;
+    private Array<Equipment> equipmentPlaced;
     private final Label saveButtonLabel;
-
     private final Rectangle saveRect;
     private Substance substancePicked;
-
-
+    private final Label equipMenuLabel;
     public CustomExperimentWindow(ChemistryModelingGame game) throws SQLException, ClassNotFoundException {
         this.game = game;
 
         background = new Texture("exp1_bg.jpg");
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 1280, 720);
-        mainStage = new Stage();
         dialogBg = new Texture("dialog.png");
         menu = new Texture("menu.png");
         chemist = new Texture("chemist.png");
         menuSlotTexture = new Texture("menuSlot.png");
         menuSlotChoosen = new Texture("menuSlotChoosed.png");
+        equipMenu = new Texture("equipMenu.png");
+        equipMenuSlot = new Texture("equipMenuSlot.png");
+        equipMenuSlotChoosed = new Texture("equipMenuSlotChoosed.png");
 
         arrowLeft = new Rectangle();
         arrowLeft.setSize(95,110);
@@ -88,9 +90,23 @@ public class CustomExperimentWindow implements Screen {
         arrowRight.setSize(95, 110);
         arrowRight.setPosition(1280-145, 720-7-100);
 
+        arrowSubstanceMenuRight = new Rectangle();
+        arrowSubstanceMenuRight.setSize(95, 110);
+        arrowSubstanceMenuRight.setPosition(1280-135,1);
+
+        arrowSubstanceMenuLeft = new Rectangle();
+        arrowSubstanceMenuLeft.setSize(95, 110);
+        arrowSubstanceMenuLeft.setPosition(905,1);
+
         mouseSpawnerRect = new Rectangle(); //Look ExperimentWindow.java
         mouseSpawnerRect.setPosition(-100,-100);
         mouseSpawnerRect.setSize(3, 3);
+
+        equipSlot = new MenuSlot();
+        equipSlot.setSize(140, 110);
+        equipSlot.setPosition(1000, 1);
+        equipSlot.setThisSlotPicked(false);
+        equipSlot.setSlotId(0);
 
         placeSpace = new Rectangle();
         placeSpace.setPosition(40, 0);
@@ -123,6 +139,12 @@ public class CustomExperimentWindow implements Screen {
         if (ostatok % 6 > 0){
             rows++;
         }
+
+        ArrayList<String> equipments = handler.getAllEquipmentsNames();
+
+        if (equipments.size()>0){
+            equipSlot.setSlotTexture(equipments.get(0));
+        } else equipSlot.setSlotTexture("Ничего нет");
 
         for (int i = 0; i < rows; i++){
             Array<String> tempArr = new Array<>();
@@ -168,6 +190,12 @@ public class CustomExperimentWindow implements Screen {
         saveButtonLabel.setAlignment(1);
         saveButtonLabel.setPosition(1050, 200);
 
+        equipMenuLabel = new Label("", labelStyle);
+        equipMenuLabel.setSize(140,110);
+        equipMenuLabel.setAlignment(1);
+        equipMenuLabel.setPosition(1005, 720-equipSlot.getY()-equipSlot.getHeight());
+        equipMenuLabel.setWrap(true);
+
         saveRect = new Rectangle();
         saveRect.setSize(saveButtonLabel.getWidth(), saveButtonLabel.getHeight());
         saveRect.setPosition(saveButtonLabel.getX(), 720-saveButtonLabel.getY()-saveButtonLabel.getHeight());
@@ -175,11 +203,18 @@ public class CustomExperimentWindow implements Screen {
 
     @Override
     public void render(float delta) {
+        if (closeWindow){
+            game.setScreen(new ChemistryModelingMainWindow(game));
+            closeWindow = false;
+            this.dispose();
+        }
+
         game.batch.begin();
         game.batch.draw(background, 0, 0);
         game.batch.draw(chemist, 1280 - 40 - 241, 0);
         game.batch.draw(dialogBg, 1270 - 40 - 345, 270);
         game.batch.draw(menu, 38, 0);
+        game.batch.draw(equipMenu, 905, 720-equipMenu.getHeight());
         saveButtonLabel.draw(this.game.batch, 1f);
         for (MenuSlot slot : substancesMenu) {
             if (slot.getThisSlotPicked()) {
@@ -189,8 +224,16 @@ public class CustomExperimentWindow implements Screen {
             textInSlot.setPosition(slot.getX() + 5, 5);
             textInSlot.setSize(164, 110);
             textInSlot.setAlignment(1);
+            textInSlot.setWrap(true);
             textInSlot.draw(this.game.batch, 1f);
         }
+
+        if (equipSlot.getThisSlotPicked()){
+            game.batch.draw(equipMenuSlotChoosed, equipSlot.getX()+6, 720-equipMenu.getHeight()+5);
+        } else game.batch.draw(equipMenuSlot, equipSlot.getX()+6, 720-equipMenu.getHeight()+5);
+
+        equipMenuLabel.setText(equipSlot.getSlotTexture());
+        equipMenuLabel.draw(this.game.batch, 1f);
 
         for (Substance substance : substancesPlaced) {
             game.batch.draw(substance.getTexture_path(), substance.getX(),
@@ -200,6 +243,7 @@ public class CustomExperimentWindow implements Screen {
 
         if (startSpawn) {
             if (!rightClick) {
+
                 if (saveRect.overlaps(mouseSpawnerRect)){
                     System.out.println("Save");
                 }
@@ -209,11 +253,26 @@ public class CustomExperimentWindow implements Screen {
                 if (arrowLeft.overlaps(mouseSpawnerRect)) {
                     System.out.println("Left");
                 }
+
+                if (arrowSubstanceMenuRight.overlaps(mouseSpawnerRect)){
+                    System.out.println("RightEquip");
+                }
+
+                if (arrowSubstanceMenuLeft.overlaps(mouseSpawnerRect)){
+                    System.out.println("LeftEquip");
+                }
+
+                if (equipSlot.overlaps(mouseSpawnerRect)){
+                    equipSlot.setThisSlotPicked(true);
+                }
+
                 for (Substance substance : substancesPlaced) {
                     if (substance.overlaps(mouseSpawnerRect)) {
                         mouseSpawnerRect.setPosition(-100, -100);
                     }
                 }
+
+
 
                 for (MenuSlot slot : substancesMenu) {
                     if (slot.overlaps(mouseSpawnerRect)) {
