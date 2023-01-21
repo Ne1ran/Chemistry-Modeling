@@ -1,5 +1,7 @@
 package com.chemistry;
 
+import com.chemistry.dto.Experiment;
+
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -178,7 +180,6 @@ public class DBHandler extends Config{
         rset = prst.executeQuery();
         while (rset.next()){
             equipments.add(rset.getString(1));
-            System.out.println(rset.getString(1));
         }
         return equipments;
     }
@@ -190,5 +191,70 @@ public class DBHandler extends Config{
         PreparedStatement prst = getConnection().prepareStatement(select);
         rset = prst.executeQuery();
         return rset;
+    }
+
+    public void saveNewExperiment(Experiment thisExperiment) throws SQLException, ClassNotFoundException {
+        String insert = "INSERT INTO " + AllConstants.ExpConsts.EXP_TABLE + "(" + AllConstants.ExpConsts.NAME +
+                ',' + AllConstants.ExpConsts.TEXTURE_PATH + ')' + "VALUES(?,?)";
+        PreparedStatement prst = getConnection().prepareStatement(insert);
+        prst.setString(1, thisExperiment.getName());
+        prst.setString(2, thisExperiment.getTexture_path());
+        prst.executeUpdate();
+    }
+
+    public int findSystemExperiments() throws SQLException, ClassNotFoundException {
+        int num = 0;
+        ResultSet rset = null;
+        String select = "SELECT * FROM " + AllConstants.ExpConsts.EXP_TABLE + " Where "
+                + AllConstants.ExpConsts.CREATOR + " ='SYSTEM'";
+        PreparedStatement prst = getConnection().prepareStatement(select);
+        rset = prst.executeQuery();
+        while (rset.next()){
+            num++;
+        }
+        return num;
+    }
+
+    public ArrayList<Experiment> getAllSystemExperiments() throws SQLException, ClassNotFoundException {
+        ArrayList<Experiment> experiments = new ArrayList<>();
+        ResultSet rset = null;
+        String select = "SELECT * FROM " + AllConstants.ExpConsts.EXP_TABLE + " Where "
+                + AllConstants.ExpConsts.CREATOR + " ='SYSTEM'";
+        PreparedStatement prst = getConnection().prepareStatement(select);
+        rset = prst.executeQuery();
+        while (rset.next()){
+            Experiment tempExp = new Experiment();
+            tempExp.setExp_id(rset.getString(AllConstants.ExpConsts.EXP_ID));
+            tempExp.setName(rset.getString(AllConstants.ExpConsts.NAME));
+            experiments.add(tempExp);
+        }
+        return experiments;
+    }
+    public ArrayList<Experiment> getAllCustomExperiments(String fio) throws SQLException, ClassNotFoundException {
+        ArrayList<Experiment> experiments = new ArrayList<>();
+        ResultSet rset = null;
+        String select = "SELECT * FROM " + AllConstants.ExpConsts.EXP_TABLE + " Where "
+                + AllConstants.ExpConsts.CREATOR + " ='" + fio + "'";
+        PreparedStatement prst = getConnection().prepareStatement(select);
+        rset = prst.executeQuery();
+        while (rset.next()){
+            Experiment tempExp = new Experiment();
+            tempExp.setExp_id(rset.getString(AllConstants.ExpConsts.EXP_ID));
+            tempExp.setName(rset.getString(AllConstants.ExpConsts.NAME));
+            experiments.add(tempExp);
+        }
+        return experiments;
+    }
+    public int findCustomExperimentsOfThisUser(String fio) throws SQLException, ClassNotFoundException {
+        int num = 0;
+        ResultSet rset = null;
+        String select = "SELECT * FROM " + AllConstants.ExpConsts.EXP_TABLE + " Where "
+                + AllConstants.ExpConsts.CREATOR + " ='" + fio + "'";
+        PreparedStatement prst = getConnection().prepareStatement(select);
+        rset = prst.executeQuery();
+        while (rset.next()){
+            num++;
+        }
+        return num;
     }
 }
