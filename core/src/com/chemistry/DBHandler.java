@@ -182,4 +182,13 @@ public class DBHandler extends Config{
         }
         return equipments;
     }
+
+    public ResultSet findEquipmentByItsName(String equipName) throws SQLException, ClassNotFoundException {
+        ResultSet rset = null;
+        String select = "SELECT * FROM " + AllConstants.EquipConsts.EQUIP_TABLE + " Where "
+                + AllConstants.EquipConsts.NAME + " ='" + equipName + "'";
+        PreparedStatement prst = getConnection().prepareStatement(select);
+        rset = prst.executeQuery();
+        return rset;
+    }
 }
