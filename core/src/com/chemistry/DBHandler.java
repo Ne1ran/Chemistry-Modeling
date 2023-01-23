@@ -166,10 +166,30 @@ public class DBHandler extends Config{
         return rset;
     }
 
+    public ResultSet getSubstanceByIDInSubsExpsTableForExpWindow(String subsId, String expId) throws SQLException, ClassNotFoundException {
+        ResultSet rset = null;
+        String select = "SELECT * FROM " + AllConstants.SubsExpConsts.SUBS_EXP_TABLE + " Where "
+                + AllConstants.SubsExpConsts.SUBS_EXP_ID + " ='" + subsId + "'"
+                + "AND " + AllConstants.SubsExpConsts.EXP_ID + " ='" + expId + "'";
+        PreparedStatement prst = getConnection().prepareStatement(select);
+        rset = prst.executeQuery();
+        return rset;
+    }
+
     public ResultSet getEquipmentByIDInEquipExpTable(String equipId) throws SQLException, ClassNotFoundException {
         ResultSet rset = null;
         String select = "SELECT * FROM " + AllConstants.EquipExpConsts.EQUIP_EXP_TABLE + " Where "
                 + AllConstants.EquipExpConsts.EQUIP_EXP_ID + " ='" + equipId + "'";
+        PreparedStatement prst = getConnection().prepareStatement(select);
+        rset = prst.executeQuery();
+        return rset;
+    }
+
+    public ResultSet getEquipmentByIDInEquipExpTableForExpWindow(String equipId, String expId) throws SQLException, ClassNotFoundException {
+        ResultSet rset = null;
+        String select = "SELECT * FROM " + AllConstants.EquipExpConsts.EQUIP_EXP_TABLE + " Where "
+                + AllConstants.EquipExpConsts.EQUIP_EXP_ID + " ='" + equipId + "'"
+                + "AND " + AllConstants.EquipExpConsts.EXP4_ID + " ='" + expId + "'";
         PreparedStatement prst = getConnection().prepareStatement(select);
         rset = prst.executeQuery();
         return rset;
@@ -209,7 +229,7 @@ public class DBHandler extends Config{
         ResultSet rset = null;
         String select = "SELECT exp_id FROM " + AllConstants.ExpConsts.EXP_TABLE + " Where "
                 + AllConstants.ExpConsts.NAME + " ='" + thisExperiment.getName() + "'"
-                + "AND " + AllConstants.ExpConsts.TEXTURE_PATH + " ='" + thisExperiment.getTexture_path() + "'" ;
+                + "AND " + AllConstants.ExpConsts.CREATOR + " ='" + currentUser.getFIO() + "'" ;
         PreparedStatement prst2 = getConnection().prepareStatement(select);
         rset = prst2.executeQuery();
 
@@ -287,12 +307,25 @@ public class DBHandler extends Config{
             prst.setString(1, substance.getSubId());
             prst.setString(2, expId);
             prst.setString(3, String.valueOf(substance.getX()));
-            prst.setString(4, String.valueOf(substance.getY()));
+            prst.setString(4, String.valueOf(720-substance.getY()-substance.getHeight()*1.65));
             prst.executeUpdate();
-            System.out.println("added subs_exp");
         }
     }
 
-    public void saveEquipment(Array<Equipment> equipmentPlaced) {
+    public void saveEquipment(Array<Equipment> equipmentPlaced, String expId) throws SQLException, ClassNotFoundException {
+        for (Equipment equipment : equipmentPlaced) {
+            String insert = "INSERT INTO " + AllConstants.EquipExpConsts.EQUIP_EXP_TABLE + "("
+                    + AllConstants.EquipExpConsts.EQUIP_EXP_ID + ','
+                    + AllConstants.EquipExpConsts.EXP4_ID + ','
+                    + AllConstants.EquipExpConsts.EQUIP_X + ','
+                    + AllConstants.EquipExpConsts.EQUIP_Y + ')'
+                    + "VALUES(?,?,?,?)";
+            PreparedStatement prst = getConnection().prepareStatement(insert);
+            prst.setString(1, equipment.getId());
+            prst.setString(2, expId);
+            prst.setString(3, String.valueOf(equipment.getX()));
+            prst.setString(4, String.valueOf(720-equipment.getY()-equipment.getHeight()));
+            prst.executeUpdate();
+        }
     }
 }

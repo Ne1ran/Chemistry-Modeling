@@ -98,7 +98,6 @@ public class ExperimentWindow implements Screen {
         }
 
         ResultSet substancesIDS = handler.getUsingSubstancesIDs(choosenExperiment.getExp_id()); // Setting all usable substances
-
         while (substancesIDS.next()){
             ResultSet substanceItself = handler.getSubstanceByID(substancesIDS.getString(AllConstants.SubsExpConsts.SUBS_EXP_ID));
             Substance tempSubstance = new Substance();
@@ -112,7 +111,8 @@ public class ExperimentWindow implements Screen {
                 tempSubstance.setFound_amount(substanceItself.getString(AllConstants.SubsConsts.FOUND_AMOUNT));
                 tempSubstance.setOxid_amount(substanceItself.getString(AllConstants.SubsConsts.OXID_AMOUNT));
                 tempSubstance.setSize(tempSubstance.getTexture_path().getWidth(), tempSubstance.getTexture_path().getHeight());
-                ResultSet substanceExpConn = handler.getSubstanceByIDInSubsExpsTable(substanceItself.getString(AllConstants.SubsConsts.ID));
+                ResultSet substanceExpConn = handler.getSubstanceByIDInSubsExpsTableForExpWindow(
+                        substanceItself.getString(AllConstants.SubsConsts.ID), choosenExperiment.getExp_id());
                 if (substanceExpConn.next()){
                     tempSubstance.setX(Float.parseFloat(substanceExpConn.getString(AllConstants.SubsExpConsts.SUBS_X)));
                     tempSubstance.setY(720 - Float.parseFloat(substanceExpConn.getString(AllConstants.SubsExpConsts.SUBS_Y)) - 200);
@@ -132,7 +132,8 @@ public class ExperimentWindow implements Screen {
                 tempEquip.setTexture_path(new Texture(equipItself.getString(AllConstants.EquipConsts.TEXTURE_PATH)));
                 tempEquip.setSize(tempEquip.getTexture_path().getWidth(), tempEquip.getTexture_path().getHeight());
                 tempEquip.setSetOnPlace(false);
-                ResultSet equipExpConn = handler.getEquipmentByIDInEquipExpTable(equipItself.getString(AllConstants.EquipConsts.ID));
+                ResultSet equipExpConn = handler.getEquipmentByIDInEquipExpTableForExpWindow(
+                        equipItself.getString(AllConstants.EquipConsts.ID), choosenExperiment.getExp_id());
                 if (equipExpConn.next()){
                     tempEquip.setX(Float.parseFloat(equipExpConn.getString(AllConstants.EquipExpConsts.EQUIP_X)));
                     tempEquip.setY(720 - Float.parseFloat(equipExpConn.getString(AllConstants.EquipExpConsts.EQUIP_Y)) - tempEquip.getHeight());

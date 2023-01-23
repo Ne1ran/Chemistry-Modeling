@@ -8,26 +8,21 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Array;
 
 import com.chemistry.dto.Equipment;
 import com.chemistry.dto.Experiment;
 import com.chemistry.dto.MenuSlot;
 import com.chemistry.dto.Substance;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 
-import java.awt.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
 import java.util.ArrayList;
-
-import static com.chemistry.ExperimentChooseWindow.choosenExperiment;
-
-
 public class CustomExperimentWindow implements Screen {
     final ChemistryModelingGame game;
     private final OrthographicCamera camera;
@@ -42,6 +37,7 @@ public class CustomExperimentWindow implements Screen {
     private final Texture equipMenu;
     private final Texture equipMenuSlot;
     private final Texture equipMenuSlotChoosed;
+    private final Texture saveMenuTexture;
     private final DBHandler handler = new DBHandler();
     private final Rectangle arrowRight;
     private final Rectangle arrowLeft;
@@ -55,14 +51,13 @@ public class CustomExperimentWindow implements Screen {
     public static Boolean startSpawn = false;
     public static Boolean closeWindow = false;
     private final Array<MenuSlot> substancesMenu;
-//    private final Array<Equipment> equipmentMenu;
-//    private final Array<String> equipmentMenuNames;
     private final Label.LabelStyle labelStyle;
     public static Integer choosedSlotId;
     public static Boolean isSomethingPicked;
     public static Boolean unpickFromMenu;
     public static Boolean rightClick;
     private Boolean equipmentPicked;
+    private Boolean saveMenuEnabled;
     private Array<Substance> substancesPlaced;
 
     private Array<Equipment> equipmentPlaced;
@@ -73,12 +68,14 @@ public class CustomExperimentWindow implements Screen {
     private Substance substancePicked;
     private Equipment equipPickedFromMenu;
     private final Label equipMenuLabel;
+    private final Stage saveMenuStage;
+    private final TextField saveMenuExpNameTF;
 
     //OPTIMIZATION (YESSSSSSSSSSS)
     private final Rectangle customScreenRect;
     private final Rectangle menuRect;
     //end of it
-    public CustomExperimentWindow(ChemistryModelingGame game) throws SQLException, ClassNotFoundException {
+    public CustomExperimentWindow(final ChemistryModelingGame game) throws SQLException, ClassNotFoundException {
         this.game = game;
 
         background = new Texture("exp1_bg.jpg");
@@ -92,6 +89,7 @@ public class CustomExperimentWindow implements Screen {
         equipMenu = new Texture("equipMenu.png");
         equipMenuSlot = new Texture("equipMenuSlot.png");
         equipMenuSlotChoosed = new Texture("equipMenuSlotChoosed.png");
+        saveMenuTexture = new Texture("saveMenu.png");
 
         //optimization
         customScreenRect = new Rectangle();
@@ -134,7 +132,7 @@ public class CustomExperimentWindow implements Screen {
         placeSpace.setSize(850,550);
 
 
-        CustomExperimentInputListener inputListener = new CustomExperimentInputListener();
+        final CustomExperimentInputListener inputListener = new CustomExperimentInputListener();
         Gdx.input.setInputProcessor(inputListener);
 
 //        Array<Array<String>> substances = new Array<>();
@@ -149,9 +147,17 @@ public class CustomExperimentWindow implements Screen {
         unpickFromMenu = false;
         rightClick = false;
         equipmentPicked = false;
+        saveMenuEnabled = false;
 
         substancePicked = new Substance();
         equipPickedFromMenu = new Equipment();
+
+        saveMenuStage = new Stage();
+        Image stageMenuImage = new Image(saveMenuTexture);
+        stageMenuImage.setPosition(1280/2f-saveMenuTexture.getWidth()/2f, 720/2f-saveMenuTexture.getHeight()/2f);
+        saveMenuStage.addActor(stageMenuImage);
+
+
 
         ArrayList<String> substances = handler.getAllSubstancesNames(); // Getting all substances' names
 
@@ -211,10 +217,68 @@ public class CustomExperimentWindow implements Screen {
         labelStyle = new Label.LabelStyle();
         labelStyle.font = labelFont;
 
+        TextField.TextFieldStyle textFieldStyle = new TextField.TextFieldStyle();
+        textFieldStyle.font = labelFont;
+        textFieldStyle.fontColor = new Color(0.7f, 0.7f, 0.7f, 1);
+
+        saveMenuExpNameTF = new TextField("", textFieldStyle);
+        saveMenuExpNameTF.setPosition(470, 400);
+        saveMenuExpNameTF.setMessageText("Введите название для эксперимента:");
+        saveMenuExpNameTF.setWidth(370);
+        saveMenuStage.addActor(saveMenuExpNameTF);
+
+        TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
+        buttonStyle.font = labelFont;
+
         saveButtonLabel = new Label("Сохранить?", labelStyle);
         saveButtonLabel.setSize(100,30);
         saveButtonLabel.setAlignment(1);
         saveButtonLabel.setPosition(1050, 200);
+
+        final Button dismissBtn = new TextButton("Отменить?", buttonStyle);
+        saveMenuStage.addActor(dismissBtn);
+        dismissBtn.setPosition(470, 300);
+
+        dismissBtn.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                saveMenuEnabled = false;
+                Gdx.input.setInputProcessor(inputListener);
+                saveMenuExpNameTF.setText("");
+            }
+        });
+
+        final Button acceptBtn = new TextButton("Подтвердить!", buttonStyle);
+        saveMenuStage.addActor(acceptBtn);
+        acceptBtn.setPosition(680, 300);
+        acceptBtn.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (substancesPlaced.size!=0 && equipmentPlaced.size!=0) {
+                    Experiment thisExperiment = new Experiment();
+                    thisExperiment.setName(saveMenuExpNameTF.getText());
+                    thisExperiment.setTexture_path("exp1_bg.jpg");
+                    try {
+                        String expId = handler.saveNewExperiment(thisExperiment);
+                        handler.saveSubstances(substancesPlaced, expId);
+                        handler.saveEquipment(equipmentPlaced, expId);
+                    } catch (SQLException | ClassNotFoundException e) {
+                        throw new RuntimeException(e);
+                    }
+                    game.setScreen(new ChemistryModelingMainWindow(game));
+                } else {
+                    System.out.println("Nothing placed at all");
+                }
+
+            }
+        });
+
+        final Label messageLabel = new Label("", labelStyle);
+        messageLabel.setColor(new Color(1f, 0f, 0f, 1));
+        messageLabel.setPosition(100, 500);
+        messageLabel.setSize(100, 150);
+        messageLabel.setAlignment(1);
+        saveMenuStage.addActor(messageLabel);
 
         equipMenuLabel = new Label("", labelStyle);
         equipMenuLabel.setSize(140,110);
@@ -270,27 +334,20 @@ public class CustomExperimentWindow implements Screen {
             game.batch.draw(equipment.getTexture_path(), equipment.getX(),
                     720 - equipment.getY() - equipment.getHeight());
         }
+
+        if (saveMenuEnabled){
+//            game.batch.draw(saveMenuTexture, 1280/2f-saveMenuTexture.getWidth()/2f,
+//                    720/2f-saveMenuTexture.getHeight()/2f);
+            saveMenuStage.draw();
+        }
         game.batch.end();
 
         if (startSpawn) {
             if (mouseSpawnerRect.overlaps(customScreenRect)){
                 if (!rightClick) {
                     if (saveRect.overlaps(mouseSpawnerRect)){
-
-                        Experiment thisExperiment = new Experiment();
-                        thisExperiment.setName("Testname");
-                        thisExperiment.setTexture_path("exp1_bg.jpg");
-                        try {
-                            String expId = handler.saveNewExperiment(thisExperiment);
-                            handler.saveSubstances(substancesPlaced,expId);
-//                            handler.saveEquipment(equipmentPlaced);
-                        } catch (SQLException | ClassNotFoundException e) {
-                            throw new RuntimeException(e);
-                        }
-
-
-                        game.setScreen(new ChemistryModelingMainWindow(game));
-                        this.dispose();
+                        Gdx.input.setInputProcessor(saveMenuStage);
+                        saveMenuEnabled = true;
                     }
 
                     if (arrowSubstanceMenuRight.overlaps(mouseSpawnerRect)){
@@ -373,18 +430,7 @@ public class CustomExperimentWindow implements Screen {
 
                         if (isSomethingPicked && !rightClick) {
                             if (placeSpace.overlaps(mouseSpawnerRect)) {
-                                if (substancesPlaced.size > 0) {
-                                    for (Substance substance : substancesPlaced) {
-                                        if (substance.overlaps(mouseSpawnerRect)) {
-                                            System.out.println("You can't place an object here. It's too narrow!");
-                                        } else {
-                                            setSubstanceOnTheSpace();
-                                            break;
-                                        }
-                                    }
-                                } else {
-                                    setSubstanceOnTheSpace();
-                                }
+                                setSubstanceOnTheSpace();
                             } else System.out.println("You can't place an object here!");
                         }
                         startSpawn = false;
@@ -394,7 +440,7 @@ public class CustomExperimentWindow implements Screen {
                             equipmentPicked=false;
                         }
                         if (mouseSpawnerRect.overlaps(placeSpace)){
-                            if (substancesPlaced.size > 0) {
+                            if (equipmentPlaced.size > 0) {
                                 for (Equipment equipment : equipmentPlaced) {
                                     if (equipment.overlaps(mouseSpawnerRect)) {
                                         System.out.println("You can't place an object here. It's too narrow!");
@@ -406,7 +452,6 @@ public class CustomExperimentWindow implements Screen {
                             } else {
                                 setEquipmentOnTheSpace();
                             }
-
                         }
                         startSpawn = false;
                     }
