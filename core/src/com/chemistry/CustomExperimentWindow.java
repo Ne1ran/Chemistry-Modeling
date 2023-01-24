@@ -46,7 +46,7 @@ public class CustomExperimentWindow implements Screen {
     public static Integer y_pos;
     public static Boolean startSpawn = false;
     public static Boolean closeWindow = false;
-    private final Array<MenuSlot> substancesMenu;
+    private Array<MenuSlot> substancesMenu;
     private final Label.LabelStyle labelStyle;
     public static Integer choosedSlotId;
     public static Boolean isSomethingPicked;
@@ -58,6 +58,7 @@ public class CustomExperimentWindow implements Screen {
 
     private final Array<Equipment> equipmentPlaced;
     private final ArrayList<String> equipments;
+    private final Array<Array<String>> subtancesInMenu;
     private int equipmentPlacedElementId;
     private final Label saveButtonLabel;
     private final Rectangle saveRect;
@@ -66,6 +67,7 @@ public class CustomExperimentWindow implements Screen {
     private final Label equipMenuLabel;
     private final Stage saveMenuStage;
     private final TextField saveMenuExpNameTF;
+    private int substanceMenuRowPicked = 0;
 
     //OPTIMIZATION (YESSSSSSSSSSS)
     private final Rectangle customScreenRect;
@@ -122,11 +124,8 @@ public class CustomExperimentWindow implements Screen {
         placeSpace.setPosition(40, 0);
         placeSpace.setSize(850,550);
 
-
         final CustomExperimentInputListener inputListener = new CustomExperimentInputListener();
         Gdx.input.setInputProcessor(inputListener);
-
-//        Array<Array<String>> substances = new Array<>();
 
         substancesPlaced = new Array<>();
 
@@ -148,11 +147,9 @@ public class CustomExperimentWindow implements Screen {
         stageMenuImage.setPosition(1280/2f- saveMenuTexture.getWidth()/2f, 720/2f- saveMenuTexture.getHeight()/2f);
         saveMenuStage.addActor(stageMenuImage);
 
-
-
         ArrayList<String> substances = handler.getAllSubstancesNames(); // Getting all substances' names
 
-        Array<Array<String>> subtancesInMenu = new Array<>();
+        subtancesInMenu = new Array<>();
 
         equipmentPlaced = new Array<>();
 
@@ -172,30 +169,20 @@ public class CustomExperimentWindow implements Screen {
         for (int i = 0; i < rows; i++){
             Array<String> tempArr = new Array<>();
             for (int j = 0; j < 6; j++){
-                if (ostatok <= j){
-                    tempArr.add(substances.get(j * (i + 1)));
-                } else tempArr.add("Nothing");
+                if (i == rows-1) {
+                    if (i*6+j< substances.size()) {
+                        if (ostatok-1 <= j) {
+                            tempArr.add(substances.get(j + i * 6));
+                        } else tempArr.add("Ничего");
+                    } else {
+                        tempArr.add("Ничего");
+                    }
+                } else tempArr.add(substances.get(j + i*6));
             }
             subtancesInMenu.add(tempArr);
         }
 
-        for (int i = 0; i < 6; i++){
-            MenuSlot substance = new MenuSlot();
-            substance.setX(138 + i * 166);
-            substance.setSize(166, 120);
-            substance.setY(715-substance.getHeight());
-            substance.setSlotId(i+1);
-            substance.setSlotTexture(subtancesInMenu.get(0).get(i)); //name
-            substance.setThisSlotPicked(false);
-            substancesMenu.add(substance);
-        }
-        try {
-            for (int i = 0; i < 6; i++) { //setting substances names in menu
-                substancesMenu.get(i).setSlotTexture(substances.get(i));
-            }
-        } catch (Exception e){
-            e.printStackTrace();
-        }
+        resetSubstancesInMenu();
 
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("appetite.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
@@ -280,6 +267,21 @@ public class CustomExperimentWindow implements Screen {
         saveRect = new Rectangle();
         saveRect.setSize(saveButtonLabel.getWidth(), saveButtonLabel.getHeight());
         saveRect.setPosition(saveButtonLabel.getX(), 720-saveButtonLabel.getY()-saveButtonLabel.getHeight());
+    }
+
+    private void resetSubstancesInMenu() {
+        substancesMenu = new Array<>();
+
+        for (int i = 0; i < 6; i++){
+            MenuSlot substance = new MenuSlot();
+            substance.setX(138 + i * 166);
+            substance.setSize(166, 120);
+            substance.setY(715-substance.getHeight());
+            substance.setSlotId(i+1);
+            substance.setSlotTexture(subtancesInMenu.get(substanceMenuRowPicked).get(i)); //name
+            substance.setThisSlotPicked(false);
+            substancesMenu.add(substance);
+        }
     }
 
     @Override
@@ -372,52 +374,60 @@ public class CustomExperimentWindow implements Screen {
                     }
 
                     if (arrowRight.overlaps(mouseSpawnerRect)) {
-                        System.out.println("Right");
+                        if (substanceMenuRowPicked+1!=subtancesInMenu.size){
+                            substanceMenuRowPicked++;
+                            resetSubstancesInMenu();
+                        } else System.out.println("This is the last row of substances");
                     }
                     if (arrowLeft.overlaps(mouseSpawnerRect)) {
-                        System.out.println("Left");
+                        if (substanceMenuRowPicked!=0){
+                            substanceMenuRowPicked--;
+                            resetSubstancesInMenu();
+                        } else System.out.println("This is the first row of substances");
                     }
 
                     if (!equipmentPicked){
                         for (MenuSlot slot : substancesMenu) {
                             if (slot.overlaps(mouseSpawnerRect)) {
-                                if (!unpickFromMenu && isSomethingPicked && !slot.getThisSlotPicked()) { // if something is picked and we want to swap
-                                    substancesMenu.get(choosedSlotId - 1).setThisSlotPicked(false);
-                                    choosedSlotId = slot.getSlotId();
-                                    slot.setThisSlotPicked(true);
-                                    System.out.println("Repicked slot with id: " + slot.getSlotId());
-                                    mouseSpawnerRect.setPosition(-100, -100);
-                                    try {
-                                        setChoosedSubstance(slot.getSlotTexture());
-                                    } catch (SQLException | ClassNotFoundException e) {
-                                        throw new RuntimeException(e);
+                                if (!slot.getSlotTexture().equals("Ничего")) {
+                                    if (!unpickFromMenu && isSomethingPicked && !slot.getThisSlotPicked()) { // if something is picked and we want to swap
+                                        substancesMenu.get(choosedSlotId - 1).setThisSlotPicked(false);
+                                        choosedSlotId = slot.getSlotId();
+                                        slot.setThisSlotPicked(true);
+                                        System.out.println("Repicked slot with id: " + slot.getSlotId());
+                                        mouseSpawnerRect.setPosition(-100, -100);
+                                        try {
+                                            setChoosedSubstance(slot.getSlotTexture());
+                                        } catch (SQLException | ClassNotFoundException e) {
+                                            throw new RuntimeException(e);
+                                        }
+                                    } else if (!isSomethingPicked && !rightClick && !slot.getThisSlotPicked()) { // if nothing is picked
+                                        slot.setThisSlotPicked(true);
+                                        choosedSlotId = slot.getSlotId();
+                                        System.out.println("Picked slot with id: " + slot.getSlotId());
+                                        isSomethingPicked = true;
+                                        rightClick = false;
+                                        try {
+                                            setChoosedSubstance(slot.getSlotTexture());
+                                        } catch (SQLException | ClassNotFoundException e) {
+                                            throw new RuntimeException(e);
+                                        }
+                                    } else { //we unpick if right-click
+                                        if (slot.getThisSlotPicked()) {
+                                            choosedSlotId = 0;
+                                            slot.setThisSlotPicked(false);
+                                            System.out.println("Unpicked slot with id: " + slot.getSlotId());
+                                            isSomethingPicked = false;
+                                            unpickFromMenu = false;
+                                            substancePicked = new Substance();
+                                        } else { //for right click on not picked and then lmbc on picked
+                                            unpickFromMenu = false; //flag change cause else if you
+                                        }
                                     }
-                                } else if (!isSomethingPicked && !rightClick && !slot.getThisSlotPicked()) { // if nothing is picked
-                                    slot.setThisSlotPicked(true);
-                                    choosedSlotId = slot.getSlotId();
-                                    System.out.println("Picked slot with id: " + slot.getSlotId());
-                                    isSomethingPicked = true;
-                                    rightClick = false;
-                                    try {
-                                        setChoosedSubstance(slot.getSlotTexture());
-                                    } catch (SQLException | ClassNotFoundException e) {
-                                        throw new RuntimeException(e);
-                                    }
-                                } else { //we unpick if right-click
-                                    if (slot.getThisSlotPicked()) {
-                                        choosedSlotId = 0;
-                                        slot.setThisSlotPicked(false);
-                                        System.out.println("Unpicked slot with id: " + slot.getSlotId());
-                                        isSomethingPicked = false;
-                                        unpickFromMenu = false;
-                                        substancePicked = new Substance();
-                                    } else { //for right click on not picked and then lmbc on picked
-                                        unpickFromMenu = false; //flag change cause else if you
-                                    }
-                                }
+                                } else System.out.println("You can't choose nothing");
+
                             }
                         }
-
                         if (isSomethingPicked && !rightClick) {
                             if (placeSpace.overlaps(mouseSpawnerRect)) {
                                 setSubstanceOnTheSpace();
@@ -479,8 +489,6 @@ public class CustomExperimentWindow implements Screen {
 
         }
     }
-
-
     public void setSubstanceOnTheSpace() {
         float substancePlaceX = mouseSpawnerRect.getX();
         float substancePlaceY = mouseSpawnerRect.getY();
@@ -491,7 +499,6 @@ public class CustomExperimentWindow implements Screen {
         substancesMenu.get(choosedSlotId - 1).setThisSlotPicked(false);
         substancePicked = new Substance();
     }
-
     public void setEquipmentOnTheSpace(){
         float equipPlaceX = mouseSpawnerRect.getX();
         float equipPlaceY = mouseSpawnerRect.getY();
@@ -503,8 +510,6 @@ public class CustomExperimentWindow implements Screen {
         equipSlot.setThisSlotPicked(false);
         equipPickedFromMenu = new Equipment();
     }
-
-
     public void setChoosedSubstance(String substanceName) throws SQLException, ClassNotFoundException {
         ResultSet foundSubstance = handler.findSubstanceByName(substanceName); // Finding substance with name (small_texture)
         if (foundSubstance.next()) {
@@ -525,7 +530,6 @@ public class CustomExperimentWindow implements Screen {
             System.out.println("Resetted substance with name " + substancePicked.getSmallTexturePath());
         }
     }
-
     public void setChoosedEquipment(String equipName) throws SQLException, ClassNotFoundException {
         ResultSet foundEquip = handler.findEquipmentByItsName(equipName); // Finding substance with name (small_texture)
         if (foundEquip.next()) {
