@@ -156,7 +156,7 @@ public class CustomExperimentWindow implements Screen {
         int substancesAmount = substances.size();
         int rows = Math.round(substancesAmount / 6f);
         int ostatok = substancesAmount % 6;
-        if (ostatok % 6 > 0){
+        if (ostatok % 6 > 0 && rows * 6 < substancesAmount){
             rows++;
         }
 
@@ -171,7 +171,7 @@ public class CustomExperimentWindow implements Screen {
             for (int j = 0; j < 6; j++){
                 if (i == rows-1) {
                     if (i*6+j< substances.size()) {
-                        if (ostatok-1 <= j) {
+                        if (ostatok-1 >= j) {
                             tempArr.add(substances.get(j + i * 6));
                         } else tempArr.add("Ничего");
                     } else {

@@ -1,6 +1,7 @@
 package com.chemistry;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.utils.Array;
 import com.chemistry.dto.Equipment;
 import com.chemistry.dto.Foundation;
 import com.chemistry.dto.Oxid;
@@ -128,7 +129,7 @@ public class ReactionHandler {
             }
         }
 
-        if (isFirstFoundStronger && isFirstOxidStronger){
+        if (isFirstFoundStronger == isFirstOxidStronger){
             startReaction = false; //reaction won't start because strong elements are already combined
         }
 
@@ -137,13 +138,47 @@ public class ReactionHandler {
         }
 
         if (startReaction){
-            reactionStarted(foundPool, oxidPool);
+//            reactionStarted(foundPool, oxidPool);
+            newReactionStart();
         } else {
             phrase = "Реакция не пошла... Емкость очищена.";
             clearEquipment();
         }
     }
+    public void newReactionStart(){
+        Array<String> answer = new Array<>(); // All answer
+        String answerFirstPart = ""; //First part (before =)
+        String answerSecondPart = ""; //Second part (after =)
 
+        ArrayList<Oxid> oxids = new ArrayList<>();
+        ArrayList<Foundation> foundations = new ArrayList<>();
+
+        for (Oxid oxid : oxidPool.keySet()){
+            oxids.add(oxid);
+        }
+
+        for (Foundation found : foundPool.keySet()){
+            foundations.add(found);
+        }
+
+        for (Substance substance : substances){
+            answerFirstPart += substance.getSmallTexturePath();
+            answerFirstPart += " + ";
+        }
+        answerFirstPart = answerFirstPart.substring(0, answerFirstPart.length()-3);
+
+
+
+
+        //answer
+
+        answer.add(answerFirstPart);
+        answer.add(answerSecondPart);
+
+        phrase = "Какой итог мы получили: " + String.join(" = ", answer) + ". Емкость очищена";
+
+        clearEquipment();
+    }
     public void reactionStarted(Map<Foundation, Integer> foundPool, Map<Oxid, Integer> oxidPool){ // We swap foundations for oxidizers
         String answer = "";
 
@@ -182,7 +217,6 @@ public class ReactionHandler {
 
             int tempInt2 = (oxidPool.get(oxids.get(i-1)) * Integer.parseInt(oxids.get(i-1).getOxid_state_min()))
                     / Integer.parseInt(oxids.get(i).getOxid_state_min());
-            System.out.println(tempInt2 + " ti2");
 
             if (tempInt2 == 0){
                 tempInt2++;
@@ -190,6 +224,7 @@ public class ReactionHandler {
 
             oxidPool.replace(oxids.get(i), tempInt2);
             oxidPool.replace(oxids.get(i-1), tempInt);
+
         } else { // 1 with 2 2Fe(Cl)6 nerf
             int tempInt = (oxidPool.get(oxids.get(i-1)) * Integer.parseInt(oxids.get(i-1).getOxid_state_min()))
                     / Integer.parseInt(oxids.get(i).getOxid_state_min());
@@ -209,11 +244,8 @@ public class ReactionHandler {
             oxidPool.replace(oxids.get(i), tempInt);
         }
 
-//        System.out.println(foundPool.get(foundations.get(i-1)) / 2); // 1/2=0 cause int
-//        System.out.println(foundPool.get(foundations.get(i)) / 2);
-
         // nerf 2FeCl6 -> FeCl3
-        // 2->4 still exists (not nerfed)
+        // 2->4 still exists (not nerfed). nerfed
         if (foundPool.get(foundations.get(i-1)) % 2 == 0 && oxidPool.get(oxids.get(i)) % 2 == 0){
             foundPool.replace(foundations.get(i-1), foundPool.get(foundations.get(i-1)) / 2);
             oxidPool.replace(oxids.get(i),oxidPool.get(oxids.get(i)) / 2);
@@ -248,36 +280,11 @@ public class ReactionHandler {
             }
         }
 
-//        if (foundPool.get(foundations.get(i)) * Integer.parseInt(foundations.get(i).getFound_state_max()) !=
-//                oxidPool.get(oxids.get(i-1)) * -Integer.parseInt(oxids.get(i-1).getOxid_state_min())){
-//            foundPool.replace(foundations.get(i-1), -Integer.parseInt(oxids.get(i-1).getOxid_state_min()));
-//        }
-//
-//        if (foundPool.get(foundations.get(i-1)) * Integer.parseInt(foundations.get(i-1).getFound_state_max()) !=
-//                oxidPool.get(oxids.get(i)) * -Integer.parseInt(oxids.get(i).getOxid_state_min())){
-//            foundPool.replace(foundations.get(i), -Integer.parseInt(oxids.get(i).getOxid_state_min()));
-//        }
-
         System.out.println(oxidPool.get(oxids.get(i)) + " - " + oxidPool.get(oxids.get(i-1)));
 
-//        boolean singleCheck = false;
-//        if (oxids.get(i).getOxid_name().equals("0")){
-//            System.out.println("Catch single found");
-//            singleCheck = true;
-//        }
-//        if (oxids.get(i-1).getOxid_name().equals("0")){
-//            System.out.println("Catch single found");
-//            singleCheck = true;
-//        }
-//        int indexOfNullOxid = 0;
-//        int j = 0;
-//        for (Oxid oxid : oxids){
-//            if (oxid.getOxid_name().equals("0")){
-//                indexOfNullOxid = j++;
-//                break;
-//            }
-//            j++;
-//        }
+        for (String string : tempArray){
+            System.out.println(string + " ///");
+        }
 
         for (Foundation foundation : foundations){
             if (foundPool.get(foundation) > 1){
