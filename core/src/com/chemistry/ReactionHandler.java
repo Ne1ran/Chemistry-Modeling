@@ -79,21 +79,32 @@ public class ReactionHandler {
 
     public void chemicalReaction(Map<Foundation, Integer> foundPool, Map<Oxid, Integer> oxidPool){
         ArrayList<Foundation> foundationsFirstIteration = new ArrayList<>();
+        ArrayList<Oxid> oxidFirstIteration = new ArrayList<>();
         boolean startReaction = false;
         boolean containsNullOxid = false;
         int nullOxidsAmount = 0;
         for (Foundation found : foundPool.keySet()){
             foundationsFirstIteration.add(found);
         }
-        int first = Integer.parseInt(foundationsFirstIteration.get(0).getElectrochem_pos());
-        int second = Integer.parseInt(foundationsFirstIteration.get(1).getElectrochem_pos());
-        if (second <= 8 && first <= 8 && (first - second > 4 || second - first > 4)){
+
+        for (Oxid oxid : oxidPool.keySet()){
+            oxidFirstIteration.add(oxid);
+        }
+
+        int firstFound = Integer.parseInt(foundationsFirstIteration.get(0).getElectrochem_pos());
+        int secondFound = Integer.parseInt(foundationsFirstIteration.get(1).getElectrochem_pos());
+        int firstOxid = Integer.parseInt(oxidFirstIteration.get(0).getOxid_strength());
+        int secondOxid = Integer.parseInt(oxidFirstIteration.get(1).getOxid_strength());
+
+        if (secondFound <= 8 && firstFound <= 8 && (firstFound - secondFound > 4 || secondFound - firstFound > 4)
+                && firstOxid != secondOxid){
             startReaction = true;
-        } else if (first - second > 2 || second - first > 2){
+        } else if ((firstFound - secondFound > 2 || secondFound - firstFound > 2) && firstOxid != secondOxid){
             startReaction = true;
         }
+
         for (Oxid oxid : oxidPool.keySet()){
-            if (oxid.getOxid_name().equals("0")){
+            if (oxid.getOxid_name().equals("0") || oxid.getOxid_name().equals("O")){
                 containsNullOxid = true;
                 nullOxidsAmount++;
             }
