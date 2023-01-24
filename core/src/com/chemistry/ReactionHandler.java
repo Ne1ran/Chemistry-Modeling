@@ -83,6 +83,9 @@ public class ReactionHandler {
         boolean startReaction = false;
         boolean containsNullOxid = false;
         int nullOxidsAmount = 0;
+
+        boolean isFirstFoundStronger, isFirstOxidStronger;
+
         for (Foundation found : foundPool.keySet()){
             foundationsFirstIteration.add(found);
         }
@@ -93,13 +96,19 @@ public class ReactionHandler {
 
         int firstFound = Integer.parseInt(foundationsFirstIteration.get(0).getElectrochem_pos());
         int secondFound = Integer.parseInt(foundationsFirstIteration.get(1).getElectrochem_pos());
-        int firstOxid = Integer.parseInt(oxidFirstIteration.get(0).getOxid_strength());
-        int secondOxid = Integer.parseInt(oxidFirstIteration.get(1).getOxid_strength());
 
-        if (secondFound <= 8 && firstFound <= 8 && (firstFound - secondFound > 4 || secondFound - firstFound > 4)
-                && firstOxid != secondOxid){
+        int firstOxidStrength = Integer.parseInt(oxidFirstIteration.get(0).getOxid_strength());
+        int secondOxidStrength = Integer.parseInt(oxidFirstIteration.get(1).getOxid_strength());
+
+
+        isFirstFoundStronger = firstFound < secondFound; //simplified if check of strength among oxids and founds
+        isFirstOxidStronger = firstOxidStrength < secondOxidStrength;
+
+        if (secondFound <= 7 && firstFound <= 7 && (firstFound - secondFound > 3 || secondFound - firstFound > 3)
+                && firstOxidStrength != secondOxidStrength){
             startReaction = true;
-        } else if ((firstFound - secondFound > 2 || secondFound - firstFound > 2) && firstOxid != secondOxid){
+        } else if ((firstFound - secondFound > 2 || secondFound - firstFound > 2)
+                && firstOxidStrength != secondOxidStrength){
             startReaction = true;
         }
 
@@ -117,6 +126,10 @@ public class ReactionHandler {
                     break;
                 } else startReaction = false;
             }
+        }
+
+        if (isFirstFoundStronger && isFirstOxidStronger){
+            startReaction = false; //reaction won't start because strong elements are already combined
         }
 
         if (nullOxidsAmount == 2){
