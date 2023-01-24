@@ -167,10 +167,49 @@ public class ReactionHandler {
         }
         answerFirstPart = answerFirstPart.substring(0, answerFirstPart.length()-3);
 
+        //BEFORE SWAP
+        int firstFoundationAmount = foundPool.get(foundations.get(0));
+        int secondFoundationAmount = foundPool.get(foundations.get(1));
 
+        int firstOxidAmount = oxidPool.get(oxids.get(0));
+        int secondOxidAmount = oxidPool.get(oxids.get(1));
+
+        int firstFoundationOxidState = Integer.parseInt(foundations.get(0).getFound_state_max());
+        int secondFoundationOxidState = Integer.parseInt(foundations.get(1).getFound_state_max());
+
+        int firstOxid_OxidState = Integer.parseInt(oxids.get(0).getOxid_state_max());
+        int secondOxid_OxidState = Integer.parseInt(oxids.get(1).getOxid_state_max());
+
+        int firstFoundationMultiplier = firstFoundationOxidState * firstFoundationAmount;
+        int secondFoundationMultiplier = secondFoundationOxidState * secondFoundationAmount;
+
+        String firstSubstanceOxidSwap = ""; //Here is substance (found - 1, oxid - 2) NO AMOUNT
+        String secondSubstanceOxidSwap = ""; //Here is substance (found - 2, oxid - 1) NO AMOUNT
+
+        //(SWAPPED)
+        firstSubstanceOxidSwap += "(" + foundations.get(0).getFoundation_name() + ")";
+        firstSubstanceOxidSwap += "(" + oxids.get(1).getOxid_name()+ ")";
+
+        secondSubstanceOxidSwap += "(" + foundations.get(1).getFoundation_name() + ")";
+        secondSubstanceOxidSwap += "(" + oxids.get(0).getOxid_name() + ")";
+
+        //Afterswap calculatings
+
+        if (firstFoundationOxidState > secondOxid_OxidState){
+            if (firstFoundationOxidState % secondOxid_OxidState == 0){
+
+            } else {
+
+            }
+        } else if (secondOxid_OxidState > firstFoundationOxidState) {
+
+        } else {
+            //no need to change multipliers
+        }
 
 
         //answer
+        answerSecondPart = firstSubstanceOxidSwap + " + " + secondSubstanceOxidSwap;
 
         answer.add(answerFirstPart);
         answer.add(answerSecondPart);
