@@ -86,6 +86,7 @@ public class AllConstants {
         public static final String NAME = "name";
         public static final String OXID_STATE_MIN = "oxid_state_min";
         public static final String OXID_STATE_MAX = "oxid_state_max";
+        public static final String OXID_STRENGTH = "oxid_strength";
 
     }
 

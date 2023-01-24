@@ -14,10 +14,10 @@ import static com.chemistry.ExperimentWindow.phrase;
 import static com.chemistry.ExperimentWindow.usedEquipment;
 
 public class ReactionHandler {
-    ArrayList<Substance> substances;
-    Map<Foundation, Integer> foundPool;
-    Map<Oxid, Integer> oxidPool;
-    DBHandler handler = new DBHandler();
+    public ArrayList<Substance> substances;
+    public Map<Foundation, Integer> foundPool;
+    public Map<Oxid, Integer> oxidPool;
+    public DBHandler handler = new DBHandler();
 
     public void getSubstancesFromEquipment(Equipment equipment) throws SQLException, ClassNotFoundException {
         substances = new ArrayList<>();
@@ -45,8 +45,6 @@ public class ReactionHandler {
         for (Substance subs : substances){
             String foundation = subs.getFoundation();
             String oxid = subs.getOxid();
-            System.out.println(foundation);
-            System.out.println(oxid);
             Integer found_amount = Integer.valueOf(subs.getFound_amount());
             Integer oxid_amount = Integer.valueOf(subs.getOxid_amount());
 
@@ -62,7 +60,7 @@ public class ReactionHandler {
                 foundPool.put(tempFoundation, found_amount);
             }
 
-            ResultSet oxidFound = handler.getOxidByName(oxid); // Putting a oxidizer with its amount in its pool
+            ResultSet oxidFound = handler.getOxidByName(oxid); // Putting an oxidizer with its amount in its pool
             if (oxidFound.next()){
                 Oxid tempOxid = new Oxid();
 
@@ -70,6 +68,7 @@ public class ReactionHandler {
                 tempOxid.setName(oxidFound.getString(AllConstants.OxidConsts.NAME));
                 tempOxid.setOxid_state_min(oxidFound.getString(AllConstants.OxidConsts.OXID_STATE_MIN));
                 tempOxid.setOxid_state_max(oxidFound.getString(AllConstants.OxidConsts.OXID_STATE_MAX));
+                tempOxid.setOxid_strength(oxidFound.getString(AllConstants.OxidConsts.OXID_STRENGTH));
 
                 oxidPool.put(tempOxid, oxid_amount);
             }
@@ -108,6 +107,7 @@ public class ReactionHandler {
                 } else startReaction = false;
             }
         }
+
         if (nullOxidsAmount == 2){
             startReaction = false;
         }
