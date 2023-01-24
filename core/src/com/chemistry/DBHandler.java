@@ -307,7 +307,7 @@ public class DBHandler extends Config{
             prst.setString(1, substance.getSubId());
             prst.setString(2, expId);
             prst.setString(3, String.valueOf(substance.getX()));
-            prst.setString(4, String.valueOf(720-substance.getY()-substance.getHeight()*1.65));
+            prst.setString(4, String.valueOf(720-substance.getY()-substance.getHeight()));
             prst.executeUpdate();
         }
     }

@@ -115,7 +115,7 @@ public class ExperimentWindow implements Screen {
                         substanceItself.getString(AllConstants.SubsConsts.ID), choosenExperiment.getExp_id());
                 if (substanceExpConn.next()){
                     tempSubstance.setX(Float.parseFloat(substanceExpConn.getString(AllConstants.SubsExpConsts.SUBS_X)));
-                    tempSubstance.setY(720 - Float.parseFloat(substanceExpConn.getString(AllConstants.SubsExpConsts.SUBS_Y)) - 200);
+                    tempSubstance.setY(720 - Float.parseFloat(substanceExpConn.getString(AllConstants.SubsExpConsts.SUBS_Y)) - tempSubstance.getTexture_path().getHeight());
                 }
             }
             usedSubstances.add(tempSubstance);

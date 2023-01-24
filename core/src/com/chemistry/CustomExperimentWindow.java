@@ -318,13 +318,6 @@ public class CustomExperimentWindow implements Screen {
             textInSlot.draw(this.game.batch, 1f);
         }
 
-        if (equipSlot.getThisSlotPicked()){
-            game.batch.draw(equipMenuSlotChoosed, equipSlot.getX()+6, 720-equipMenu.getHeight()+5);
-        } else game.batch.draw(equipMenuSlot, equipSlot.getX()+6, 720-equipMenu.getHeight()+5);
-
-        equipMenuLabel.setText(equipSlot.getSlotTexture());
-        equipMenuLabel.draw(this.game.batch, 1f);
-
         for (Substance substance : substancesPlaced) {
             game.batch.draw(substance.getTexture_path(), substance.getX(),
                     720 - substance.getY() - substance.getHeight());
@@ -335,11 +328,17 @@ public class CustomExperimentWindow implements Screen {
                     720 - equipment.getY() - equipment.getHeight());
         }
 
+        if (equipSlot.getThisSlotPicked()){
+            game.batch.draw(equipMenuSlotChoosed, equipSlot.getX()+6, 720-equipMenu.getHeight()+5);
+        } else game.batch.draw(equipMenuSlot, equipSlot.getX()+6, 720-equipMenu.getHeight()+5);
+
+        equipMenuLabel.setText(equipSlot.getSlotTexture());
+        equipMenuLabel.draw(this.game.batch, 1f);
+
         if (saveMenuEnabled){
-//            game.batch.draw(saveMenuTexture, 1280/2f-saveMenuTexture.getWidth()/2f,
-//                    720/2f-saveMenuTexture.getHeight()/2f);
             saveMenuStage.draw();
         }
+
         game.batch.end();
 
         if (startSpawn) {
@@ -433,7 +432,6 @@ public class CustomExperimentWindow implements Screen {
                                 setSubstanceOnTheSpace();
                             } else System.out.println("You can't place an object here!");
                         }
-                        startSpawn = false;
                     } else {
                         if (equipSlot.overlaps(mouseSpawnerRect)){
                             equipSlot.setThisSlotPicked(false);
@@ -453,8 +451,8 @@ public class CustomExperimentWindow implements Screen {
                                 setEquipmentOnTheSpace();
                             }
                         }
-                        startSpawn = false;
                     }
+                    startSpawn = false;
 
                 } else {
                     if (placeSpace.overlaps(mouseSpawnerRect)) {
