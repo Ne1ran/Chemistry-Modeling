@@ -25,9 +25,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 public class CustomExperimentWindow implements Screen {
     final ChemistryModelingGame game;
-    private final OrthographicCamera camera;
-
-    private final BitmapFont labelFont;
     private final Texture background;
     private final Texture dialogBg;
     private final Texture menu;
@@ -37,7 +34,6 @@ public class CustomExperimentWindow implements Screen {
     private final Texture equipMenu;
     private final Texture equipMenuSlot;
     private final Texture equipMenuSlotChoosed;
-    private final Texture saveMenuTexture;
     private final DBHandler handler = new DBHandler();
     private final Rectangle arrowRight;
     private final Rectangle arrowLeft;
@@ -58,10 +54,10 @@ public class CustomExperimentWindow implements Screen {
     public static Boolean rightClick;
     private Boolean equipmentPicked;
     private Boolean saveMenuEnabled;
-    private Array<Substance> substancesPlaced;
+    private final Array<Substance> substancesPlaced;
 
-    private Array<Equipment> equipmentPlaced;
-    private ArrayList<String> equipments;
+    private final Array<Equipment> equipmentPlaced;
+    private final ArrayList<String> equipments;
     private int equipmentPlacedElementId;
     private final Label saveButtonLabel;
     private final Rectangle saveRect;
@@ -73,13 +69,12 @@ public class CustomExperimentWindow implements Screen {
 
     //OPTIMIZATION (YESSSSSSSSSSS)
     private final Rectangle customScreenRect;
-    private final Rectangle menuRect;
     //end of it
     public CustomExperimentWindow(final ChemistryModelingGame game) throws SQLException, ClassNotFoundException {
         this.game = game;
 
         background = new Texture("exp1_bg.jpg");
-        camera = new OrthographicCamera();
+        OrthographicCamera camera = new OrthographicCamera();
         camera.setToOrtho(false, 1280, 720);
         dialogBg = new Texture("dialog.png");
         menu = new Texture("menu.png");
@@ -89,16 +84,12 @@ public class CustomExperimentWindow implements Screen {
         equipMenu = new Texture("equipMenu.png");
         equipMenuSlot = new Texture("equipMenuSlot.png");
         equipMenuSlotChoosed = new Texture("equipMenuSlotChoosed.png");
-        saveMenuTexture = new Texture("saveMenu.png");
+        Texture saveMenuTexture = new Texture("saveMenu.png");
 
         //optimization
         customScreenRect = new Rectangle();
         customScreenRect.setSize(1280, 720);
         customScreenRect.setPosition(0,0);
-
-        menuRect = new Rectangle();
-        menuRect.setSize(1200, 120);
-        menuRect.setPosition(37, 120);
         //end
 
         arrowLeft = new Rectangle();
@@ -154,7 +145,7 @@ public class CustomExperimentWindow implements Screen {
 
         saveMenuStage = new Stage();
         Image stageMenuImage = new Image(saveMenuTexture);
-        stageMenuImage.setPosition(1280/2f-saveMenuTexture.getWidth()/2f, 720/2f-saveMenuTexture.getHeight()/2f);
+        stageMenuImage.setPosition(1280/2f- saveMenuTexture.getWidth()/2f, 720/2f- saveMenuTexture.getHeight()/2f);
         saveMenuStage.addActor(stageMenuImage);
 
 
@@ -211,7 +202,7 @@ public class CustomExperimentWindow implements Screen {
         parameter.characters = "абвгдеёжзийклмнопрстуфхцчшщъыьэюяabcdefghijklmnopqrstuvwxyzАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789][_!$%#@|\\/?-+=()*&.;:,{}\"´`'<>";
         parameter.size = 16;
         parameter.color = Color.BLACK;
-        labelFont = generator.generateFont(parameter);
+        BitmapFont labelFont = generator.generateFont(parameter);
         generator.dispose();
 
         labelStyle = new Label.LabelStyle();
@@ -452,7 +443,6 @@ public class CustomExperimentWindow implements Screen {
                             }
                         }
                     }
-                    startSpawn = false;
 
                 } else {
                     if (placeSpace.overlaps(mouseSpawnerRect)) {
@@ -483,8 +473,8 @@ public class CustomExperimentWindow implements Screen {
                             }
                         }
                     }
-                    startSpawn = false;
                 }
+                startSpawn = false;
             }
 
         }
