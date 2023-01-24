@@ -28,8 +28,6 @@ public class ExperimentWindow implements Screen {
     private final BitmapFont expFont;
     private final BitmapFont slotTextFont;
     private final Texture choosedSlotTexture;
-
-    private final DBHandler handler = new DBHandler();
     private final ReactionHandler reactionHandler = new ReactionHandler();
 
     private final OrthographicCamera camera;
@@ -97,6 +95,7 @@ public class ExperimentWindow implements Screen {
             inventory.add(slot);
         }
 
+        DBHandler handler = new DBHandler();
         ResultSet substancesIDS = handler.getUsingSubstancesIDs(choosenExperiment.getExp_id()); // Setting all usable substances
         while (substancesIDS.next()){
             ResultSet substanceItself = handler.getSubstanceByID(substancesIDS.getString(AllConstants.SubsExpConsts.SUBS_EXP_ID));
@@ -157,7 +156,6 @@ public class ExperimentWindow implements Screen {
 
         if (closeWindow){
             game.setScreen(new ChemistryModelingMainWindow(game));
-            closeWindow = false;
             phrase = "";
             startSpawn = false;
             deleteFromInventory = false;
@@ -284,9 +282,7 @@ public class ExperimentWindow implements Screen {
                                 } else phrase = "Вы не можете выбрать пустой слот для работы!";
                             } else {
                                 for (InventorySlot slot2: inventory){
-                                    if (slotTryingToPickId != slot2.getSlotId()){
-                                        slot2.setThisSlotPicked(false);
-                                    } else slot2.setThisSlotPicked(true);
+                                    slot2.setThisSlotPicked(slotTryingToPickId == slot2.getSlotId());
                                 }
                                 for (Substance substance : usedSubstances){
                                     if (substance.getSubId().equals(slot.getSubstanceIdInSlot())){
@@ -306,18 +302,18 @@ public class ExperimentWindow implements Screen {
     public void phraseProcessing(){
         ArrayList<String> newPhraseArr = new ArrayList<>();
         if (phrase.length() > 30){
-            String tempString = "";
+            StringBuilder tempString = new StringBuilder();
             String[] tempArray = phrase.trim().split(" ");
             for (int i = 0; i<=tempArray.length-1; i++){
                 if (tempString.length() + tempArray[i].length()<31){
-                    tempString += tempArray[i] + " ";
+                    tempString.append(tempArray[i]).append(" ");
                 } else {
-                    newPhraseArr.add(tempString);
-                    tempString = "";
+                    newPhraseArr.add(tempString.toString());
+                    tempString = new StringBuilder();
                     i--;
                 }
             }
-            newPhraseArr.add(tempString);
+            newPhraseArr.add(tempString.toString());
         } else newPhraseArr.add(phrase);
         if (newPhraseArr.size() > 8){
             newPhraseArr = new ArrayList<>();
