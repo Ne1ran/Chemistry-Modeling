@@ -133,7 +133,7 @@ public class ReactionHandler {
             startReaction = false; //reaction won't start because strong elements are already combined
         }
 
-        if (nullOxidsAmount == 2){
+        if (nullOxidsAmount >= 1){
             startReaction = false;
         }
 
@@ -177,44 +177,105 @@ public class ReactionHandler {
         int firstFoundationOxidState = Integer.parseInt(foundations.get(0).getFound_state_max());
         int secondFoundationOxidState = Integer.parseInt(foundations.get(1).getFound_state_max());
 
-        int firstOxid_OxidState = Integer.parseInt(oxids.get(0).getOxid_state_max());
-        int secondOxid_OxidState = Integer.parseInt(oxids.get(1).getOxid_state_max());
-
-        int firstFoundationMultiplier = firstFoundationOxidState * firstFoundationAmount;
-        int secondFoundationMultiplier = secondFoundationOxidState * secondFoundationAmount;
+        int firstOxid_OxidState = -Integer.parseInt(oxids.get(0).getOxid_state_max());
+        int secondOxid_OxidState = -Integer.parseInt(oxids.get(1).getOxid_state_max());
 
         String firstSubstanceOxidSwap = ""; //Here is substance (found - 1, oxid - 2) NO AMOUNT
         String secondSubstanceOxidSwap = ""; //Here is substance (found - 2, oxid - 1) NO AMOUNT
 
         //(SWAPPED)
-        firstSubstanceOxidSwap += "(" + foundations.get(0).getFoundation_name() + ")";
-        firstSubstanceOxidSwap += "(" + oxids.get(1).getOxid_name()+ ")";
+        firstSubstanceOxidSwap += foundations.get(0).getFoundation_name() + " ";
+        firstSubstanceOxidSwap += oxids.get(1).getOxid_name();
 
-        secondSubstanceOxidSwap += "(" + foundations.get(1).getFoundation_name() + ")";
-        secondSubstanceOxidSwap += "(" + oxids.get(0).getOxid_name() + ")";
+        secondSubstanceOxidSwap += foundations.get(1).getFoundation_name() + " ";
+        secondSubstanceOxidSwap += oxids.get(0).getOxid_name();
 
         //Afterswap calculatings
 
+        int tempSecondOxidAmount = secondOxidAmount;
+        int tempFirstFoundAmount = firstFoundationAmount;
+        int tempFirstOxidAmount = firstOxidAmount; //useless?
+        int tempSecondFoundAmount = secondFoundationAmount;
+
         if (firstFoundationOxidState > secondOxid_OxidState){
             if (firstFoundationOxidState % secondOxid_OxidState == 0){
-
+                secondOxidAmount = firstOxidAmount / secondOxid_OxidState;
+                firstFoundationAmount = tempSecondFoundAmount;
             } else {
-
+                secondOxidAmount = firstFoundationOxidState;
+                firstFoundationAmount = secondOxid_OxidState;
             }
         } else if (secondOxid_OxidState > firstFoundationOxidState) {
-
-        } else {
-            //no need to change multipliers
+            if (secondOxid_OxidState % firstFoundationOxidState == 0){
+                firstFoundationAmount = secondOxid_OxidState / firstFoundationOxidState;
+                secondOxidAmount = firstOxidAmount;
+            } else {
+                secondOxidAmount = firstFoundationOxidState;
+                firstFoundationAmount = secondOxid_OxidState;
+            }
         }
 
+        System.out.println(firstFoundationAmount + " - " + secondOxidAmount);
+
+        if (secondFoundationOxidState > firstOxid_OxidState){
+            if (secondFoundationOxidState % firstOxid_OxidState == 0){
+                firstOxidAmount = secondFoundationOxidState / firstOxid_OxidState;
+                secondFoundationAmount = tempFirstFoundAmount;
+            } else {
+                firstOxidAmount = secondFoundationOxidState;
+                secondFoundationAmount = firstOxid_OxidState;
+            }
+        } else if (firstOxid_OxidState > secondFoundationOxidState){
+            if (firstOxid_OxidState % secondFoundationOxidState == 0){
+                secondFoundationAmount = firstOxid_OxidState / secondFoundationOxidState;
+                firstOxidAmount = tempSecondOxidAmount;
+            } else {
+                firstOxidAmount = secondFoundationOxidState;
+                secondFoundationAmount = firstOxid_OxidState;
+            }
+        }
+
+        System.out.println(secondFoundationAmount + " - " + firstOxidAmount);
+
+        Array<String> tempArrayFirstSubstance = new Array<>(firstSubstanceOxidSwap.split(" "));
+        Array<String> tempArraySecondSubstance = new Array<>(secondSubstanceOxidSwap.split(" "));
+
+        //Preparing answer p2 string
+        if (firstFoundationAmount > 1){
+            firstSubstanceOxidSwap = firstSubstanceOxidSwap.replaceFirst(
+                    tempArrayFirstSubstance.get(0), firstFoundationAmount
+                            + "(" + tempArrayFirstSubstance.get(0) + ")");
+        }
+
+        if (secondOxidAmount > 1){
+            firstSubstanceOxidSwap = firstSubstanceOxidSwap.replaceFirst(
+                    tempArrayFirstSubstance.get(1),"("
+                            + tempArrayFirstSubstance.get(1) + ")" + secondOxidAmount);
+        }
+
+        if (secondFoundationAmount > 1){
+            secondSubstanceOxidSwap = secondSubstanceOxidSwap.replaceFirst(
+                    tempArraySecondSubstance.get(0), secondFoundationAmount
+                            + "(" + tempArraySecondSubstance.get(0) + ")");
+        }
+
+        if (firstOxidAmount > 1){
+            secondSubstanceOxidSwap = secondSubstanceOxidSwap.replaceFirst(
+                    tempArraySecondSubstance.get(1), "(" +
+                            tempArraySecondSubstance.get(1) + ")" + firstOxidAmount);
+        }
 
         //answer
+        System.out.println(answerSecondPart);
         answerSecondPart = firstSubstanceOxidSwap + " + " + secondSubstanceOxidSwap;
+
+        answerSecondPart = answerSecondPart.replaceAll(" ", "");
+        answerSecondPart = answerSecondPart.replace("+", " + ");
 
         answer.add(answerFirstPart);
         answer.add(answerSecondPart);
 
-        phrase = "Какой итог мы получили: " + String.join(" = ", answer) + ". Емкость очищена";
+        phrase = "Какой итог мы получили:    " + String.join(" =    ", answer) + ".    Емкость очищена";
 
         clearEquipment();
     }
