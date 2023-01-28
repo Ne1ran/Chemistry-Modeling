@@ -20,6 +20,8 @@ public class ReactionHandler {
     public Map<Oxid, Integer> oxidPool;
     public DBHandler handler = new DBHandler();
 
+    public String cause = "";
+
     public void getSubstancesFromEquipment(Equipment equipment) throws SQLException, ClassNotFoundException {
         substances = new ArrayList<>();
         foundPool = new LinkedHashMap<>();
@@ -77,7 +79,7 @@ public class ReactionHandler {
         }
         chemicalReaction(foundPool, oxidPool);
     }
-
+//add normal causes
     public void chemicalReaction(Map<Foundation, Integer> foundPool, Map<Oxid, Integer> oxidPool){
         ArrayList<Foundation> foundationsFirstIteration = new ArrayList<>();
         ArrayList<Oxid> oxidFirstIteration = new ArrayList<>();
@@ -122,15 +124,20 @@ public class ReactionHandler {
 
         for (Substance substance : substances) {
             if (substance.getSmallTexturePath().equals("H2O")) {
-                if (containsNullOxid){
-                    startReaction = true;
-                    break;
-                } else startReaction = false;
+                startReaction = false;
+                cause += "Работа с водой еще не проработана. ";
+//                if (containsNullOxid){
+//                    startReaction = true;
+//                    break;
+//                } else {
+//                    startReaction = false;
+//                }
             }
         }
 
         if (isFirstFoundStronger == isFirstOxidStronger){
             startReaction = false; //reaction won't start because strong elements are already combined
+            cause += "Одно из веще. ";
         }
 
         if (nullOxidsAmount >= 1){
