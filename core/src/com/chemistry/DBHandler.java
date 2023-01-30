@@ -360,4 +360,19 @@ public class DBHandler extends Config{
         return strength;
 
     }
+
+    public String getDissotiationReaction(String substanceName) throws SQLException, ClassNotFoundException {
+        String reaction = "";
+        ResultSet rset = null;
+        String select = "SELECT dissotiation_reaction FROM " + AllConstants.SubsConsts.SUBS_TABLE + " Where "
+                + AllConstants.SubsConsts.SMALL_TEXTURE + " ='" + substanceName + "'";
+        PreparedStatement prst = getConnection().prepareStatement(select);
+        rset = prst.executeQuery();
+
+        if (rset.next()){
+            reaction = rset.getString(1);
+        }
+
+        return reaction;
+    }
 }

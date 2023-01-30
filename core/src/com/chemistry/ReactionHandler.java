@@ -288,31 +288,27 @@ public class ReactionHandler {
         String secondOxidAfterSwapStrength = handler.getOxidStrengthByName(secondSubstanceOxidSwap.split(" ")[1]);
 
         if (Integer.parseInt(firstFoundAfterSwapStrength) > 8 && Integer.parseInt(firstOxidAfterSwapStrength) > 12){
-            String dissociatedFirstSubstance = dissociate(firstSubstanceOxidSwap);
-        }
+            String dissociatedFirstSubstance = dissociate(firstSubstanceOxidSwap.replace(" ", ""));
+            answerSecondPart = dissociatedFirstSubstance + " + " + secondSubstanceOxidSwap;
+        } else if (Integer.parseInt(secondFoundAfterSwapStrength) > 8 && Integer.parseInt(secondOxidAfterSwapStrength) > 13){
+            String dissociatedSecondSubstance = dissociate(secondSubstanceOxidSwap.replace(" ", ""));
+            answerSecondPart = firstSubstanceOxidSwap + " + " + dissociatedSecondSubstance;
+        } else answerSecondPart = firstSubstanceOxidSwap + " + " + secondSubstanceOxidSwap;
 
-        if (Integer.parseInt(secondFoundAfterSwapStrength) > 8 && Integer.parseInt(firstOxidAfterSwapStrength) > 12){
-            String dissociatedFirstSubstance = dissociate(secondSubstanceOxidSwap);
-        }
-
-        answerSecondPart = firstSubstanceOxidSwap + " + " + secondSubstanceOxidSwap;
-
-        answerSecondPart = answerSecondPart.replaceAll(" ", "");
+        answerSecondPart = answerSecondPart.replaceAll(" ", "").trim();
         answerSecondPart = answerSecondPart.replace("+", " + ");
 
         answer.add(answerFirstPart);
         answer.add(answerSecondPart);
 
-        phrase = "Какой итог мы получили:    " + String.join(" =    ", answer) + ".    Емкость очищена";
+        phrase = "Какой итог мы получили:    " + String.join(" = ", answer) + ".    Емкость очищена";
 
         clearEquipment();
     }
 
-    public String dissociate(String substance){
+    public String dissociate(String substance) throws SQLException, ClassNotFoundException {
         String dissociated = "" ;
-
-        //shiza victora
-
+        dissociated = handler.getDissotiationReaction(substance);
         return dissociated;
     }
     @Deprecated //created a better version
@@ -393,7 +389,7 @@ public class ReactionHandler {
                 oxidPool.replace(oxids.get(i-1),oxidPool.get(oxids.get(i-1)) / 2);
         }
 
-        //At upper code there was NO replacements in oxids/founds arrays. BUT it swapped their amounts already!
+        //At upper code there were NO replacements in oxids/founds arrays. BUT it swapped their amounts already!
 
         boolean nullOxidizer = oxids.get(i).getOxid_name().equals("0") || oxids.get(i - 1).getOxid_name().equals("0");
 
