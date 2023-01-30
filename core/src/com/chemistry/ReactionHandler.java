@@ -80,7 +80,7 @@ public class ReactionHandler {
         chemicalReaction(foundPool, oxidPool);
     }
 //add normal causes
-    public void chemicalReaction(Map<Foundation, Integer> foundPool, Map<Oxid, Integer> oxidPool){
+    public void chemicalReaction(Map<Foundation, Integer> foundPool, Map<Oxid, Integer> oxidPool) throws SQLException, ClassNotFoundException {
         ArrayList<Foundation> foundationsFirstIteration = new ArrayList<>();
         ArrayList<Oxid> oxidFirstIteration = new ArrayList<>();
         boolean startReaction = false;
@@ -152,7 +152,7 @@ public class ReactionHandler {
             clearEquipment();
         }
     }
-    public void newReactionStart(){
+    public void newReactionStart() throws SQLException, ClassNotFoundException {
         Array<String> answer = new Array<>(); // All answer
         String answerFirstPart = ""; //First part (before =)
         String answerSecondPart = ""; //Second part (after =)
@@ -220,6 +220,9 @@ public class ReactionHandler {
                 secondOxidAmount = firstFoundationOxidState;
                 firstFoundationAmount = secondOxid_OxidState;
             }
+        } else {
+            secondOxidAmount = 1;
+            firstFoundationAmount = 1;
         }
 
         System.out.println(firstFoundationAmount + " - " + secondOxidAmount);
@@ -240,6 +243,9 @@ public class ReactionHandler {
                 firstOxidAmount = secondFoundationOxidState;
                 secondFoundationAmount = firstOxid_OxidState;
             }
+        } else {
+            secondFoundationAmount = 1;
+            firstOxidAmount = 1;
         }
 
         System.out.println(secondFoundationAmount + " - " + firstOxidAmount);
@@ -272,8 +278,23 @@ public class ReactionHandler {
                             tempArraySecondSubstance.get(1) + ")" + firstOxidAmount);
         }
 
-        //answer
+        //answer part 2
         System.out.println(answerSecondPart);
+
+        String firstFoundAfterSwapStrength = handler.getFoundationStrengthByName(firstSubstanceOxidSwap.split(" ")[0]);
+        String firstOxidAfterSwapStrength = handler.getOxidStrengthByName(firstSubstanceOxidSwap.split(" ")[1]);
+
+        String secondFoundAfterSwapStrength = handler.getFoundationStrengthByName(secondSubstanceOxidSwap.split(" ")[0]);
+        String secondOxidAfterSwapStrength = handler.getOxidStrengthByName(secondSubstanceOxidSwap.split(" ")[1]);
+
+        if (Integer.parseInt(firstFoundAfterSwapStrength) > 8 && Integer.parseInt(firstOxidAfterSwapStrength) > 12){
+            String dissociatedFirstSubstance = dissociate(firstSubstanceOxidSwap);
+        }
+
+        if (Integer.parseInt(secondFoundAfterSwapStrength) > 8 && Integer.parseInt(firstOxidAfterSwapStrength) > 12){
+            String dissociatedFirstSubstance = dissociate(secondSubstanceOxidSwap);
+        }
+
         answerSecondPart = firstSubstanceOxidSwap + " + " + secondSubstanceOxidSwap;
 
         answerSecondPart = answerSecondPart.replaceAll(" ", "");
@@ -286,6 +307,15 @@ public class ReactionHandler {
 
         clearEquipment();
     }
+
+    public String dissociate(String substance){
+        String dissociated = "" ;
+
+        //shiza victora
+
+        return dissociated;
+    }
+    @Deprecated //created a better version
     public void reactionStarted(Map<Foundation, Integer> foundPool, Map<Oxid, Integer> oxidPool){ // We swap foundations for oxidizers
         String answer = "";
 
@@ -328,6 +358,7 @@ public class ReactionHandler {
             if (tempInt2 == 0){
                 tempInt2++;
             }
+
 
             oxidPool.replace(oxids.get(i), tempInt2);
             oxidPool.replace(oxids.get(i-1), tempInt);

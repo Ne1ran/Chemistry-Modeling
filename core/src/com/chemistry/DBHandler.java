@@ -328,4 +328,36 @@ public class DBHandler extends Config{
             prst.executeUpdate();
         }
     }
+
+    public String getFoundationStrengthByName(String name) throws SQLException, ClassNotFoundException {
+        String strength = "0";
+        ResultSet rset = null;
+        String select = "SELECT electrochem_position FROM " + AllConstants.FoundConsts.FOUND_TABLE + " Where "
+                + AllConstants.FoundConsts.FOUNDATION_NAME + " ='" + name + "'";
+        PreparedStatement prst = getConnection().prepareStatement(select);
+        rset = prst.executeQuery();
+
+        if (rset.next()){
+            strength = rset.getString(1);
+        }
+
+        return strength;
+
+    }
+
+    public String getOxidStrengthByName(String name) throws SQLException, ClassNotFoundException {
+        String strength = "0";
+        ResultSet rset = null;
+        String select = "SELECT oxid_strength FROM " + AllConstants.OxidConsts.OXID_TABLE + " Where "
+                + AllConstants.OxidConsts.OXIDIZER_NAME + " ='" + name + "'";
+        PreparedStatement prst = getConnection().prepareStatement(select);
+        rset = prst.executeQuery();
+
+        if (rset.next()){
+            strength = rset.getString(1);
+        }
+
+        return strength;
+
+    }
 }
