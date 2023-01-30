@@ -253,6 +253,13 @@ public class ReactionHandler {
         Array<String> tempArrayFirstSubstance = new Array<>(firstSubstanceOxidSwap.split(" "));
         Array<String> tempArraySecondSubstance = new Array<>(secondSubstanceOxidSwap.split(" "));
 
+        //Would be needed later
+        String firstFoundAfterSwapStrength = handler.getFoundationStrengthByName(firstSubstanceOxidSwap.split(" ")[0]);
+        String firstOxidAfterSwapStrength = handler.getOxidStrengthByName(firstSubstanceOxidSwap.split(" ")[1]);
+
+        String secondFoundAfterSwapStrength = handler.getFoundationStrengthByName(secondSubstanceOxidSwap.split(" ")[0]);
+        String secondOxidAfterSwapStrength = handler.getOxidStrengthByName(secondSubstanceOxidSwap.split(" ")[1]);
+
         //Preparing answer p2 string
         if (firstFoundationAmount > 1){
             firstSubstanceOxidSwap = firstSubstanceOxidSwap.replaceFirst(
@@ -264,6 +271,10 @@ public class ReactionHandler {
             firstSubstanceOxidSwap = firstSubstanceOxidSwap.replaceFirst(
                     tempArrayFirstSubstance.get(1),"("
                             + tempArrayFirstSubstance.get(1) + ")" + secondOxidAmount);
+        } else {
+            firstSubstanceOxidSwap = firstSubstanceOxidSwap.replaceFirst(
+                    tempArrayFirstSubstance.get(1),"("
+                            + tempArrayFirstSubstance.get(1) + ")");
         }
 
         if (secondFoundationAmount > 1){
@@ -276,16 +287,14 @@ public class ReactionHandler {
             secondSubstanceOxidSwap = secondSubstanceOxidSwap.replaceFirst(
                     tempArraySecondSubstance.get(1), "(" +
                             tempArraySecondSubstance.get(1) + ")" + firstOxidAmount);
+        } else {
+            secondSubstanceOxidSwap = secondSubstanceOxidSwap.replaceFirst(
+                    tempArraySecondSubstance.get(1), "(" +
+                            tempArraySecondSubstance.get(1) + ")");
         }
 
         //answer part 2
         System.out.println(answerSecondPart);
-
-        String firstFoundAfterSwapStrength = handler.getFoundationStrengthByName(firstSubstanceOxidSwap.split(" ")[0]);
-        String firstOxidAfterSwapStrength = handler.getOxidStrengthByName(firstSubstanceOxidSwap.split(" ")[1]);
-
-        String secondFoundAfterSwapStrength = handler.getFoundationStrengthByName(secondSubstanceOxidSwap.split(" ")[0]);
-        String secondOxidAfterSwapStrength = handler.getOxidStrengthByName(secondSubstanceOxidSwap.split(" ")[1]);
 
         if (Integer.parseInt(firstFoundAfterSwapStrength) > 8 && Integer.parseInt(firstOxidAfterSwapStrength) > 12){
             String dissociatedFirstSubstance = dissociate(firstSubstanceOxidSwap.replace(" ", ""));
