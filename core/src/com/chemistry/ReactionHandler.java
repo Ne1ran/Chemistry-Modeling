@@ -156,6 +156,8 @@ public class ReactionHandler {
         String answerFirstPart = ""; //First part (before =)
         String answerSecondPart = ""; //Second part (after =)
 
+        Boolean canReactionBeMade = false; //geteroreactions need either h2o or gas or osadok to be made of in the end
+
         ArrayList<Oxid> oxids = new ArrayList<>();
         ArrayList<Foundation> foundations = new ArrayList<>();
 
@@ -294,6 +296,7 @@ public class ReactionHandler {
 
         //answer part 2
         if (firstSubstanceOxidSwap.contains("(0)")){ // work with H (0) or NH4 (0)
+            canReactionBeMade = true;
             if (!firstSubstanceOxidSwap.contains("(0) 0")){
                 if (firstSubstanceOxidSwap.split(" ")[0].length() == 1) { //Cl problems probably?
                     firstSubstanceOxidSwap = firstSubstanceOxidSwap.replace("(0)", "2"); //makes it H2
@@ -302,6 +305,7 @@ public class ReactionHandler {
 
             answerSecondPart = firstSubstanceOxidSwap + " + " + secondSubstanceOxidSwap;
         } else if (secondSubstanceOxidSwap.contains("(0)")){
+            canReactionBeMade = true;
             if (!secondSubstanceOxidSwap.contains("(0) 0")){
                 if (secondSubstanceOxidSwap.split(" ")[0].length() == 1){
                     secondSubstanceOxidSwap = secondSubstanceOxidSwap.replace("(0)", "2");
@@ -313,6 +317,7 @@ public class ReactionHandler {
 
             if (Integer.parseInt(firstFoundAfterSwapStrength) > 8 && Integer.parseInt(firstOxidAfterSwapStrength) > 12){ //Dissotiation possibility
                 String dissociatedFirstSubstance = dissociate(firstSubstanceOxidSwap.replace(" ", ""));
+                canReactionBeMade = true;
 
                 if (!dissociatedFirstSubstance.equals("")) { //if there is something
                     answerSecondPart = dissociatedFirstSubstance + " + " + secondSubstanceOxidSwap;
@@ -325,8 +330,8 @@ public class ReactionHandler {
                 }
 
             } else if (Integer.parseInt(secondFoundAfterSwapStrength) > 8 && Integer.parseInt(secondOxidAfterSwapStrength) > 13){
-
                 String dissociatedSecondSubstance = dissociate(secondSubstanceOxidSwap.replace(" ", ""));
+                canReactionBeMade = true;
 
                 if (!dissociatedSecondSubstance.equals("")) {
                     answerSecondPart = dissociatedSecondSubstance + " + " + dissociatedSecondSubstance;
@@ -356,7 +361,9 @@ public class ReactionHandler {
         answer.add(answerFirstPart);
         answer.add(answerSecondPart);
 
-        phrase = "Какой итог мы получили:    " + String.join(" = ", answer) + ".    Емкость очищена";
+        if (canReactionBeMade){
+            phrase = "Какой итог мы получили:    " + String.join(" = ", answer) + ".    Емкость очищена";
+        } else phrase = "Оп ахах неловко вышло)))";
 
         clearEquipment();
     }
