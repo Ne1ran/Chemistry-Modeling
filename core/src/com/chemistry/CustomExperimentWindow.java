@@ -287,7 +287,11 @@ public class CustomExperimentWindow implements Screen {
     @Override
     public void render(float delta) {
         if (closeWindow){
-            game.setScreen(new ChemistryModelingMainWindow(game));
+            try {
+                game.setScreen(new ExperimentChooseWindow(game));
+            } catch (SQLException | ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
             closeWindow = false;
             this.dispose();
         }

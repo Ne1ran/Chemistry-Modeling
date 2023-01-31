@@ -155,7 +155,11 @@ public class ExperimentWindow implements Screen {
         camera.update();
 
         if (closeWindow){
-            game.setScreen(new ChemistryModelingMainWindow(game));
+            try {
+                game.setScreen(new ExperimentChooseWindow(game));
+            } catch (SQLException | ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
             phrase = "";
             startSpawn = false;
             deleteFromInventory = false;
