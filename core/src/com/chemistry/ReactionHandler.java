@@ -358,6 +358,18 @@ public class ReactionHandler {
             answerSecondPart = tempArr.get(1);
         }
 
+        System.out.println(answerSecondPart);
+
+        if (!canReactionBeMade){ // check if one of the substance is either h2o or gas or osadok
+            tempArr = new Array<>(answerSecondPart.split(" \\+ "));
+            for (String substanceName : tempArr){
+                if (handler.DoesThisSubstanceHaveSubstanceType(substanceName)){
+                    canReactionBeMade = true;
+                    break;
+                }
+            }
+        }
+
         answer.add(answerFirstPart);
         answer.add(answerSecondPart);
 
@@ -373,6 +385,10 @@ public class ReactionHandler {
         dissociated = handler.getDissotiationReaction(substance);
         return dissociated;
     }
+
+
+
+
     @Deprecated //created a better version
     public void reactionStarted(Map<Foundation, Integer> foundPool, Map<Oxid, Integer> oxidPool){ // We swap foundations for oxidizers
         String answer = "";

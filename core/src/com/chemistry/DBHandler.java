@@ -375,4 +375,21 @@ public class DBHandler extends Config{
 
         return reaction;
     }
+
+    public boolean DoesThisSubstanceHaveSubstanceType(String substanceName) throws SQLException, ClassNotFoundException {
+        Boolean check = false;
+        ResultSet rset = null;
+        String select = "SELECT substance_type FROM " + AllConstants.SubsConsts.SUBS_TABLE +
+                " WHERE " + AllConstants.SubsConsts.SMALL_TEXTURE + " ='" + substanceName + "'";
+        PreparedStatement prst = getConnection().prepareStatement(select);
+        rset = prst.executeQuery();
+
+        if (rset.next()){
+            if (rset.getString(1).equals("")){
+                check = true;
+            }
+        }
+
+        return check;
+    }
 }

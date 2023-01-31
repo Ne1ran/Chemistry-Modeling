@@ -47,6 +47,7 @@ public class AllConstants {
         public static final String OXID_AMOUNT = "oxid_amount";
         public static final String FOUND_AMOUNT = "found_amount";
         public static final String DISSOTIATION = "dissotiation_reaction";
+        public static final String SUBSTANCE_TYPE = "substance_type";
     }
 
     public static class EquipConsts{
