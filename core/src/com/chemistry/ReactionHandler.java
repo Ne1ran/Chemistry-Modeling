@@ -97,12 +97,12 @@ public class ReactionHandler {
             oxidFirstIteration.add(oxid);
         }
 
+        //Strength of elements
         int firstFound = Integer.parseInt(foundationsFirstIteration.get(0).getElectrochem_pos());
         int secondFound = Integer.parseInt(foundationsFirstIteration.get(1).getElectrochem_pos());
 
         int firstOxidStrength = Integer.parseInt(oxidFirstIteration.get(0).getOxid_strength());
         int secondOxidStrength = Integer.parseInt(oxidFirstIteration.get(1).getOxid_strength());
-
 
         isFirstFoundStronger = firstFound < secondFound; //simplified if check of strength among oxids and founds
         isFirstOxidStronger = firstOxidStrength < secondOxidStrength;
@@ -123,7 +123,7 @@ public class ReactionHandler {
         }
 
         if (isFirstFoundStronger == isFirstOxidStronger){
-            startReaction = false; //reaction won't start because strong elements are already combined
+            startReaction = false; //reaction won't start because strong elements are already combined fine
             cause += "Вещества находятся в правильном балансе. ";
         }
 
@@ -133,8 +133,6 @@ public class ReactionHandler {
 
         for (Substance substance : substances) {
             if (substance.getSmallTexturePath().equals("H2O")) {
-//                startReaction = false;
-                cause += "Работа с водой еще не проработана. ";
                 if (containsNullOxid){
                     startReaction = true;
                     break;
@@ -262,7 +260,7 @@ public class ReactionHandler {
         String secondOxidAfterSwapStrength = handler.getOxidStrengthByName(secondSubstanceOxidSwap.split(" ")[1]);
 
         //Preparing answer p2 string
-        if (firstFoundationAmount > 1){
+        if (firstFoundationAmount > 1){ //Create brackets
             firstSubstanceOxidSwap = firstSubstanceOxidSwap.replaceFirst(
                     tempArrayFirstSubstance.get(0), firstFoundationAmount
                             + "(" + tempArrayFirstSubstance.get(0) + ")");
@@ -295,40 +293,65 @@ public class ReactionHandler {
         }
 
         //answer part 2
-        if (firstSubstanceOxidSwap.contains("(0)")){
-            if (firstSubstanceOxidSwap.split(" ")[0].length() == 1) { //Cl problems probably?
-                firstSubstanceOxidSwap = firstSubstanceOxidSwap.replace("(0)", "2");
-            } else firstSubstanceOxidSwap = firstSubstanceOxidSwap.replace("(0)", "");
+        if (firstSubstanceOxidSwap.contains("(0)")){ // work with H (0) or NH4 (0)
+            if (!firstSubstanceOxidSwap.contains("(0) 0")){
+                if (firstSubstanceOxidSwap.split(" ")[0].length() == 1) { //Cl problems probably?
+                    firstSubstanceOxidSwap = firstSubstanceOxidSwap.replace("(0)", "2"); //makes it H2
+                } else firstSubstanceOxidSwap = firstSubstanceOxidSwap.replace("(0)", ""); //makes it NH4
+            }
+
             answerSecondPart = firstSubstanceOxidSwap + " + " + secondSubstanceOxidSwap;
         } else if (secondSubstanceOxidSwap.contains("(0)")){
-            if (secondSubstanceOxidSwap.split(" ")[0].length() == 1){
-                secondSubstanceOxidSwap = secondSubstanceOxidSwap.replace("(0)", "2");
-            } else secondSubstanceOxidSwap = secondSubstanceOxidSwap.replace("(0)", "");
+            if (!secondSubstanceOxidSwap.contains("(0) 0")){
+                if (secondSubstanceOxidSwap.split(" ")[0].length() == 1){
+                    secondSubstanceOxidSwap = secondSubstanceOxidSwap.replace("(0)", "2");
+                } else secondSubstanceOxidSwap = secondSubstanceOxidSwap.replace("(0)", "");
+            }
+
             answerSecondPart = firstSubstanceOxidSwap + " + " + secondSubstanceOxidSwap;
         } else {
-            if (Integer.parseInt(firstFoundAfterSwapStrength) > 8 && Integer.parseInt(firstOxidAfterSwapStrength) > 12){
+
+            if (Integer.parseInt(firstFoundAfterSwapStrength) > 8 && Integer.parseInt(firstOxidAfterSwapStrength) > 12){ //Dissotiation possibility
                 String dissociatedFirstSubstance = dissociate(firstSubstanceOxidSwap.replace(" ", ""));
-                if (!dissociatedFirstSubstance.equals("")) {
+
+                if (!dissociatedFirstSubstance.equals("")) { //if there is something
                     answerSecondPart = dissociatedFirstSubstance + " + " + secondSubstanceOxidSwap;
-                } else {
-                    if (firstSubstanceOxidSwap.contains("H (OH)")){
+                } else { //if not
+                    if (firstSubstanceOxidSwap.contains("H (OH)")){ //change hoh -> h2o
                         answerSecondPart = firstSubstanceOxidSwap.replace("H (OH)", "H2O") + " + " + secondSubstanceOxidSwap;
+                    } else if (firstSubstanceOxidSwap.contains("0 (OH)")) {
+                        answerSecondPart = firstSubstanceOxidSwap.replace("0 (OH)", "H2O") + " + " + secondSubstanceOxidSwap;
                     } else answerSecondPart = firstSubstanceOxidSwap + " + " + secondSubstanceOxidSwap;
                 }
+
             } else if (Integer.parseInt(secondFoundAfterSwapStrength) > 8 && Integer.parseInt(secondOxidAfterSwapStrength) > 13){
+
                 String dissociatedSecondSubstance = dissociate(secondSubstanceOxidSwap.replace(" ", ""));
+
                 if (!dissociatedSecondSubstance.equals("")) {
                     answerSecondPart = dissociatedSecondSubstance + " + " + dissociatedSecondSubstance;
                 } else {
                     if (secondSubstanceOxidSwap.contains("H (OH)")){
                         answerSecondPart = firstSubstanceOxidSwap + " + " + secondSubstanceOxidSwap.replace("H (OH)", "H2O");
+                    } else if (secondSubstanceOxidSwap.contains("0 (OH)")){
+                        answerSecondPart = firstSubstanceOxidSwap + " + " + secondSubstanceOxidSwap.replace("0 (OH)", "H2O");
                     } else answerSecondPart = firstSubstanceOxidSwap + " + " + secondSubstanceOxidSwap;
                 }
+
             } else answerSecondPart = firstSubstanceOxidSwap + " + " + secondSubstanceOxidSwap;
         }
 
+        answerSecondPart = answerSecondPart.replaceFirst("\\(0\\) 0", "");
+        answerSecondPart = answerSecondPart.replaceAll("0", "").trim();
         answerSecondPart = answerSecondPart.replaceAll(" ", "").trim();
         answerSecondPart = answerSecondPart.replace("+", " + ");
+
+        Array<String> tempArr = new Array<>(answerSecondPart.split(" \\+ "));
+        if (tempArr.size == 1){
+            answerSecondPart = tempArr.get(0);
+        } else if (tempArr.size == 2 && tempArr.get(0).equals("")){
+            answerSecondPart = tempArr.get(1);
+        }
 
         answer.add(answerFirstPart);
         answer.add(answerSecondPart);
