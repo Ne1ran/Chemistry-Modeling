@@ -116,39 +116,40 @@ public class ReactionHandler {
         }
 
         for (Oxid oxid : oxidPool.keySet()){
-            if (oxid.getOxid_name().equals("0") || oxid.getOxid_name().equals("O")){
+            if (oxid.getOxid_name().equals("0")){
                 containsNullOxid = true;
                 nullOxidsAmount++;
             }
         }
 
-        for (Substance substance : substances) {
-            if (substance.getSmallTexturePath().equals("H2O")) {
-                startReaction = false;
-                cause += "Работа с водой еще не проработана. ";
-//                if (containsNullOxid){
-//                    startReaction = true;
-//                    break;
-//                } else {
-//                    startReaction = false;
-//                }
-            }
-        }
-
         if (isFirstFoundStronger == isFirstOxidStronger){
             startReaction = false; //reaction won't start because strong elements are already combined
-            cause += "Одно из веще. ";
+            cause += "Вещества находятся в правильном балансе. ";
         }
 
-        if (nullOxidsAmount >= 1){
+        if (nullOxidsAmount > 1){
             startReaction = false;
+        }
+
+        for (Substance substance : substances) {
+            if (substance.getSmallTexturePath().equals("H2O")) {
+//                startReaction = false;
+                cause += "Работа с водой еще не проработана. ";
+                if (containsNullOxid){
+                    startReaction = true;
+                    break;
+                } else {
+                    startReaction = false;
+                }
+            }
         }
 
         if (startReaction){
 //            reactionStarted(foundPool, oxidPool);
             newReactionStart();
         } else {
-            phrase = "Реакция не пошла... Емкость очищена.";
+            phrase = "Реакция не пошла... Емкость очищена. Причина: ";
+            phrase += cause;
             clearEquipment();
         }
     }
@@ -294,15 +295,37 @@ public class ReactionHandler {
         }
 
         //answer part 2
-        System.out.println(answerSecondPart);
-
-        if (Integer.parseInt(firstFoundAfterSwapStrength) > 8 && Integer.parseInt(firstOxidAfterSwapStrength) > 12){
-            String dissociatedFirstSubstance = dissociate(firstSubstanceOxidSwap.replace(" ", ""));
-            answerSecondPart = dissociatedFirstSubstance + " + " + secondSubstanceOxidSwap;
-        } else if (Integer.parseInt(secondFoundAfterSwapStrength) > 8 && Integer.parseInt(secondOxidAfterSwapStrength) > 13){
-            String dissociatedSecondSubstance = dissociate(secondSubstanceOxidSwap.replace(" ", ""));
-            answerSecondPart = firstSubstanceOxidSwap + " + " + dissociatedSecondSubstance;
-        } else answerSecondPart = firstSubstanceOxidSwap + " + " + secondSubstanceOxidSwap;
+        if (firstSubstanceOxidSwap.contains("(0)")){
+            if (firstSubstanceOxidSwap.split(" ")[0].length() == 1) { //Cl problems probably?
+                firstSubstanceOxidSwap = firstSubstanceOxidSwap.replace("(0)", "2");
+            } else firstSubstanceOxidSwap = firstSubstanceOxidSwap.replace("(0)", "");
+            answerSecondPart = firstSubstanceOxidSwap + " + " + secondSubstanceOxidSwap;
+        } else if (secondSubstanceOxidSwap.contains("(0)")){
+            if (secondSubstanceOxidSwap.split(" ")[0].length() == 1){
+                secondSubstanceOxidSwap = secondSubstanceOxidSwap.replace("(0)", "2");
+            } else secondSubstanceOxidSwap = secondSubstanceOxidSwap.replace("(0)", "");
+            answerSecondPart = firstSubstanceOxidSwap + " + " + secondSubstanceOxidSwap;
+        } else {
+            if (Integer.parseInt(firstFoundAfterSwapStrength) > 8 && Integer.parseInt(firstOxidAfterSwapStrength) > 12){
+                String dissociatedFirstSubstance = dissociate(firstSubstanceOxidSwap.replace(" ", ""));
+                if (!dissociatedFirstSubstance.equals("")) {
+                    answerSecondPart = dissociatedFirstSubstance + " + " + secondSubstanceOxidSwap;
+                } else {
+                    if (firstSubstanceOxidSwap.contains("H (OH)")){
+                        answerSecondPart = firstSubstanceOxidSwap.replace("H (OH)", "H2O") + " + " + secondSubstanceOxidSwap;
+                    } else answerSecondPart = firstSubstanceOxidSwap + " + " + secondSubstanceOxidSwap;
+                }
+            } else if (Integer.parseInt(secondFoundAfterSwapStrength) > 8 && Integer.parseInt(secondOxidAfterSwapStrength) > 13){
+                String dissociatedSecondSubstance = dissociate(secondSubstanceOxidSwap.replace(" ", ""));
+                if (!dissociatedSecondSubstance.equals("")) {
+                    answerSecondPart = dissociatedSecondSubstance + " + " + dissociatedSecondSubstance;
+                } else {
+                    if (secondSubstanceOxidSwap.contains("H (OH)")){
+                        answerSecondPart = firstSubstanceOxidSwap + " + " + secondSubstanceOxidSwap.replace("H (OH)", "H2O");
+                    } else answerSecondPart = firstSubstanceOxidSwap + " + " + secondSubstanceOxidSwap;
+                }
+            } else answerSecondPart = firstSubstanceOxidSwap + " + " + secondSubstanceOxidSwap;
+        }
 
         answerSecondPart = answerSecondPart.replaceAll(" ", "").trim();
         answerSecondPart = answerSecondPart.replace("+", " + ");
