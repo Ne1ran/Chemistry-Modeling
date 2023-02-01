@@ -12,7 +12,7 @@ public class Equipment extends Rectangle {
     private String x_pos;
     private String y_pos;
     private Boolean isSetOnPlace;
-    private ArrayList<String> substancesInside = new ArrayList<>();
+    private ArrayList<Substance> substancesInside = new ArrayList<>();
     private String xAfter;
     private String yAfter;
 
@@ -20,15 +20,10 @@ public class Equipment extends Rectangle {
 
     }
 
-    public void addSubstance(String id){
-        substancesInside.add(id);
+    public void addSubstance(Substance substance){
+        substancesInside.add(substance);
     }
-
-    public void setSubstancesInside(ArrayList<String> substancesInside) {
-        this.substancesInside = substancesInside;
-    }
-
-    public ArrayList<String> getSubstancesInside() {
+    public ArrayList<Substance> getSubstancesInside() {
         return substancesInside;
     }
 

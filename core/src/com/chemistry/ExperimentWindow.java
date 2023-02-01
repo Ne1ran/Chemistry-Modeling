@@ -29,7 +29,7 @@ public class ExperimentWindow implements Screen {
     private final BitmapFont expFont;
     private final BitmapFont slotTextFont;
     private final Texture choosedSlotTexture;
-//    private final ReactionHandler reactionHandler = new ReactionHandler();
+    private final ReactionHandler reactionHandler = new ReactionHandler();
 
     private final OrthographicCamera camera;
 
@@ -93,6 +93,7 @@ public class ExperimentWindow implements Screen {
             slot.setSlotId(i);
             slot.setSlotTexture("");
             slot.setThisSlotPicked(false);
+            slot.setSubstanceInSlot(new Substance());
             inventory.add(slot);
         }
 
@@ -208,11 +209,11 @@ public class ExperimentWindow implements Screen {
             for (Equipment equip: usedEquipment) {
                 if (equip.overlaps(mouseSpawnerRect)){
                     if (inventorySlotIsPicked){
-                        String substanceInSlotId = "";
+                        Substance substanceInSlotId = new Substance();
                         for (InventorySlot slot: inventory) {
                             if (slot.getThisSlotPicked()){
-                                if (!slot.getSubstanceIdInSlot().isEmpty()){
-                                    substanceInSlotId = slot.getSubstanceIdInSlot();
+                                if (!slot.getSubstanceInSlot().getSubstanceNameInGame().equals("Ничего")){
+                                    substanceInSlotId = slot.getSubstanceInSlot();
                                     break;
                                 }
                             }
@@ -239,9 +240,9 @@ public class ExperimentWindow implements Screen {
                 if (subs.overlaps(mouseSpawnerRect)){
                     choosedSubstance = Integer.valueOf(subs.getSubId());
                     for (InventorySlot slot : inventory){
-                        if(slot.getSubstanceIdInSlot().isEmpty()){
-                            slot.setSubstanceIdInSlot(String.valueOf(choosedSubstance));
+                        if(slot.getSubstanceInSlot().getSubstanceNameInGame().equals("Ничего")){
                             slot.setSlotTexture(subs.getSubstanceNameInGame());
+                            slot.setSubstanceInSlot(subs);
                             phrase = "Добавил в инвентарь: " + subs.getName();
                             break;
                         }
@@ -254,10 +255,10 @@ public class ExperimentWindow implements Screen {
             for (InventorySlot slot : inventory){
                 if (slot.overlaps(mouseSpawnerRect)){
                     if (deleteFromInventory) {
-                        if (slot.getSubstanceIdInSlot().isEmpty()) {
+                        if (slot.getSubstanceInSlot().getSubstanceNameInGame().equals("Ничего")) {
                             phrase = "Пустовато тут...";
                         } else {
-                            slot.setSubstanceIdInSlot("");
+                            slot.setSubstanceInSlot(new Substance());
                             slot.setSlotTexture("");
                             phrase = "Убрал содержимое слота номер " + slot.getSlotId()+1;
                             if (slot.getThisSlotPicked()){
@@ -281,9 +282,9 @@ public class ExperimentWindow implements Screen {
                                 }
                             }
                             if (count == 0){
-                                if (!slot.getSubstanceIdInSlot().equals("")) {
+                                if (!slot.getSubstanceInSlot().getSubstanceNameInGame().equals("Ничего")) {
                                     for (Substance substance : usedSubstances) {
-                                        if (substance.getSubId().equals(slot.getSubstanceIdInSlot())) {
+                                        if (substance.getSubId().equals(slot.getSubstanceInSlot().getSubId())) {
                                             phrase = "Этот слот теперь выбран для работы. В нем находится - " + substance.getName();
                                         }
                                     }
@@ -295,7 +296,7 @@ public class ExperimentWindow implements Screen {
                                     slot2.setThisSlotPicked(slotTryingToPickId == slot2.getSlotId());
                                 }
                                 for (Substance substance : usedSubstances){
-                                    if (substance.getSubId().equals(slot.getSubstanceIdInSlot())){
+                                    if (substance.getSubId().equals(slot.getSubstanceInSlot().getSubId())){
                                         phrase = "Выбранный слот изменен на другой, в нем находится - " + substance.getName();
                                     }
                                 }

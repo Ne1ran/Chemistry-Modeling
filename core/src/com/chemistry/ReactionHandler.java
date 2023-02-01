@@ -1,5 +1,5 @@
 package com.chemistry;
-/*
+
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.Array;
 import com.chemistry.dto.Equipment;
@@ -21,7 +21,7 @@ public class ReactionHandler {
     public DBHandler handler = new DBHandler();
 
     public String cause = "";
-
+/*
     public void getSubstancesFromEquipment(Equipment equipment) throws SQLException, ClassNotFoundException {
         substances = new ArrayList<>();
         foundPool = new LinkedHashMap<>();
@@ -543,5 +543,6 @@ public class ReactionHandler {
 
 
     }
+    */
+
 }
-*/
