@@ -67,7 +67,7 @@ public class ExperimentChooseWindow implements Screen {
                 public void changed(ChangeEvent event, Actor actor) {
                     try {
                         handler.setChoosenExperiment(exp_id);
-                        game.setScreen(new ExperimentWindow(game));
+//                        game.setScreen(new ExperimentWindow(game));
                     } catch (SQLException | ClassNotFoundException throwables) {
                         throwables.printStackTrace();
                     }
@@ -111,7 +111,7 @@ public class ExperimentChooseWindow implements Screen {
                 public void changed(ChangeEvent event, Actor actor) {
                     try {
                         handler.setChoosenExperiment(exp_id);
-                        game.setScreen(new ExperimentWindow(game));
+//                        game.setScreen(new ExperimentWindow(game));
                     } catch (SQLException | ClassNotFoundException throwables) {
                         throwables.printStackTrace();
                     }

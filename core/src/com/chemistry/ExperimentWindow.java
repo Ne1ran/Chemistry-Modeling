@@ -18,9 +18,9 @@ import java.util.ArrayList;
 
 import static com.chemistry.ExperimentChooseWindow.choosenExperiment;
 
-public class ExperimentWindow implements Screen {
-    final ChemistryModelingGame game;
-
+//public class ExperimentWindow implements Screen {
+    //final ChemistryModelingGame game;
+ /*
     private final Texture experimentBackground;
     private final Texture inventoryTexture;
     private final Texture chemist;
@@ -102,19 +102,19 @@ public class ExperimentWindow implements Screen {
             Substance tempSubstance = new Substance();
             if (substanceItself.next()){
                 tempSubstance.setSubId(substanceItself.getString(AllConstants.SubsConsts.ID));
-                tempSubstance.setTexture_path(new Texture(substanceItself.getString(AllConstants.SubsConsts.TEXTURE_PATH)));
+                tempSubstance.setTexture(new Texture(substanceItself.getString(AllConstants.SubsConsts.TEXTURE_PATH)));
                 tempSubstance.setName(substanceItself.getString(AllConstants.SubsConsts.NAME));
                 tempSubstance.setFoundation(substanceItself.getString(AllConstants.SubsConsts.FOUND_PART_NAME));
                 tempSubstance.setOxid(substanceItself.getString(AllConstants.SubsConsts.OXID_PART_NAME));
                 tempSubstance.setSmallTexturePath(substanceItself.getString(AllConstants.SubsConsts.SMALL_TEXTURE));
                 tempSubstance.setFound_amount(substanceItself.getString(AllConstants.SubsConsts.FOUND_AMOUNT));
                 tempSubstance.setOxid_amount(substanceItself.getString(AllConstants.SubsConsts.OXID_AMOUNT));
-                tempSubstance.setSize(tempSubstance.getTexture_path().getWidth(), tempSubstance.getTexture_path().getHeight());
+                tempSubstance.setSize(tempSubstance.getTexture().getWidth(), tempSubstance.getTexture().getHeight());
                 ResultSet substanceExpConn = handler.getSubstanceByIDInSubsExpsTableForExpWindow(
                         substanceItself.getString(AllConstants.SubsConsts.ID), choosenExperiment.getExp_id());
                 if (substanceExpConn.next()){
                     tempSubstance.setX(Float.parseFloat(substanceExpConn.getString(AllConstants.SubsExpConsts.SUBS_X)));
-                    tempSubstance.setY(720 - Float.parseFloat(substanceExpConn.getString(AllConstants.SubsExpConsts.SUBS_Y)) - tempSubstance.getTexture_path().getHeight());
+                    tempSubstance.setY(720 - Float.parseFloat(substanceExpConn.getString(AllConstants.SubsExpConsts.SUBS_Y)) - tempSubstance.getTexture().getHeight());
                 }
             }
             usedSubstances.add(tempSubstance);
@@ -182,7 +182,7 @@ public class ExperimentWindow implements Screen {
         }
 
         for (Substance subs : usedSubstances){
-            game.batch.draw(subs.getTexture_path(), subs.getX(), 720 - subs.getY() - subs.getHeight());
+            game.batch.draw(subs.getTexture(), subs.getX(), 720 - subs.getY() - subs.getHeight());
         }
 
         for (Equipment equip: usedEquipment) {
@@ -350,3 +350,4 @@ public class ExperimentWindow implements Screen {
 
     }
 }
+  */

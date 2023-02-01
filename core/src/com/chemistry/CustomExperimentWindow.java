@@ -34,7 +34,7 @@ public class CustomExperimentWindow implements Screen {
     private final Texture equipMenu;
     private final Texture equipMenuSlot;
     private final Texture equipMenuSlotChoosed;
-    private final DBHandler handler = new DBHandler();
+    private static final DBHandler handler = new DBHandler();
     private final Rectangle arrowRight;
     private final Rectangle arrowLeft;
     private final Rectangle arrowSubstanceMenuRight;
@@ -58,7 +58,7 @@ public class CustomExperimentWindow implements Screen {
 
     private final Array<Equipment> equipmentPlaced;
     private final ArrayList<String> equipments;
-    private final Array<Array<String>> subtancesInMenu;
+    private final Array<Array<Substance>> subtancesInMenu;
     private int equipmentPlacedElementId;
     private final Label saveButtonLabel;
     private final Rectangle saveRect;
@@ -147,7 +147,7 @@ public class CustomExperimentWindow implements Screen {
         stageMenuImage.setPosition(1280/2f- saveMenuTexture.getWidth()/2f, 720/2f- saveMenuTexture.getHeight()/2f);
         saveMenuStage.addActor(stageMenuImage);
 
-        ArrayList<String> substances = handler.getAllSubstancesNames(); // Getting all substances' names
+        ArrayList<Substance> substances = handler.getAllSubstances(); // Getting all substances' names
 
         subtancesInMenu = new Array<>();
 
@@ -163,19 +163,19 @@ public class CustomExperimentWindow implements Screen {
         equipments = handler.getAllEquipmentsNames();
         equipmentPlacedElementId = 0;
         if (equipments.size()>0){
-            equipSlot.setSlotTexture(equipments.get(0));
-        } else equipSlot.setSlotTexture("Ничего нет");
+            equipSlot.setSlotSubstanceName(equipments.get(0));
+        } else equipSlot.setSlotSubstanceName("Ничего нет");
 
         for (int i = 0; i < rows; i++){
-            Array<String> tempArr = new Array<>();
+            Array<Substance> tempArr = new Array<>();
             for (int j = 0; j < 6; j++){
                 if (i == rows-1) {
                     if (i*6+j< substances.size()) {
                         if (ostatok-1 >= j) {
                             tempArr.add(substances.get(j + i * 6));
-                        } else tempArr.add("Ничего");
+                        } else tempArr.add(new Substance());
                     } else {
-                        tempArr.add("Ничего");
+                        tempArr.add(new Substance());
                     }
                 } else tempArr.add(substances.get(j + i*6));
             }
@@ -278,7 +278,8 @@ public class CustomExperimentWindow implements Screen {
             substance.setSize(166, 120);
             substance.setY(715-substance.getHeight());
             substance.setSlotId(i+1);
-            substance.setSlotTexture(subtancesInMenu.get(substanceMenuRowPicked).get(i)); //name
+            substance.setSlotSubstanceName(subtancesInMenu.get(substanceMenuRowPicked).get(i).getSubstanceNameInGame()); //name
+            substance.setSubstanceIdInSlot(subtancesInMenu.get(substanceMenuRowPicked).get(i).getSubId()); //id
             substance.setThisSlotPicked(false);
             substancesMenu.add(substance);
         }
@@ -307,7 +308,7 @@ public class CustomExperimentWindow implements Screen {
             if (slot.getThisSlotPicked()) {
                 game.batch.draw(menuSlotChoosen, slot.getX() + 3, 5);
             } else game.batch.draw(menuSlotTexture, slot.getX() + 3, 5);
-            Label textInSlot = new Label(slot.getSlotTexture(), labelStyle);
+            Label textInSlot = new Label(slot.getSlotSubstanceName(), labelStyle);
             textInSlot.setPosition(slot.getX() + 5, 5);
             textInSlot.setSize(164, 110);
             textInSlot.setAlignment(1);
@@ -316,7 +317,7 @@ public class CustomExperimentWindow implements Screen {
         }
 
         for (Substance substance : substancesPlaced) {
-            game.batch.draw(substance.getTexture_path(), substance.getX(),
+            game.batch.draw(substance.getTexture(), substance.getX(),
                     720 - substance.getY() - substance.getHeight());
         }
 
@@ -329,7 +330,7 @@ public class CustomExperimentWindow implements Screen {
             game.batch.draw(equipMenuSlotChoosed, equipSlot.getX()+6, 720-equipMenu.getHeight()+5);
         } else game.batch.draw(equipMenuSlot, equipSlot.getX()+6, 720-equipMenu.getHeight()+5);
 
-        equipMenuLabel.setText(equipSlot.getSlotTexture());
+        equipMenuLabel.setText(equipSlot.getSlotSubstanceName());
         equipMenuLabel.draw(this.game.batch, 1f);
 
         if (saveMenuEnabled){
@@ -349,14 +350,14 @@ public class CustomExperimentWindow implements Screen {
                     if (arrowSubstanceMenuRight.overlaps(mouseSpawnerRect)){
                         if (equipmentPlacedElementId + 1 < equipments.size()){
                             equipmentPlacedElementId++;
-                            equipSlot.setSlotTexture(equipments.get(equipmentPlacedElementId));
+                            equipSlot.setSlotSubstanceName(equipments.get(equipmentPlacedElementId));
                         } else System.out.println("This is last element");
                     }
 
                     if (arrowSubstanceMenuLeft.overlaps(mouseSpawnerRect)){
                         if (equipmentPlacedElementId - 1 >= 0 ){
                             equipmentPlacedElementId--;
-                            equipSlot.setSlotTexture(equipments.get(equipmentPlacedElementId));
+                            equipSlot.setSlotSubstanceName(equipments.get(equipmentPlacedElementId));
                         } else System.out.println("This is first element");
                     }
 
@@ -365,7 +366,7 @@ public class CustomExperimentWindow implements Screen {
                         equipmentPicked = true;
                         mouseSpawnerRect.setPosition(-100, -100);
                         try {
-                            setChoosedEquipment(equipSlot.getSlotTexture());
+                            setChoosedEquipment(equipSlot.getSlotSubstanceName());
                         } catch (SQLException | ClassNotFoundException e) {
                             throw new RuntimeException(e);
                         }
@@ -393,7 +394,7 @@ public class CustomExperimentWindow implements Screen {
                     if (!equipmentPicked){
                         for (MenuSlot slot : substancesMenu) {
                             if (slot.overlaps(mouseSpawnerRect)) {
-                                if (!slot.getSlotTexture().equals("Ничего")) {
+                                if (!slot.getSlotSubstanceName().equals("Ничего")) {
                                     if (!unpickFromMenu && isSomethingPicked && !slot.getThisSlotPicked()) { // if something is picked and we want to swap
                                         substancesMenu.get(choosedSlotId - 1).setThisSlotPicked(false);
                                         choosedSlotId = slot.getSlotId();
@@ -401,7 +402,7 @@ public class CustomExperimentWindow implements Screen {
                                         System.out.println("Repicked slot with id: " + slot.getSlotId());
                                         mouseSpawnerRect.setPosition(-100, -100);
                                         try {
-                                            setChoosedSubstance(slot.getSlotTexture());
+                                            setChoosedSubstance(slot.getSubstanceIdInSlot());
                                         } catch (SQLException | ClassNotFoundException e) {
                                             throw new RuntimeException(e);
                                         }
@@ -412,7 +413,7 @@ public class CustomExperimentWindow implements Screen {
                                         isSomethingPicked = true;
                                         rightClick = false;
                                         try {
-                                            setChoosedSubstance(slot.getSlotTexture());
+                                            setChoosedSubstance(slot.getSubstanceIdInSlot());
                                         } catch (SQLException | ClassNotFoundException e) {
                                             throw new RuntimeException(e);
                                         }
@@ -514,25 +515,64 @@ public class CustomExperimentWindow implements Screen {
         equipSlot.setThisSlotPicked(false);
         equipPickedFromMenu = new Equipment();
     }
-    public void setChoosedSubstance(String substanceName) throws SQLException, ClassNotFoundException {
-        ResultSet foundSubstance = handler.findSubstanceByName(substanceName); // Finding substance with name (small_texture)
+    public void setChoosedSubstance(String substanceId) throws SQLException, ClassNotFoundException {
+        ResultSet foundSubstance = handler.findSubstanceById(substanceId); // Finding substance with name (small_texture)
         if (foundSubstance.next()) {
             substancePicked.setSubId(foundSubstance.getString(AllConstants.SubsConsts.ID));
-            substancePicked.setTexture_path(new Texture(foundSubstance.getString(AllConstants.SubsConsts.TEXTURE_PATH)));
+            substancePicked.setTexture(new Texture(foundSubstance.getString(AllConstants.SubsConsts.TEXTURE_PATH)));
             substancePicked.setName(foundSubstance.getString(AllConstants.SubsConsts.NAME));
             substancePicked.setFoundation(foundSubstance.getString(AllConstants.SubsConsts.FOUND_PART_NAME));
             substancePicked.setOxid(foundSubstance.getString(AllConstants.SubsConsts.OXID_PART_NAME));
-            substancePicked.setSmallTexturePath(foundSubstance.getString(AllConstants.SubsConsts.SMALL_TEXTURE));
             substancePicked.setFound_amount(foundSubstance.getString(AllConstants.SubsConsts.FOUND_AMOUNT));
             substancePicked.setOxid_amount(foundSubstance.getString(AllConstants.SubsConsts.OXID_AMOUNT));
-            substancePicked.setSize(substancePicked.getTexture_path().getWidth(), substancePicked.getTexture_path().getHeight());
+            substancePicked.setSize(substancePicked.getTexture().getWidth(), substancePicked.getTexture().getHeight());
+
             ResultSet substanceExpConn = handler.getSubstanceByIDInSubsExpsTable(foundSubstance.getString(AllConstants.SubsConsts.ID));
             if (substanceExpConn.next()){
                 substancePicked.setX(Float.parseFloat(substanceExpConn.getString(AllConstants.SubsExpConsts.SUBS_X)));
                 substancePicked.setY(720 - Float.parseFloat(substanceExpConn.getString(AllConstants.SubsExpConsts.SUBS_Y)) - 200);
             }
-            System.out.println("Resetted substance with name " + substancePicked.getSmallTexturePath());
+
+            System.out.println("Resetted substance with name " + substancePicked.getName());
         }
+    }
+
+    public static String createInGameNameForSubstance(String string) throws SQLException, ClassNotFoundException {
+        String name = "";
+        Array<String> tempArr = new Array<>(string.split(" "));
+
+        if (!tempArr.get(0).split("-")[0].equals("0")) {
+            if (Integer.parseInt(tempArr.get(0).split("-")[1]) > 1) {
+
+                //if not simple
+                if (!handler.getIsFoundationSimple(tempArr.get(0).split("-")[0])){
+                    name += "(" + tempArr.get(0).split("-")[0] + ")" + tempArr.get(0).split("-")[1];
+                } else {
+                    name += tempArr.get(0).split("-")[0] + tempArr.get(0).split("-")[1];
+                }
+
+            }  else name += tempArr.get(0).split("-")[0];
+        }
+
+        if (!tempArr.get(1).split("-")[0].equals("0")) {
+            if (Integer.parseInt(tempArr.get(1).split("-")[1]) > 1) {
+
+                //if not simple
+                if (!handler.getIsOxidizerSimple(tempArr.get(1).split("-")[0])) {
+                    name += "(" + tempArr.get(1).split("-")[0] + ")" + tempArr.get(1).split("-")[1];
+                } else {
+                    name += tempArr.get(1).split("-")[0] + tempArr.get(1).split("-")[1];
+                }
+
+
+            } else name += tempArr.get(1).split("-")[0];
+        }
+
+        if (name.equals("HOH")){
+            name = "H2O";
+        }
+
+        return name;
     }
     public void setChoosedEquipment(String equipName) throws SQLException, ClassNotFoundException {
         ResultSet foundEquip = handler.findEquipmentByItsName(equipName); // Finding substance with name (small_texture)

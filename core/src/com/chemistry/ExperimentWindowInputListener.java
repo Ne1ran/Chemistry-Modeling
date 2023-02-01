@@ -1,5 +1,5 @@
 package com.chemistry;
-
+/*
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 
@@ -70,3 +70,4 @@ public class ExperimentWindowInputListener implements InputProcessor {
         return false;
     }
 }
+*/

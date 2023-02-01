@@ -1,5 +1,5 @@
 package com.chemistry;
-
+/*
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.Array;
 import com.chemistry.dto.Equipment;
@@ -31,7 +31,7 @@ public class ReactionHandler {
             ResultSet substanceFromDB = handler.getSubstanceByID(substanceId);
             if (substanceFromDB.next()){
                 tempSubstance.setSubId(substanceFromDB.getString(AllConstants.SubsConsts.ID));
-                tempSubstance.setTexture_path(new Texture(substanceFromDB.getString(AllConstants.SubsConsts.TEXTURE_PATH)));
+                tempSubstance.setTexture(new Texture(substanceFromDB.getString(AllConstants.SubsConsts.TEXTURE_PATH)));
                 tempSubstance.setName(substanceFromDB.getString(AllConstants.SubsConsts.NAME));
                 tempSubstance.setFoundation(substanceFromDB.getString(AllConstants.SubsConsts.FOUND_PART_NAME));
                 tempSubstance.setOxid(substanceFromDB.getString(AllConstants.SubsConsts.OXID_PART_NAME));
@@ -544,4 +544,4 @@ public class ReactionHandler {
 
     }
 }
-
+*/
