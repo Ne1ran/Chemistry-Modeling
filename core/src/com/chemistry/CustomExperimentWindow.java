@@ -572,6 +572,8 @@ public class CustomExperimentWindow implements Screen {
             name = "H2O";
         }
 
+        System.out.println(name + " - InGameSubstanceName");
+
         return name;
     }
     public void setChoosedEquipment(String equipName) throws SQLException, ClassNotFoundException {

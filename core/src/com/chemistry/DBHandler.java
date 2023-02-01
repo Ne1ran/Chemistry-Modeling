@@ -51,12 +51,6 @@ public class DBHandler extends Config{
             return true;
         } else return false;
     }
-
-//    public Integer checkAvailableExperiments() {
-//        int UserExperiment = Integer.parseInt(currentUser.getCurrent_exp());
-//        return UserExperiment;
-//    }
-
     public void setChoosenExperiment(String id) throws SQLException, ClassNotFoundException {
         ResultSet rset = null;
         String select = "SELECT * FROM " + AllConstants.ExpConsts.EXP_TABLE + " where " + AllConstants.ExpConsts.EXP_ID
@@ -161,15 +155,6 @@ public class DBHandler extends Config{
         }
         return substancesNames;
     }
-
-//    public ResultSet findSubstanceByName(String substanceName) throws SQLException, ClassNotFoundException {
-//        ResultSet rset = null;
-//        String select = "SELECT * FROM " + AllConstants.SubsConsts.SUBS_TABLE + " Where "
-//                + AllConstants.SubsConsts.SMALL_TEXTURE + " ='" + substanceName + "'";
-//        PreparedStatement prst = getConnection().prepareStatement(select);
-//        rset = prst.executeQuery();
-//        return rset;
-//    }
 
     public ResultSet getSubstanceByIDInSubsExpsTable(String subsId) throws SQLException, ClassNotFoundException {
         ResultSet rset = null;

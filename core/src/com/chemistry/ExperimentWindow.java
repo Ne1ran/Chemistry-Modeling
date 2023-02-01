@@ -16,11 +16,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import static com.chemistry.CustomExperimentWindow.createInGameNameForSubstance;
 import static com.chemistry.ExperimentChooseWindow.choosenExperiment;
 
-//public class ExperimentWindow implements Screen {
-    //final ChemistryModelingGame game;
- /*
+public class ExperimentWindow implements Screen {
+    final ChemistryModelingGame game;
+
     private final Texture experimentBackground;
     private final Texture inventoryTexture;
     private final Texture chemist;
@@ -28,7 +29,7 @@ import static com.chemistry.ExperimentChooseWindow.choosenExperiment;
     private final BitmapFont expFont;
     private final BitmapFont slotTextFont;
     private final Texture choosedSlotTexture;
-    private final ReactionHandler reactionHandler = new ReactionHandler();
+//    private final ReactionHandler reactionHandler = new ReactionHandler();
 
     private final OrthographicCamera camera;
 
@@ -104,11 +105,16 @@ import static com.chemistry.ExperimentChooseWindow.choosenExperiment;
                 tempSubstance.setSubId(substanceItself.getString(AllConstants.SubsConsts.ID));
                 tempSubstance.setTexture(new Texture(substanceItself.getString(AllConstants.SubsConsts.TEXTURE_PATH)));
                 tempSubstance.setName(substanceItself.getString(AllConstants.SubsConsts.NAME));
+
                 tempSubstance.setFoundation(substanceItself.getString(AllConstants.SubsConsts.FOUND_PART_NAME));
                 tempSubstance.setOxid(substanceItself.getString(AllConstants.SubsConsts.OXID_PART_NAME));
-                tempSubstance.setSmallTexturePath(substanceItself.getString(AllConstants.SubsConsts.SMALL_TEXTURE));
                 tempSubstance.setFound_amount(substanceItself.getString(AllConstants.SubsConsts.FOUND_AMOUNT));
                 tempSubstance.setOxid_amount(substanceItself.getString(AllConstants.SubsConsts.OXID_AMOUNT));
+
+                tempSubstance.setSubstanceNameInGame(createInGameNameForSubstance(
+                        tempSubstance.getFoundation() + "-" + tempSubstance.getFound_amount() + " " +
+                                tempSubstance.getOxid() + "-" + tempSubstance.getOxid_amount()));
+
                 tempSubstance.setSize(tempSubstance.getTexture().getWidth(), tempSubstance.getTexture().getHeight());
                 ResultSet substanceExpConn = handler.getSubstanceByIDInSubsExpsTableForExpWindow(
                         substanceItself.getString(AllConstants.SubsConsts.ID), choosenExperiment.getExp_id());
@@ -219,11 +225,11 @@ import static com.chemistry.ExperimentChooseWindow.choosenExperiment;
                         }
                         // Need a normal check if substance is already added
                         if (equip.getSubstancesInside().size()>=2){
-                            try {
-                                reactionHandler.getSubstancesFromEquipment(equip);
-                            } catch (SQLException | ClassNotFoundException throwables) {
-                                throwables.printStackTrace();
-                            }
+//                            try {
+//                                reactionHandler.getSubstancesFromEquipment(equip);
+//                            } catch (SQLException | ClassNotFoundException throwables) {
+//                                throwables.printStackTrace();
+//                            }
                         }
                     } else phrase = "Вы ничего не выбрали...";
                 }
@@ -235,7 +241,7 @@ import static com.chemistry.ExperimentChooseWindow.choosenExperiment;
                     for (InventorySlot slot : inventory){
                         if(slot.getSubstanceIdInSlot().isEmpty()){
                             slot.setSubstanceIdInSlot(String.valueOf(choosedSubstance));
-                            slot.setSlotTexture(subs.getSmallTexturePath());
+                            slot.setSlotTexture(subs.getSubstanceNameInGame());
                             phrase = "Добавил в инвентарь: " + subs.getName();
                             break;
                         }
@@ -350,4 +356,4 @@ import static com.chemistry.ExperimentChooseWindow.choosenExperiment;
 
     }
 }
-  */
+
