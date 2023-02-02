@@ -518,20 +518,10 @@ public class ReactionHandler {
 
     public void clearEquipment(){
         for (Equipment equip : usedEquipment) {
-            boolean check = false;
-            for (Substance substance : substances) {
-                if (!equip.getSubstancesInside().contains(substance.getSubId())) {
-                    check = false;
-                    break;
-                } else check = true;
-            }
-            if (check) {
-                equip.setSubstancesInside(new ArrayList<Substance>());
-                System.out.println("Equipment is clear now");
-            }
+            //need a check here if equipment is fulled with substances
+            equip.setSubstancesInside(new ArrayList<Substance>());
+            cause = "";
         }
-
-
     }
 
 
