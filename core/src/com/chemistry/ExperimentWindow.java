@@ -219,19 +219,17 @@ public class ExperimentWindow implements Screen {
                             }
                         } //extended functions lower incoming... \|/
                         equip.addSubstance(substanceInSlotId);
-                        for (Substance substance : usedSubstances){
-                            if (substance.getSubId().equals(substanceInSlotId)){
-                                phrase = "Добавил " + substance.getName() + " в минзурку!";
-                            }
-                        }
+                        phrase = "Добавил " + substanceInSlotId.getName() + " в минзурку!";
+
                         // Need a normal check if substance is already added
                         if (equip.getSubstancesInside().size()>=2){
-//                            try {
-//                                reactionHandler.getSubstancesFromEquipment(equip);
-//                            } catch (SQLException | ClassNotFoundException throwables) {
-//                                throwables.printStackTrace();
-//                            }
+                            try {
+                                reactionHandler.getSubstancesFromEquipment(equip);
+                            } catch (SQLException | ClassNotFoundException throwables) {
+                                throwables.printStackTrace();
+                            }
                         }
+
                     } else phrase = "Вы ничего не выбрали...";
                 }
             }

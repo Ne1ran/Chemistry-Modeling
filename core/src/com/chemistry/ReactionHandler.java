@@ -21,28 +21,14 @@ public class ReactionHandler {
     public DBHandler handler = new DBHandler();
 
     public String cause = "";
-/*
+
     public void getSubstancesFromEquipment(Equipment equipment) throws SQLException, ClassNotFoundException {
-        substances = new ArrayList<>();
+        substances = new ArrayList<>(equipment.getSubstancesInside());
         foundPool = new LinkedHashMap<>();
         oxidPool = new LinkedHashMap<>();
-        for (String substanceId : equipment.getSubstancesInside()){
-            Substance tempSubstance = new Substance();
-            ResultSet substanceFromDB = handler.getSubstanceByID(substanceId);
-            if (substanceFromDB.next()){
-                tempSubstance.setSubId(substanceFromDB.getString(AllConstants.SubsConsts.ID));
-                tempSubstance.setTexture(new Texture(substanceFromDB.getString(AllConstants.SubsConsts.TEXTURE_PATH)));
-                tempSubstance.setName(substanceFromDB.getString(AllConstants.SubsConsts.NAME));
-                tempSubstance.setFoundation(substanceFromDB.getString(AllConstants.SubsConsts.FOUND_PART_NAME));
-                tempSubstance.setOxid(substanceFromDB.getString(AllConstants.SubsConsts.OXID_PART_NAME));
-                tempSubstance.setSmallTexturePath(substanceFromDB.getString(AllConstants.SubsConsts.SMALL_TEXTURE));
-                tempSubstance.setFound_amount(substanceFromDB.getString(AllConstants.SubsConsts.FOUND_AMOUNT));
-                tempSubstance.setOxid_amount(substanceFromDB.getString(AllConstants.SubsConsts.OXID_AMOUNT));
-            }
-            substances.add(tempSubstance);
-        }
         experimentPoolSetting(substances);
     }
+
 
     public void experimentPoolSetting(ArrayList<Substance> substances) throws SQLException, ClassNotFoundException {
         for (Substance subs : substances){
@@ -56,10 +42,8 @@ public class ReactionHandler {
                 Foundation tempFoundation = new Foundation();
                 tempFoundation.setFoundation_name(foundationFound.getString(AllConstants.FoundConsts.FOUNDATION_NAME));
                 tempFoundation.setName(foundationFound.getString(AllConstants.FoundConsts.NAME));
-                tempFoundation.setFound_state_min(foundationFound.getString(AllConstants.FoundConsts.FOUND_STATE_MIN));
-                tempFoundation.setFound_state_max(foundationFound.getString(AllConstants.FoundConsts.FOUND_STATE_MAX));
+                tempFoundation.setPossible_states(foundationFound.getString(AllConstants.FoundConsts.POSSIBLE_STATES));
                 tempFoundation.setElectrochem_pos(foundationFound.getString(AllConstants.FoundConsts.ELECTROCHEM_POSITION));
-
                 foundPool.put(tempFoundation, found_amount);
             }
 
@@ -69,8 +53,7 @@ public class ReactionHandler {
 
                 tempOxid.setOxid_name(oxidFound.getString(AllConstants.OxidConsts.OXIDIZER_NAME));
                 tempOxid.setName(oxidFound.getString(AllConstants.OxidConsts.NAME));
-                tempOxid.setOxid_state_min(oxidFound.getString(AllConstants.OxidConsts.OXID_STATE_MIN));
-                tempOxid.setOxid_state_max(oxidFound.getString(AllConstants.OxidConsts.OXID_STATE_MAX));
+                tempOxid.setPossible_states(oxidFound.getString(AllConstants.OxidConsts.POSSIBLE_STATES));
                 tempOxid.setOxid_strength(oxidFound.getString(AllConstants.OxidConsts.OXID_STRENGTH));
 
                 oxidPool.put(tempOxid, oxid_amount);
@@ -132,7 +115,7 @@ public class ReactionHandler {
         }
 
         for (Substance substance : substances) {
-            if (substance.getSmallTexturePath().equals("H2O")) {
+            if (substance.getSubstanceNameInGame().equals("H2O")) {
                 if (containsNullOxid){
                     startReaction = true;
                     break;
@@ -151,6 +134,8 @@ public class ReactionHandler {
             clearEquipment();
         }
     }
+
+
     public void newReactionStart() throws SQLException, ClassNotFoundException {
         Array<String> answer = new Array<>(); // All answer
         String answerFirstPart = ""; //First part (before =)
@@ -170,7 +155,7 @@ public class ReactionHandler {
         }
 
         for (Substance substance : substances){
-            answerFirstPart += substance.getSmallTexturePath();
+            answerFirstPart += substance.getSubstanceNameInGame();
             answerFirstPart += " + ";
         }
         answerFirstPart = answerFirstPart.substring(0, answerFirstPart.length()-3);
@@ -182,11 +167,11 @@ public class ReactionHandler {
         int firstOxidAmount = oxidPool.get(oxids.get(0));
         int secondOxidAmount = oxidPool.get(oxids.get(1));
 
-        int firstFoundationOxidState = Integer.parseInt(foundations.get(0).getFound_state_max());
-        int secondFoundationOxidState = Integer.parseInt(foundations.get(1).getFound_state_max());
+        int firstFoundationOxidState = Integer.parseInt(foundations.get(0).getPossible_states());
+        int secondFoundationOxidState = Integer.parseInt(foundations.get(1).getPossible_states());
 
-        int firstOxid_OxidState = -Integer.parseInt(oxids.get(0).getOxid_state_max());
-        int secondOxid_OxidState = -Integer.parseInt(oxids.get(1).getOxid_state_max());
+        int firstOxid_OxidState = -Integer.parseInt(oxids.get(0).getPossible_states());
+        int secondOxid_OxidState = -Integer.parseInt(oxids.get(1).getPossible_states());
 
         String firstSubstanceOxidSwap = ""; //Here is substance (found - 1, oxid - 2) NO AMOUNT
         String secondSubstanceOxidSwap = ""; //Here is substance (found - 2, oxid - 1) NO AMOUNT
@@ -316,7 +301,7 @@ public class ReactionHandler {
         } else {
 
             if (Integer.parseInt(firstFoundAfterSwapStrength) > 8 && Integer.parseInt(firstOxidAfterSwapStrength) > 12){ //Dissotiation possibility
-                String dissociatedFirstSubstance = dissociate(firstSubstanceOxidSwap.replace(" ", ""));
+                String dissociatedFirstSubstance = dissociate(tempArrayFirstSubstance);
                 canReactionBeMade = true;
 
                 if (!dissociatedFirstSubstance.equals("")) { //if there is something
@@ -330,7 +315,7 @@ public class ReactionHandler {
                 }
 
             } else if (Integer.parseInt(secondFoundAfterSwapStrength) > 8 && Integer.parseInt(secondOxidAfterSwapStrength) > 13){
-                String dissociatedSecondSubstance = dissociate(secondSubstanceOxidSwap.replace(" ", ""));
+                String dissociatedSecondSubstance = dissociate(tempArraySecondSubstance);
                 canReactionBeMade = true;
 
                 if (!dissociatedSecondSubstance.equals("")) {
@@ -361,13 +346,15 @@ public class ReactionHandler {
         System.out.println(answerSecondPart);
 
         if (!canReactionBeMade){ // check if one of the substance is either h2o or gas or osadok
-            tempArr = new Array<>(answerSecondPart.split(" \\+ "));
-            for (String substanceName : tempArr){
-                if (handler.DoesThisSubstanceHaveSubstanceType(substanceName)){
-                    canReactionBeMade = true;
-                    break;
-                }
+
+            if (handler.CheckIfReactionPossible(tempArrayFirstSubstance)){
+                canReactionBeMade = true;
             }
+
+            if (handler.CheckIfReactionPossible(tempArraySecondSubstance)){
+                canReactionBeMade = true;
+            }
+
         }
 
         answer.add(answerFirstPart);
@@ -375,18 +362,19 @@ public class ReactionHandler {
 
         if (canReactionBeMade){
             phrase = "Какой итог мы получили:    " + String.join(" = ", answer) + ".    Емкость очищена";
+//            cause = "";
         } else phrase = "Оп ахах неловко вышло)))";
 
         clearEquipment();
     }
 
-    public String dissociate(String substance) throws SQLException, ClassNotFoundException {
+    public String dissociate(Array<String> substance) throws SQLException, ClassNotFoundException {
         String dissociated = "" ;
         dissociated = handler.getDissotiationReaction(substance);
         return dissociated;
     }
 
-
+    /*
 
 
     @Deprecated //created a better version
@@ -526,6 +514,8 @@ public class ReactionHandler {
         clearEquipment();
     }
 
+     */
+
     public void clearEquipment(){
         for (Equipment equip : usedEquipment) {
             boolean check = false;
@@ -536,13 +526,13 @@ public class ReactionHandler {
                 } else check = true;
             }
             if (check) {
-                equip.setSubstancesInside(new ArrayList<String>());
+                equip.setSubstancesInside(new ArrayList<Substance>());
                 System.out.println("Equipment is clear now");
             }
         }
 
 
     }
-    */
+
 
 }

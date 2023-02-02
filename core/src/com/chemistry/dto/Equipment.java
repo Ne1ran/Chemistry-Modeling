@@ -26,6 +26,9 @@ public class Equipment extends Rectangle {
     public ArrayList<Substance> getSubstancesInside() {
         return substancesInside;
     }
+    public void setSubstancesInside(ArrayList<Substance> substancesInside) {
+        this.substancesInside = substancesInside;
+    }
 
     public Boolean getSetOnPlace() {
         return isSetOnPlace;
