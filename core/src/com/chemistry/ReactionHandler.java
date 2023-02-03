@@ -342,7 +342,8 @@ public class ReactionHandler {
         } else {
 
             if (Integer.parseInt(firstFoundAfterSwapStrength) > 8 && Integer.parseInt(firstOxidAfterSwapStrength) > 12){ //Dissotiation possibility
-                String dissociatedFirstSubstance = dissociate(tempArrayFirstSubstance);
+//                String dissociatedFirstSubstance = dissociate(tempArrayFirstSubstance);
+                String dissociatedFirstSubstance = firstSubstanceOxidSwap;
                 canReactionBeMade = true;
 
                 if (dissociatedFirstSubstance != null) { //if there is something
@@ -356,7 +357,8 @@ public class ReactionHandler {
                 }
 
             } else if (Integer.parseInt(secondFoundAfterSwapStrength) > 8 && Integer.parseInt(secondOxidAfterSwapStrength) > 13){
-                String dissociatedSecondSubstance = dissociate(tempArraySecondSubstance);
+//                String dissociatedSecondSubstance = dissociate(tempArraySecondSubstance); its hard to do
+                String dissociatedSecondSubstance = secondSubstanceOxidSwap;
                 canReactionBeMade = true;
 
                 if (dissociatedSecondSubstance != null) {
