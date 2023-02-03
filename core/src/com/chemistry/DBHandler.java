@@ -410,7 +410,7 @@ public class DBHandler extends Config{
             if (rset.getString(1).equals("1")){
                 check = true;
             }
-        }
+        } else check = true;
         return check;
     }
 

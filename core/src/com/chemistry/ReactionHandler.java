@@ -133,9 +133,8 @@ public class ReactionHandler {
                     + oxidFirstIteration.get(0).getOxid_name() + " + " +
                     foundationsFirstIteration.get(1).getFoundation_name()
                     + oxidFirstIteration.get(1).getOxid_name());
-            phrase = "Реакция не пошла... Емкость очищена. Причина: ";
+            phrase = "Реакция не пошла... Очистите емкость повторным нажатием. Причина: ";
             phrase += cause;
-            clearEquipment();
         }
     }
 
@@ -221,7 +220,7 @@ public class ReactionHandler {
 
         if (firstFoundationOxidState > secondOxid_OxidState){
             if (firstFoundationOxidState % secondOxid_OxidState == 0){
-                secondOxidAmount = firstOxidAmount / secondOxid_OxidState;
+                secondOxidAmount = firstOxid_OxidState / secondOxid_OxidState;
                 firstFoundationAmount = tempSecondFoundAmount;
             } else {
                 secondOxidAmount = firstFoundationOxidState;
@@ -406,8 +405,6 @@ public class ReactionHandler {
 //            cause = "";
             System.out.println("Реакция успешна: " + String.join(" = ", answer));
         } else phrase = "Оп ахах неловко вышло)))";
-
-        clearEquipment();
     }
 
     public String dissociate(Array<String> substance) throws SQLException, ClassNotFoundException {

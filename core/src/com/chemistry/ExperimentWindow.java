@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.chemistry.dto.Equipment;
 import com.chemistry.dto.InventorySlot;
 import com.chemistry.dto.Substance;
@@ -49,9 +50,11 @@ public class ExperimentWindow implements Screen {
     public static Integer choosedSubstance;
     public static Boolean inventorySlotIsPicked = false;
     public static Boolean closeWindow = false;
-
+    public static Boolean animationStarted = false;
     public static String phrase = "Для выхода на главный экран нажмите Esc";
-
+    public static Substance animatedSubstance = new Substance();
+    private Texture animationTexture;
+    private static AnimationController animationController;
     public ExperimentWindow(ChemistryModelingGame game) throws SQLException, ClassNotFoundException {
         this.game = game;
 
@@ -195,7 +198,9 @@ public class ExperimentWindow implements Screen {
         }
 
         for (Substance subs : usedSubstances){
-            game.batch.draw(subs.getTexture(), subs.getX(), 720 - subs.getY() - subs.getHeight());
+            if (subs != animatedSubstance) {
+                game.batch.draw(subs.getTexture(), subs.getX(), 720 - subs.getY() - subs.getHeight());
+            }
         }
 
         for (Equipment equip: usedEquipment) {
@@ -208,6 +213,15 @@ public class ExperimentWindow implements Screen {
                 game.batch.draw(choosedSlotTexture, slot.getX()-3, 720-slot.getY()-slot.getHeight()-2);
             }
             slotTextFont.draw(this.game.batch,slot.getSlotTexture(), slot.getX()+5, 720-slot.getY()-25);
+        }
+
+        if (animationStarted){
+            Vector2 animatedXY = animationController.Move();
+            animatedXY = animationController.Move();
+            animatedXY = animationController.Move();
+            animatedXY = animationController.Move();
+            animatedXY = animationController.Move();
+            game.batch.draw(animationTexture, animatedXY.x, animatedXY.y);
         }
 
         game.batch.end();
@@ -236,7 +250,7 @@ public class ExperimentWindow implements Screen {
 
             for (Equipment equip: usedEquipment) {
                 if (equip.overlaps(mouseSpawnerRect)){
-                    if (inventorySlotIsPicked){
+                    if (inventorySlotIsPicked && equip.getSubstancesInside().size() < 2){
                         Substance substanceInSlotId = new Substance();
                         for (InventorySlot slot: inventory) {
                             if (slot.getThisSlotPicked()){
@@ -245,9 +259,14 @@ public class ExperimentWindow implements Screen {
                                     break;
                                 }
                             }
-                        } //extended functions lower incoming... \|/
+                        } //extended functiosubstanceInSlotIdns lower incoming... \|/
                         equip.addSubstance(substanceInSlotId);
-                        phrase = "Добавил " + substanceInSlotId.getName() + " в минзурку!";
+                        phrase = "Добавил " + substanceInSlotId.getName() + " " + equip.getName() + "!";
+                        animatedSubstance = substanceInSlotId;
+                        animationTexture = animatedSubstance.getTexture();
+                        animationController = new AnimationController(new Vector2
+                                (substanceInSlotId.getX(), 720-substanceInSlotId.getY()-substanceInSlotId.getHeight()),
+                                new Vector2(equip.getX(), 720-equip.getY()), animationTexture);
 
                         // Need a normal check if substance is already added
                         if (equip.getSubstancesInside().size()>=2){
@@ -258,7 +277,10 @@ public class ExperimentWindow implements Screen {
                             }
                         }
 
-                    } else phrase = "Вы ничего не выбрали...";
+                    } else {
+                        reactionHandler.clearEquipment();
+                        phrase = "Выкинул все шо было";
+                    }
                 }
             }
 
