@@ -31,6 +31,8 @@ public class ExperimentWindow implements Screen {
     private final Texture choosedSlotTexture;
     private final ReactionHandler reactionHandler = new ReactionHandler();
 
+    private final Rectangle chemistRect;
+
     private final OrthographicCamera camera;
 
     private final ArrayList<Substance> usedSubstances = new ArrayList<>();
@@ -71,6 +73,10 @@ public class ExperimentWindow implements Screen {
 
         ExperimentWindowInputListener inputListener = new ExperimentWindowInputListener();
         Gdx.input.setInputProcessor(inputListener);
+
+        chemistRect = new Rectangle();
+        chemistRect.setSize(100, 100);
+        chemistRect.setPosition(1000, 450);
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 1280, 720);
@@ -206,6 +212,28 @@ public class ExperimentWindow implements Screen {
 
         game.batch.end();
         if(startSpawn){  //Checking overlapsing of mouseSpawnerRect and other thingies
+            if (mouseSpawnerRect.overlaps(chemistRect)){
+                for (Substance substance : usedSubstances){
+                    for (Substance substance1 : usedSubstances){
+                        if (usedEquipment.get(0).getSubstancesInside().size() < 2){
+                            usedEquipment.get(0).addSubstance(substance);
+                            usedEquipment.get(0).addSubstance(substance1);
+                        }
+
+                        if (usedEquipment.get(0).getSubstancesInside().size() == 2){
+                            try {
+                                reactionHandler.getSubstancesFromEquipment(usedEquipment.get(0));
+                            } catch (SQLException | ClassNotFoundException e) {
+                                System.out.println("Неудачная реакция - " + substance + " + " + substance1);
+                            }
+                        }
+                    }
+                }
+
+
+            }
+
+
             for (Equipment equip: usedEquipment) {
                 if (equip.overlaps(mouseSpawnerRect)){
                     if (inventorySlotIsPicked){

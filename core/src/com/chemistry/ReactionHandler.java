@@ -129,6 +129,10 @@ public class ReactionHandler {
 //            reactionStarted(foundPool, oxidPool);
             newReactionStart();
         } else {
+            System.out.println("Reaction didnt started: " + foundationsFirstIteration.get(0).getFoundation_name()
+                    + oxidFirstIteration.get(0).getOxid_name() + " + " +
+                    foundationsFirstIteration.get(1).getFoundation_name()
+                    + oxidFirstIteration.get(1).getOxid_name());
             phrase = "Реакция не пошла... Емкость очищена. Причина: ";
             phrase += cause;
             clearEquipment();
@@ -236,7 +240,6 @@ public class ReactionHandler {
             firstFoundationAmount = 1;
         }
 
-        System.out.println(firstFoundationAmount + " - " + secondOxidAmount);
 
         if (secondFoundationOxidState > firstOxid_OxidState){
             if (secondFoundationOxidState % firstOxid_OxidState == 0){
@@ -259,7 +262,6 @@ public class ReactionHandler {
             firstOxidAmount = 1;
         }
 
-        System.out.println(secondFoundationAmount + " - " + firstOxidAmount);
 
         Array<String> tempArrayFirstSubstance = new Array<>(firstSubstanceOxidSwap.split(" "));
         Array<String> tempArraySecondSubstance = new Array<>(secondSubstanceOxidSwap.split(" "));
@@ -382,8 +384,6 @@ public class ReactionHandler {
             answerSecondPart = tempArr.get(1);
         }
 
-        System.out.println(answerSecondPart);
-
         if (!canReactionBeMade){ // check if one of the substance is either h2o or gas or osadok
 
             if (handler.CheckIfReactionPossible(tempArrayFirstSubstance)){
@@ -402,6 +402,7 @@ public class ReactionHandler {
         if (canReactionBeMade){
             phrase = "Какой итог мы получили:    " + String.join(" = ", answer) + ".    Емкость очищена";
 //            cause = "";
+            System.out.println("Реакция успешна: " + String.join(" = ", answer));
         } else phrase = "Оп ахах неловко вышло)))";
 
         clearEquipment();
