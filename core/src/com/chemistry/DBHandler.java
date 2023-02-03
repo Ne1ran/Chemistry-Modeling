@@ -402,7 +402,7 @@ public class DBHandler extends Config{
         ResultSet rset = null;
         String select = "SELECT checkToStartReaction FROM " + AllConstants.SubsConsts.SUBS_TABLE +
                 " WHERE " + AllConstants.SubsConsts.FOUND_PART_NAME + " ='" + tempArrayFirstSubstance.get(0)
-                + "' AND" + AllConstants.SubsConsts.OXID_PART_NAME + " ='" + tempArrayFirstSubstance.get(1) + "'";
+                + "' AND " + AllConstants.SubsConsts.OXID_PART_NAME + " ='" + tempArrayFirstSubstance.get(1) + "'";
         PreparedStatement prst = getConnection().prepareStatement(select);
         rset = prst.executeQuery();
 
@@ -413,30 +413,6 @@ public class DBHandler extends Config{
         }
         return check;
     }
-
-//    public ArrayList<Substance> getAllSubstances() throws SQLException, ClassNotFoundException {
-//        ArrayList<Substance> substancesNames = new ArrayList<>();
-//        ResultSet rset = null;
-//        String select = "SELECT * FROM " + AllConstants.SubsConsts.SUBS_TABLE;
-//        PreparedStatement prst = getConnection().prepareStatement(select);
-//        rset = prst.executeQuery();
-//        while (rset.next()){
-//            Substance tempSubstance = new Substance();
-//            tempSubstance.setSubId(rset.getString(AllConstants.SubsConsts.ID));
-//            tempSubstance.setName(rset.getString(AllConstants.SubsConsts.NAME));
-//            tempSubstance.setFoundation(rset.getString(AllConstants.SubsConsts.FOUND_PART_NAME));
-//            tempSubstance.setOxid(rset.getString(AllConstants.SubsConsts.OXID_PART_NAME));
-//            tempSubstance.setFound_amount(rset.getString(AllConstants.SubsConsts.FOUND_AMOUNT));
-//            tempSubstance.setOxid_amount(rset.getString(AllConstants.SubsConsts.OXID_AMOUNT));
-//
-//            tempSubstance.setSubstanceNameInGame(tempSubstance.getFoundation()
-//                    + "-"  + tempSubstance.getFound_amount() + " "
-//                    + tempSubstance.getOxid() + "-" + tempSubstance.getOxid_amount());
-//
-//            substancesNames.add(tempSubstance);
-//        }
-//        return substancesNames;
-//    }
 
     public String getDissotiationReaction(Array<String> substance) throws SQLException, ClassNotFoundException {
         String reaction = "";
@@ -454,13 +430,21 @@ public class DBHandler extends Config{
         return reaction;
     }
 
+    public String getSubstanceType(String foundationName, String oxidName) throws SQLException, ClassNotFoundException {
+        ResultSet rset = null;
+        String select = "SELECT substance_type FROM " + AllConstants.SubsConsts.SUBS_TABLE + " Where "
+                + AllConstants.SubsConsts.FOUND_PART_NAME + " ='" + foundationName + "' AND " +
+                AllConstants.SubsConsts.OXID_PART_NAME + " ='" + oxidName + "'";
+        PreparedStatement prst = getConnection().prepareStatement(select);
+        rset = prst.executeQuery();
+        if (rset.next()){
+            return rset.getString(1);
+        } else return "";
+    }
+
 //    public boolean DoesThisSubstanceHaveSubstanceType(String substanceName) throws SQLException, ClassNotFoundException {
 //        Boolean check = false;
-//        ResultSet rset = null;
-//        String select = "SELECT substance_type FROM " + AllConstants.SubsConsts.SUBS_TABLE +
-//                " WHERE " + AllConstants.SubsConsts.SMALL_TEXTURE + " ='" + substanceName + "'";
-//        PreparedStatement prst = getConnection().prepareStatement(select);
-//        rset = prst.executeQuery();
+
 //
 //        if (rset.next()){
 //            if (rset.getString(1).equals("")){

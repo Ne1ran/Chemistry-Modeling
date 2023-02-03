@@ -167,11 +167,36 @@ public class ReactionHandler {
         int firstOxidAmount = oxidPool.get(oxids.get(0));
         int secondOxidAmount = oxidPool.get(oxids.get(1));
 
-        int firstFoundationOxidState = Integer.parseInt(foundations.get(0).getPossible_states());
-        int secondFoundationOxidState = Integer.parseInt(foundations.get(1).getPossible_states());
 
         int firstOxid_OxidState = -Integer.parseInt(oxids.get(0).getPossible_states());
         int secondOxid_OxidState = -Integer.parseInt(oxids.get(1).getPossible_states());
+
+        int firstFoundationCurrentState, secondFoundationCurrentState;
+
+        if (handler.getSubstanceType(foundations.get(0).getFoundation_name(),
+                oxids.get(0).getOxid_name()).equals("Свободный металл")){
+
+            firstFoundationCurrentState = Integer.parseInt(foundations.get(0).getPossible_states());
+
+        } else if (foundations.get(0).getFoundation_name().equals("0")) {
+            firstFoundationCurrentState = 1;
+        } else firstFoundationCurrentState= firstOxid_OxidState * firstOxidAmount / firstFoundationAmount;
+
+
+        if (handler.getSubstanceType(foundations.get(1).getFoundation_name(),
+                oxids.get(1).getOxid_name()).equals("Свободный металл")){
+
+            secondFoundationCurrentState = Integer.parseInt(foundations.get(1).getPossible_states());
+
+        } else if (foundations.get(1).getFoundation_name().equals("0")) {
+            secondFoundationCurrentState = 1;
+        } else secondFoundationCurrentState = secondOxid_OxidState * secondOxidAmount / secondFoundationAmount;
+
+
+
+
+        int firstFoundationOxidState = firstFoundationCurrentState;
+        int secondFoundationOxidState = secondFoundationCurrentState;
 
         String firstSubstanceOxidSwap = ""; //Here is substance (found - 1, oxid - 2) NO AMOUNT
         String secondSubstanceOxidSwap = ""; //Here is substance (found - 2, oxid - 1) NO AMOUNT
@@ -248,35 +273,49 @@ public class ReactionHandler {
 
         //Preparing answer p2 string
         if (firstFoundationAmount > 1){ //Create brackets
-            firstSubstanceOxidSwap = firstSubstanceOxidSwap.replaceFirst(
-                    tempArrayFirstSubstance.get(0), firstFoundationAmount
-                            + "(" + tempArrayFirstSubstance.get(0) + ")");
+            if (handler.getIsFoundationSimple(tempArrayFirstSubstance.get(0))) {
+                firstSubstanceOxidSwap = firstSubstanceOxidSwap.replaceFirst(
+                        tempArrayFirstSubstance.get(0), tempArrayFirstSubstance.get(0) + firstFoundationAmount);
+            } else {
+                firstSubstanceOxidSwap = firstSubstanceOxidSwap.replaceFirst(
+                        tempArrayFirstSubstance.get(0), "(" + tempArrayFirstSubstance.get(0) + ")"
+                                + firstFoundationAmount);
+            }
         }
 
-        if (secondOxidAmount > 1){
-            firstSubstanceOxidSwap = firstSubstanceOxidSwap.replaceFirst(
-                    tempArrayFirstSubstance.get(1),"("
-                            + tempArrayFirstSubstance.get(1) + ")" + secondOxidAmount);
-        } else {
-            firstSubstanceOxidSwap = firstSubstanceOxidSwap.replaceFirst(
-                    tempArrayFirstSubstance.get(1),"("
-                            + tempArrayFirstSubstance.get(1) + ")");
+        if (secondOxidAmount > 1 && !oxids.get(1).getOxid_name().equals("0")){
+            if (handler.getIsOxidizerSimple(tempArrayFirstSubstance.get(1))){
+                firstSubstanceOxidSwap = firstSubstanceOxidSwap.replaceFirst(
+                        tempArrayFirstSubstance.get(1),
+                        tempArrayFirstSubstance.get(1) + secondOxidAmount);
+            } else {
+                firstSubstanceOxidSwap = firstSubstanceOxidSwap.replaceFirst(
+                        tempArrayFirstSubstance.get(1),"(" +
+                                tempArrayFirstSubstance.get(1) + ")"+ secondOxidAmount);
+            }
         }
 
         if (secondFoundationAmount > 1){
-            secondSubstanceOxidSwap = secondSubstanceOxidSwap.replaceFirst(
-                    tempArraySecondSubstance.get(0), secondFoundationAmount
-                            + "(" + tempArraySecondSubstance.get(0) + ")");
+            if (handler.getIsFoundationSimple(tempArraySecondSubstance.get(0))) {
+                secondSubstanceOxidSwap = secondSubstanceOxidSwap.replaceFirst(
+                        tempArraySecondSubstance.get(0), tempArraySecondSubstance.get(0) + secondFoundationAmount);
+            } else {
+                secondSubstanceOxidSwap = secondSubstanceOxidSwap.replaceFirst(
+                        tempArraySecondSubstance.get(0), "(" + tempArraySecondSubstance.get(0) + ")"
+                                + secondFoundationAmount);
+            }
         }
 
-        if (firstOxidAmount > 1){
-            secondSubstanceOxidSwap = secondSubstanceOxidSwap.replaceFirst(
-                    tempArraySecondSubstance.get(1), "(" +
-                            tempArraySecondSubstance.get(1) + ")" + firstOxidAmount);
-        } else {
-            secondSubstanceOxidSwap = secondSubstanceOxidSwap.replaceFirst(
-                    tempArraySecondSubstance.get(1), "(" +
-                            tempArraySecondSubstance.get(1) + ")");
+        if (firstOxidAmount > 1 && !oxids.get(0).getOxid_name().equals("0")){
+            if (handler.getIsOxidizerSimple(tempArraySecondSubstance.get(1))){
+                secondSubstanceOxidSwap = secondSubstanceOxidSwap.replaceFirst(
+                        tempArraySecondSubstance.get(1),
+                        tempArraySecondSubstance.get(1) + firstOxidAmount);
+            } else {
+                secondSubstanceOxidSwap = secondSubstanceOxidSwap.replaceFirst(
+                        tempArraySecondSubstance.get(1),"(" +
+                                tempArraySecondSubstance.get(1) + ")"+ firstOxidAmount);
+            }
         }
 
         //answer part 2
@@ -304,7 +343,7 @@ public class ReactionHandler {
                 String dissociatedFirstSubstance = dissociate(tempArrayFirstSubstance);
                 canReactionBeMade = true;
 
-                if (!dissociatedFirstSubstance.equals("")) { //if there is something
+                if (dissociatedFirstSubstance != null) { //if there is something
                     answerSecondPart = dissociatedFirstSubstance + " + " + secondSubstanceOxidSwap;
                 } else { //if not
                     if (firstSubstanceOxidSwap.contains("H (OH)")){ //change hoh -> h2o
@@ -318,8 +357,8 @@ public class ReactionHandler {
                 String dissociatedSecondSubstance = dissociate(tempArraySecondSubstance);
                 canReactionBeMade = true;
 
-                if (!dissociatedSecondSubstance.equals("")) {
-                    answerSecondPart = dissociatedSecondSubstance + " + " + dissociatedSecondSubstance;
+                if (dissociatedSecondSubstance != null) {
+                    answerSecondPart = firstSubstanceOxidSwap + " + " + dissociatedSecondSubstance;
                 } else {
                     if (secondSubstanceOxidSwap.contains("H (OH)")){
                         answerSecondPart = firstSubstanceOxidSwap + " + " + secondSubstanceOxidSwap.replace("H (OH)", "H2O");
