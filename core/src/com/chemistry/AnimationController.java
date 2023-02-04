@@ -8,6 +8,7 @@ import static com.chemistry.ExperimentWindow.*;
 
 public class AnimationController {
     Vector2 startPos;
+    Vector2 currentPos;
     Vector2 endPos;
     Texture animatedTexture;
     boolean reachedX = false;
@@ -16,23 +17,24 @@ public class AnimationController {
     public AnimationController(Vector2 startPos, Vector2 endPos, Texture texture) {
         this.startPos = startPos;
         this.endPos = endPos;
+        this.currentPos = startPos;
         this.animatedTexture = texture;
         System.out.println(startPos.x + " - " + startPos.y + "\n" + endPos.x + " - " + endPos.y);
         animationStarted = true;
     }
     public Vector2 Move (){
-        if (startPos.x > endPos.x){
-            startPos.x--;
-        } else if (startPos.x < endPos.x) {
-            startPos.x++;
+        if (currentPos.x > endPos.x){
+            currentPos.x--;
+        } else if (currentPos.x < endPos.x) {
+            currentPos.x++;
         } else {
             reachedX = true;
         }
 
-        if (startPos.y > endPos.y){
-            startPos.y--;
-        } else if (startPos.y < endPos.y) {
-            startPos.y++;
+        if (currentPos.y > endPos.y){
+            currentPos.y--;
+        } else if (currentPos.y < endPos.y) {
+            currentPos.y++;
         } else {
             reachedY = true;
         }
@@ -40,10 +42,10 @@ public class AnimationController {
         System.out.println(startPos.x + " - " + startPos.y);
 
         if (reachedX && reachedY){
-            System.out.println("Reached the end");
             reachedX = false;
             reachedY = false;
             animationStarted = false;
+            currentPos = startPos;
             animatedSubstance = new Substance();
         }
 
