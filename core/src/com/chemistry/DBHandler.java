@@ -442,6 +442,20 @@ public class DBHandler extends Config{
         } else return "";
     }
 
+    public int getUnstableTypeById(String subId) throws SQLException, ClassNotFoundException {
+        String OVR_type = "0";
+
+        String select = "SELECT unstable_type FROM " + AllConstants.SubsConsts.SUBS_TABLE + " Where "
+                + AllConstants.SubsConsts.ID + " ='" + subId + "'";
+        PreparedStatement prst = getConnection().prepareStatement(select);
+        ResultSet rset = prst.executeQuery();
+        if (rset.next()){
+            OVR_type = rset.getString(1);
+        }
+
+        return Integer.parseInt(OVR_type);
+    }
+
 //    public boolean DoesThisSubstanceHaveSubstanceType(String substanceName) throws SQLException, ClassNotFoundException {
 //        Boolean check = false;
 

@@ -1,7 +1,19 @@
 package com.chemistry;
 
 public class AllConstants {
-
+    public static class ReactionHandlerUtility{
+        public static final String METAL = "Свободный металл";
+        public static final String GAS = "Газ";
+        public static final String ALKALI = "Щелочь";
+        public static final String OXID = "Оксид";
+        public static final String ACID = "Кислота";
+        public static final String WATER = "Вода";
+        public static final String SEDIMENT = "осадок";
+        public static final String OXID_ACID = "Оксид кислотный";
+        public static final String OXID_ALKALINE = "Оксид основный";
+        public static final String OXID_AMPHOTERIC = "Оксид амфотерный";
+        public static final String SALINE = "Соль";
+    }
     public static class UserConsts{
         public static final String USERS_TABLE = "users";
 

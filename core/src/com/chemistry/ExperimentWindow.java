@@ -120,6 +120,7 @@ public class ExperimentWindow implements Screen {
                 tempSubstance.setOxid(substanceItself.getString(AllConstants.SubsConsts.OXID_PART_NAME));
                 tempSubstance.setFound_amount(substanceItself.getString(AllConstants.SubsConsts.FOUND_AMOUNT));
                 tempSubstance.setOxid_amount(substanceItself.getString(AllConstants.SubsConsts.OXID_AMOUNT));
+                tempSubstance.setSubstanceType(substanceItself.getString(AllConstants.SubsConsts.SUBSTANCE_TYPE));
 
                 tempSubstance.setSubstanceNameInGame(createInGameNameForSubstance(
                         tempSubstance.getFoundation() + "-" + tempSubstance.getFound_amount() + " " +
@@ -215,14 +216,14 @@ public class ExperimentWindow implements Screen {
             slotTextFont.draw(this.game.batch,slot.getSlotTexture(), slot.getX()+5, 720-slot.getY()-25);
         }
 
-        if (animationStarted){
-            Vector2 animatedXY = animationController.Move();
-            animatedXY = animationController.Move();
-            animatedXY = animationController.Move();
-            animatedXY = animationController.Move();
-            animatedXY = animationController.Move();
-            game.batch.draw(animationTexture, animatedXY.x, animatedXY.y);
-        }
+//        if (animationStarted){
+//            Vector2 animatedXY = animationController.Move();
+//            animatedXY = animationController.Move();
+//            animatedXY = animationController.Move();
+//            animatedXY = animationController.Move();
+//            animatedXY = animationController.Move();
+//            game.batch.draw(animationTexture, animatedXY.x, animatedXY.y);
+//        }
 
         game.batch.end();
         if(startSpawn){  //Checking overlapsing of mouseSpawnerRect and other thingies
@@ -262,11 +263,11 @@ public class ExperimentWindow implements Screen {
                         } //extended functiosubstanceInSlotIdns lower incoming... \|/
                         equip.addSubstance(substanceInSlotId);
                         phrase = "Добавил " + substanceInSlotId.getName() + " " + equip.getName() + "!";
-                        animatedSubstance = substanceInSlotId;
-                        animationTexture = animatedSubstance.getTexture();
-                        animationController = new AnimationController(new Vector2
-                                (substanceInSlotId.getX(), 720-substanceInSlotId.getY()-substanceInSlotId.getHeight()),
-                                new Vector2(equip.getX(), 720-equip.getY()), animationTexture);
+//                        animatedSubstance = substanceInSlotId;
+//                        animationTexture = animatedSubstance.getTexture();
+//                        animationController = new AnimationController(new Vector2
+//                                (substanceInSlotId.getX(), 720-substanceInSlotId.getY()-substanceInSlotId.getHeight()),
+//                                new Vector2(equip.getX(), 720-equip.getY()), animationTexture);
 
                         // Need a normal check if substance is already added
                         if (equip.getSubstancesInside().size()>=2){

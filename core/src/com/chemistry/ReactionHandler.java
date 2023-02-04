@@ -1,6 +1,5 @@
 package com.chemistry;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.Array;
 import com.chemistry.dto.Equipment;
 import com.chemistry.dto.Foundation;
@@ -66,80 +65,221 @@ public class ReactionHandler {
     public void chemicalReaction(Map<Foundation, Integer> foundPool, Map<Oxid, Integer> oxidPool) throws SQLException, ClassNotFoundException {
         ArrayList<Foundation> foundationsFirstIteration = new ArrayList<>();
         ArrayList<Oxid> oxidFirstIteration = new ArrayList<>();
-        boolean startReaction = false;
+        boolean startBasicSwapReaction = false;
         boolean containsNullOxid = false;
+        boolean canOVRbeStarted = false;
+        boolean isReactionAdditing = false;
+
+        int OVR_Oxidant = 0;
+        int OVR_Reductant = 0;
+
         int nullOxidsAmount = 0;
 
-        boolean isFirstFoundStronger, isFirstOxidStronger;
-
-        for (Foundation found : foundPool.keySet()){
-            foundationsFirstIteration.add(found);
-        }
-
-        for (Oxid oxid : oxidPool.keySet()){
-            oxidFirstIteration.add(oxid);
-        }
-
-        //Strength of elements
-        int firstFound = Integer.parseInt(foundationsFirstIteration.get(0).getElectrochem_pos());
-        int secondFound = Integer.parseInt(foundationsFirstIteration.get(1).getElectrochem_pos());
-
-        int firstOxidStrength = Integer.parseInt(oxidFirstIteration.get(0).getOxid_strength());
-        int secondOxidStrength = Integer.parseInt(oxidFirstIteration.get(1).getOxid_strength());
-
-        isFirstFoundStronger = firstFound < secondFound; //simplified if check of strength among oxids and founds
-        isFirstOxidStronger = firstOxidStrength < secondOxidStrength;
-
-        if (secondFound <= 7 && firstFound <= 7 && (firstFound - secondFound > 3 || secondFound - firstFound > 3)
-                && firstOxidStrength != secondOxidStrength){
-            startReaction = true;
-        } else if ((firstFound - secondFound > 2 || secondFound - firstFound > 2)
-                && firstOxidStrength != secondOxidStrength){
-            startReaction = true;
-        }
-
-        for (Oxid oxid : oxidPool.keySet()){
-            if (oxid.getOxid_name().equals("0")){
-                containsNullOxid = true;
-                nullOxidsAmount++;
+        for (Substance substance : substances){
+            int OVRSubstanceType = handler.getUnstableTypeById(substance.getSubId());
+            if (OVRSubstanceType == 1){
+                OVR_Reductant++;
+            } else if (OVRSubstanceType == -1) {
+                OVR_Oxidant++;
             }
         }
 
-        if (isFirstFoundStronger == isFirstOxidStronger){
-            startReaction = false; //reaction won't start because strong elements are already combined fine
-            cause += "Вещества находятся в правильном балансе. ";
-        }
+        if (OVR_Oxidant == OVR_Reductant && OVR_Reductant == 1){
+            System.out.println("OVR - started");
+            phrase = "Реакция не пошла, ";
+            cause = " так как у вас ОВР головного мозга!";
+            phrase += cause;
+            //StartOVR_Reaction();
+        } else {
 
-        if (nullOxidsAmount > 1){
-            startReaction = false;
-        }
+            String substance1type = substances.get(0).getSubstanceType();
+            String substance2type = substances.get(1).getSubstanceType();
 
-        for (Substance substance : substances) {
-            if (substance.getSubstanceNameInGame().equals("H2O")) {
-                if (containsNullOxid){
-                    startReaction = true;
-                    break;
+            boolean everyThingChecked = false;
+
+            if (substance1type.contains(AllConstants.ReactionHandlerUtility.METAL) //if one of them is metal
+                    || substance2type.contains(AllConstants.ReactionHandlerUtility.METAL)){
+                everyThingChecked = true;
+
+                if (substance1type.contains(AllConstants.ReactionHandlerUtility.OXID_ACID) || //if metal react
+                substance1type.contains(AllConstants.ReactionHandlerUtility.WATER) || // with water or
+                substance2type.contains(AllConstants.ReactionHandlerUtility.OXID_ACID) || //oxid_acid
+                        substance2type.contains(AllConstants.ReactionHandlerUtility.WATER)){ // its addition reaction
+                    isReactionAdditing = true;
+                    everyThingChecked = false;
+                }
+
+            } else if (substance1type.contains(AllConstants.ReactionHandlerUtility.OXID) || //if one of the is oxid
+            substance2type.contains(AllConstants.ReactionHandlerUtility.OXID)) {
+
+                if (
+                        (substance1type.contains(AllConstants.ReactionHandlerUtility.OXID_ALKALINE) && // if alkaline
+                substance2type.contains(AllConstants.ReactionHandlerUtility.OXID_ACID) || // and second is acid
+
+                    (substance2type.contains(AllConstants.ReactionHandlerUtility.OXID_ALKALINE) &&
+                substance1type.contains(AllConstants.ReactionHandlerUtility.OXID_ACID))
+                )){
+
+                    everyThingChecked = true; //this is a basic swap reaction via electrochem_pos
+
+                } else
+
+                if (
+                ((substance1type.contains(AllConstants.ReactionHandlerUtility.OXID_ACID) || //if one of the oxids
+                substance1type.contains(AllConstants.ReactionHandlerUtility.OXID_ALKALINE))&& //is either acid or alkaline
+                substance2type.contains(AllConstants.ReactionHandlerUtility.WATER)) //and second elem is water
+                        ||
+                ((substance2type.contains(AllConstants.ReactionHandlerUtility.OXID_ACID) ||
+                substance2type.contains(AllConstants.ReactionHandlerUtility.OXID_ALKALINE)) &&
+                substance1type.contains(AllConstants.ReactionHandlerUtility.WATER))){
+
+                    everyThingChecked = false; //this is an addition reaction
+                    isReactionAdditing = true;
+
+                } else
+
+                if ((substance1type.contains(AllConstants.ReactionHandlerUtility.OXID_ACID) && // NO3 + NaOH = NaOH + H2O
+                    substance2type.contains(AllConstants.ReactionHandlerUtility.ALKALI)) || // basic swap
+
+                    (substance2type.contains(AllConstants.ReactionHandlerUtility.OXID_ACID) &&
+                    substance1type.contains(AllConstants.ReactionHandlerUtility.ALKALI))
+                ) {
+
+                    everyThingChecked = true;
+
+                } else
+
+                if ((substance1type.contains(AllConstants.ReactionHandlerUtility.OXID_ALKALINE) && //Na2O + H2SO4 = NaSO4 + H2O
+                        substance2type.contains(AllConstants.ReactionHandlerUtility.ACID)) || //basic swap
+
+                    (substance2type.contains(AllConstants.ReactionHandlerUtility.OXID_ALKALINE) &&
+                    substance1type.contains(AllConstants.ReactionHandlerUtility.ACID))) {
+
+                    everyThingChecked = true;
+
+                } else { // if nothing then don't start... for now.
+                    everyThingChecked = false;
+                }
+
+            } else if (substance1type.contains(AllConstants.ReactionHandlerUtility.ACID) || // if it's acid
+                        substance2type.contains(AllConstants.ReactionHandlerUtility.ACID)){
+
+                if ((substance1type.contains(AllConstants.ReactionHandlerUtility.ACID) && //then simple swap
+                    substance2type.contains(AllConstants.ReactionHandlerUtility.ALKALI)) || //if one of the is alkali
+
+                    (substance1type.contains(AllConstants.ReactionHandlerUtility.ALKALI) &&
+                    substance2type.contains(AllConstants.ReactionHandlerUtility.ACID))){
+
+                    everyThingChecked = true;
+
                 } else {
-                    startReaction = false;
+                    everyThingChecked = false;
+                }
+
+            } else if (substance1type.contains(AllConstants.ReactionHandlerUtility.SALINE) || //if one of them
+                        substance2type.contains(AllConstants.ReactionHandlerUtility.SALINE)){ //is saline
+
+                if ((substance1type.contains(AllConstants.ReactionHandlerUtility.SALINE) && // if the second
+                        (substance2type.contains(AllConstants.ReactionHandlerUtility.ACID) || // is either acid
+                        substance2type.contains(AllConstants.ReactionHandlerUtility.ALKALI) || //or alkali
+                        substance2type.contains(AllConstants.ReactionHandlerUtility.SALINE)|| //or another saline
+                        substance1type.contains(AllConstants.ReactionHandlerUtility.OXID))) //or any normal oxids
+                        ||
+                    (substance2type.contains(AllConstants.ReactionHandlerUtility.SALINE) &&
+                        (substance1type.contains(AllConstants.ReactionHandlerUtility.ACID) ||
+                        substance1type.contains(AllConstants.ReactionHandlerUtility.ALKALI) ||
+                        substance1type.contains(AllConstants.ReactionHandlerUtility.SALINE) ||
+                        substance1type.contains(AllConstants.ReactionHandlerUtility.OXID)))
+                ) {
+                    everyThingChecked = true;
+                } else {
+                    everyThingChecked = false; //water probably
                 }
             }
+
+            else {
+                everyThingChecked = false;
+            }
+
+            if (everyThingChecked){
+                boolean isFirstFoundStronger, isFirstOxidStronger;
+
+                for (Foundation found : foundPool.keySet()){
+                    foundationsFirstIteration.add(found);
+                }
+
+                for (Oxid oxid : oxidPool.keySet()){
+                    oxidFirstIteration.add(oxid);
+                }
+
+                //Strength of elements
+                int firstFound = Integer.parseInt(foundationsFirstIteration.get(0).getElectrochem_pos());
+                int secondFound = Integer.parseInt(foundationsFirstIteration.get(1).getElectrochem_pos());
+
+                int firstOxidStrength = Integer.parseInt(oxidFirstIteration.get(0).getOxid_strength());
+                int secondOxidStrength = Integer.parseInt(oxidFirstIteration.get(1).getOxid_strength());
+
+                isFirstFoundStronger = firstFound < secondFound; //simplified if check of strength among oxids and founds
+                isFirstOxidStronger = firstOxidStrength < secondOxidStrength;
+
+                for (Oxid oxid : oxidPool.keySet()){
+                    if (oxid.getOxid_name().equals("0")){
+                        containsNullOxid = true;
+                        nullOxidsAmount++;
+                    }
+                }
+
+                if (isFirstFoundStronger == isFirstOxidStronger){
+                    startBasicSwapReaction = false; //reaction won't start because strong elements are already combined fine
+                    cause += "Вещества находятся в правильном балансе. ";
+                }
+
+                if (secondFound <= 7 && firstFound <= 7 && (firstFound - secondFound > 1 || secondFound - firstFound > 1)
+                        && firstOxidStrength != secondOxidStrength){
+                    startBasicSwapReaction = true;
+                } else if ((firstFound > secondFound || secondFound > firstFound)
+                        && firstOxidStrength != secondOxidStrength){
+                    startBasicSwapReaction = true;
+                }
+
+                if (nullOxidsAmount > 1){
+                    startBasicSwapReaction = false;
+                }
+
+                for (Substance substance : substances) {
+                    if (substance.getSubstanceNameInGame().equals("H2O")) {
+                        if (containsNullOxid){
+                            startBasicSwapReaction = true;
+                            break;
+                        } else {
+                            startBasicSwapReaction = false;
+                        }
+                    }
+                }
+
+                if (startBasicSwapReaction){
+                    StartSimpleSwapReaction();
+                } else {
+                    System.out.println("Reaction didnt started: " + foundationsFirstIteration.get(0).getFoundation_name()
+                            + oxidFirstIteration.get(0).getOxid_name() + " + " +
+                            foundationsFirstIteration.get(1).getFoundation_name()
+                            + oxidFirstIteration.get(1).getOxid_name());
+                    phrase = "Реакция не пошла... Очистите емкость повторным нажатием. Причина: ";
+                    phrase += cause;
+                }
+            } else if (isReactionAdditing){
+                phrase = "Addition reaction has started!!";
+                System.out.println("Addition reaction has started!!");
+                //startAdditingReaction(); Своя реакция
+            } else {
+                phrase = "No reaction at all";
+            }
         }
 
-        if (startReaction){
-//            reactionStarted(foundPool, oxidPool);
-            newReactionStart();
-        } else {
-            System.out.println("Reaction didnt started: " + foundationsFirstIteration.get(0).getFoundation_name()
-                    + oxidFirstIteration.get(0).getOxid_name() + " + " +
-                    foundationsFirstIteration.get(1).getFoundation_name()
-                    + oxidFirstIteration.get(1).getOxid_name());
-            phrase = "Реакция не пошла... Очистите емкость повторным нажатием. Причина: ";
-            phrase += cause;
-        }
     }
 
 
-    public void newReactionStart() throws SQLException, ClassNotFoundException {
+    public void StartSimpleSwapReaction() throws SQLException, ClassNotFoundException {
         Array<String> answer = new Array<>(); // All answer
         String answerFirstPart = ""; //First part (before =)
         String answerSecondPart = ""; //Second part (after =)

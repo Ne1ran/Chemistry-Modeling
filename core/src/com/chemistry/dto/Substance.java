@@ -14,9 +14,15 @@ public class Substance extends Rectangle {
     private String found_amount;
     private String oxid_amount;
     private String substanceNameInGame = "Ничего";
+    private String substanceType;
     public Substance() {
     }
-
+    public String getSubstanceType() {
+        return substanceType;
+    }
+    public void setSubstanceType(String substanceType) {
+        this.substanceType = substanceType;
+    }
     public String getSubstanceNameInGame() {
         return substanceNameInGame;
     }
