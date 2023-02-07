@@ -559,8 +559,6 @@ public class ReactionHandler {
         }
         answerFirstPart = answerFirstPart.substring(0, answerFirstPart.length()-3);
 
-        //BEFORE ADDITING
-
         if (substances.get(0).getOxid().contains(substances.get(1).getOxid()) &&
                 substances.get(0).getSubstanceType().equals(AllConstants.ReactionHandlerUtility.OXID_ACID)){
             int matchedOxidAmount = Integer.parseInt(substances.get(0).getOxid_amount());
@@ -569,54 +567,21 @@ public class ReactionHandler {
 
             String newOxidName = substances.get(0).getFoundation() + substances.get(0).getOxid() + matchedOxidAmount; //add foundAmount??
 
-            substances.get(0).setOxid(newOxidName);
-            substances.get(0).setOxid_amount("1");
-            substances.get(0).setFoundation("0");
-            substances.get(0).setFoundation("1");
-
-            substances.get(1).setOxid("1");
-            substances.get(1).setOxid_amount("0");
-
             String foundName = substances.get(1).getFoundation();
 
-            int getOxidState = handler.getOxidStateByName(substances.get(0).getOxid());
+            int getOxidState = -handler.getOxidStateByName(newOxidName);
             int getFoundationState = handler.getFoundationStateByName(foundName);
 
             int oxidAmount = 1;
             int foundAmount = 1;
 
             if (getOxidState % getFoundationState == 0){
-                oxidAmount = getOxidState/getFoundationState;
-                foundAmount = 1;
+                foundAmount = getOxidState/getFoundationState;
             } else if (getFoundationState % getOxidState == 0){
-                oxidAmount = 1;
-                foundAmount = getFoundationState/getOxidState;
+                oxidAmount = getFoundationState/getOxidState;
             }
 
-            String tempAnswer = "";
-
-            if (foundAmount > 1){
-                if (handler.getIsFoundationSimple(foundName)) {
-                    tempAnswer += foundName + foundAmount;
-                } else {
-                    tempAnswer +=  foundName + "(" + foundAmount + ")";
-
-                }
-            } else {
-                tempAnswer += foundName;
-            }
-
-            if (oxidAmount > 1){
-                if (handler.getIsOxidizerSimple(newOxidName)) {
-                    tempAnswer += newOxidName + oxidAmount;
-                } else {
-                    tempAnswer += "(" + newOxidName + ")" + oxidAmount;
-                }
-            } else {
-                tempAnswer += newOxidName;
-            }
-
-            System.out.println(tempAnswer);
+            answerSecondPart = compileSubstanceName(foundName, newOxidName, foundAmount, oxidAmount);
 
         } else if (substances.get(1).getOxid().contains(substances.get(0).getOxid()) &&
                 substances.get(1).getSubstanceType().equals(AllConstants.ReactionHandlerUtility.OXID_ACID)) {
@@ -626,28 +591,22 @@ public class ReactionHandler {
             matchedOxidAmount += Integer.parseInt(substances.get(0).getOxid_amount());
 
             String newOxidName = substances.get(1).getFoundation() + substances.get(0).getOxid() + matchedOxidAmount; //add foundAmount??
+            String foundName = substances.get(0).getFoundation();
 
-            substances.get(1).setOxid(newOxidName);
-            substances.get(1).setOxid_amount("1");
-            substances.get(1).setFoundation("0");
-            substances.get(1).setFoundation("1");
+            int getOxidState = -handler.getOxidStateByName(newOxidName);
+            int getFoundationState = handler.getFoundationStateByName(foundName);
 
-            substances.get(0).setOxid("0");
-            substances.get(0).setOxid_amount("1");
+            int oxidAmount = 1;
+            int foundAmount = 1;
 
-            int getOxidState = handler.getOxidStateByName(substances.get(1).getOxid());
+            if (getOxidState % getFoundationState == 0){
+                foundAmount = getOxidState/getFoundationState;
+            } else if (getFoundationState % getOxidState == 0){
+                oxidAmount = getFoundationState/getOxidState;
+            }
 
-            System.out.println(getOxidState);
+            answerSecondPart = compileSubstanceName(foundName, newOxidName, foundAmount, oxidAmount);
 
-        } else {
-            System.out.println("erore");
-        }
-
-        Array<String> tempArr = new Array<>(answerSecondPart.split(" \\+ "));
-        if (tempArr.size == 1){
-            answerSecondPart = tempArr.get(0);
-        } else if (tempArr.size == 2 && tempArr.get(0).equals("")){
-            answerSecondPart = tempArr.get(1);
         }
 
         answer.add(answerFirstPart);
@@ -655,6 +614,33 @@ public class ReactionHandler {
 
         phrase = "Какой итог мы получили:    " + String.join(" = ", answer) + ".    Емкость очищена";
         System.out.println("Реакция успешна: " + String.join(" = ", answer));
+    }
+
+    public String compileSubstanceName(String foundation, String oxid, int foundAmount, int oxidAmount) throws SQLException, ClassNotFoundException {
+        String answer = "";
+
+        if (foundAmount > 1){
+            if (handler.getIsFoundationSimple(foundation)) {
+                answer += foundation + foundAmount;
+            } else {
+                answer +=  foundation + "(" + foundAmount + ")";
+
+            }
+        } else {
+            answer += foundation;
+        }
+
+        if (oxidAmount > 1){
+            if (handler.getIsOxidizerSimple(oxid)) {
+                answer += oxid + oxidAmount;
+            } else {
+                answer += "(" + oxid + ")" + oxidAmount;
+            }
+        } else {
+            answer += oxid;
+        }
+
+        return answer;
     }
 
     public String dissociate(Array<String> substance) throws SQLException, ClassNotFoundException {
