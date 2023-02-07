@@ -456,6 +456,42 @@ public class DBHandler extends Config{
         return Integer.parseInt(OVR_type);
     }
 
+    public int getOxidStateByName(String oxid) throws SQLException, ClassNotFoundException {
+        int i = -1;
+
+        String select = "SELECT possible_states FROM " + AllConstants.OxidConsts.OXID_TABLE + " Where "
+                + AllConstants.OxidConsts.OXIDIZER_NAME + " ='" + oxid + "'";
+        PreparedStatement prst = getConnection().prepareStatement(select);
+        ResultSet rset = prst.executeQuery();
+        try {
+            if (rset.next()) {
+                i = Integer.parseInt(rset.getString(1));
+            }
+        } catch (Exception e){
+            return i;
+        }
+
+        return i;
+    }
+
+    public int getFoundationStateByName(String foundation) throws SQLException, ClassNotFoundException {
+        int i = 1;
+
+        String select = "SELECT possible_states FROM " + AllConstants.FoundConsts.FOUND_TABLE + " Where "
+                + AllConstants.FoundConsts.FOUNDATION_NAME + " ='" + foundation + "'";
+        PreparedStatement prst = getConnection().prepareStatement(select);
+        ResultSet rset = prst.executeQuery();
+        try {
+            if (rset.next()) {
+                i = Integer.parseInt(rset.getString(1));
+            }
+        } catch (Exception e){
+            return i;
+        }
+
+        return i;
+    }
+
 //    public boolean DoesThisSubstanceHaveSubstanceType(String substanceName) throws SQLException, ClassNotFoundException {
 //        Boolean check = false;
 
