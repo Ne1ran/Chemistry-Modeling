@@ -127,6 +127,7 @@ public class ExperimentWindow implements Screen {
                                 tempSubstance.getOxid() + "-" + tempSubstance.getOxid_amount()));
 
                 tempSubstance.setSize(tempSubstance.getTexture().getWidth(), tempSubstance.getTexture().getHeight());
+                tempSubstance.setUnstable_type(substanceItself.getString(AllConstants.SubsConsts.UNSTABLE_TYPE));
                 ResultSet substanceExpConn = handler.getSubstanceByIDInSubsExpsTableForExpWindow(
                         substanceItself.getString(AllConstants.SubsConsts.ID), choosenExperiment.getExp_id());
                 if (substanceExpConn.next()){

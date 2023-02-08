@@ -568,6 +568,10 @@ public class CustomExperimentWindow implements Screen {
             } else name += tempArr.get(1).split("-")[0];
         }
 
+        if (name.contains("_")){
+            name = name.replaceAll("_", "");
+        }
+
         if (name.equals("HOH")){
             name = "H2O";
         }

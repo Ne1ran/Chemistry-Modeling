@@ -9,6 +9,8 @@ import com.chemistry.dto.Substance;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.chemistry.ExperimentWindow.phrase;
 import static com.chemistry.ExperimentWindow.usedEquipment;
@@ -41,7 +43,7 @@ public class ReactionHandler {
                 Foundation tempFoundation = new Foundation();
                 tempFoundation.setFoundation_name(foundationFound.getString(AllConstants.FoundConsts.FOUNDATION_NAME));
                 tempFoundation.setName(foundationFound.getString(AllConstants.FoundConsts.NAME));
-                tempFoundation.setPossible_states(foundationFound.getString(AllConstants.FoundConsts.POSSIBLE_STATES));
+                tempFoundation.setPossible_states(foundationFound.getString(AllConstants.FoundConsts.POSSIBLE_STATES).split(";")[0]);
                 tempFoundation.setElectrochem_pos(foundationFound.getString(AllConstants.FoundConsts.ELECTROCHEM_POSITION));
                 foundPool.put(tempFoundation, found_amount);
             }
@@ -50,9 +52,9 @@ public class ReactionHandler {
             if (oxidFound.next()){
                 Oxid tempOxid = new Oxid();
 
-                tempOxid.setOxid_name(oxidFound.getString(AllConstants.OxidConsts.OXIDIZER_NAME));
+                tempOxid.setOxid_name(oxidFound.getString(AllConstants.OxidConsts.OXIDIZER_NAME).replace("_", ""));
                 tempOxid.setName(oxidFound.getString(AllConstants.OxidConsts.NAME));
-                tempOxid.setPossible_states(oxidFound.getString(AllConstants.OxidConsts.POSSIBLE_STATES));
+                tempOxid.setPossible_states(oxidFound.getString(AllConstants.OxidConsts.POSSIBLE_STATES).split(";")[0]);
                 tempOxid.setOxid_strength(oxidFound.getString(AllConstants.OxidConsts.OXID_STRENGTH));
 
                 oxidPool.put(tempOxid, oxid_amount);
@@ -73,10 +75,8 @@ public class ReactionHandler {
 
         if (canOVRbeStarted){
             System.out.println("OVR - started");
-            phrase = "Реакция не пошла, ";
-            cause = " так как у вас ОВР головного мозга!";
             phrase += cause;
-            //StartOVR_Reaction();
+            StartOVR_Reaction("neutral");
         } else {
             Array<Boolean> arrayOfEverythingCheckedAndAdditionReaction = getSimpleSwapAndAdditingReactionsPossibilities();
             if (arrayOfEverythingCheckedAndAdditionReaction.get(0)){
@@ -155,6 +155,104 @@ public class ReactionHandler {
         }
 
     }
+
+    private void StartOVR_Reaction(String environment) throws SQLException, ClassNotFoundException {
+        String answer = "";
+        String answerFirstPart = "";
+        String answerSecondPart = "";
+
+
+        for (Substance substance : substances){
+            answerFirstPart += substance.getSubstanceNameInGame() + " + ";
+            answerSecondPart += iterationReaction(substance);
+        }
+
+        System.out.println(answerFirstPart + answerSecondPart);
+
+    }
+
+    private String iterationReaction(Substance substance) throws SQLException, ClassNotFoundException {
+        String reaction = "";
+
+        if (substance.getUnstable_type().equals("1")) {
+            Oxid oxid = getOxidFromDB(substance.getOxid());
+
+            Integer startState = Integer.parseInt(oxid.getPossible_states());
+
+            Foundation newFoundation = getFoundationFromDB(oxid.getOxid_name().split("_")[0]);
+            Array<String> oxidAndAmount = new Array<>(splitNumbersIfNeeded(oxid.getOxid_name().split("_")[1])  );
+            Oxid NewOxid = getOxidFromDB(oxidAndAmount.get(0));
+            Integer oxidAmount = Integer.valueOf(oxidAndAmount.get(1));
+
+            Integer oxidState = Integer.parseInt(NewOxid.getPossible_states().split(";")[0]) * oxidAmount;
+            Integer foundationState = -oxidState + startState; // + - = -, - - = +
+
+            System.out.println(foundationState);
+
+
+        } else if (substance.getUnstable_type().equals("-1")) {
+            Oxid oxid = getOxidFromDB(substance.getOxid());
+
+            Integer startState = Integer.parseInt(oxid.getPossible_states());
+
+            Foundation newFoundation = getFoundationFromDB(oxid.getOxid_name().split("_")[0]);
+            Array<String> oxidAndAmount = new Array<>(splitNumbersIfNeeded(oxid.getOxid_name().split("_")[1])  );
+            Oxid NewOxid = getOxidFromDB(oxidAndAmount.get(0));
+            Integer oxidAmount = Integer.valueOf(oxidAndAmount.get(1));
+
+            Integer oxidState = Integer.parseInt(NewOxid.getPossible_states().split(";")[0]) * oxidAmount;
+            Integer foundationState = -oxidState + startState; // + - = -, - - = +
+
+            System.out.println(foundationState);
+
+        } else {
+            System.out.println("KAK");
+        }
+
+        return reaction;
+    }
+
+    private Array<String> splitNumbersIfNeeded(String str){
+        Array<String> array = new Array<>();
+        String elem = "";
+        String amount = "1";
+        String regex1 = "\\D+";
+        String regex2 = "\\d+";
+        Pattern pattern1 = Pattern.compile(regex1);
+        Pattern pattern2 = Pattern.compile(regex2);
+        Matcher matcher = pattern1.matcher(str);
+        while (matcher.find()){
+            elem = str.substring(matcher.start(), matcher.end());
+        }
+        Matcher matcher1 = pattern2.matcher(str);
+        while (matcher1.find()){
+            amount = str.substring(matcher1.start(), matcher1.end());
+        }
+        array.add(elem);
+        array.add(amount);
+        return array;
+    }
+
+    private Foundation getFoundationFromDB(String foundName) throws SQLException, ClassNotFoundException {
+        Foundation tempFound = new Foundation();
+        ResultSet rset = handler.getFoundationByName(foundName);
+        if (rset.next()) {
+            tempFound.setPossible_states(rset.getString(AllConstants.FoundConsts.POSSIBLE_STATES));
+            tempFound.setFoundation_name(rset.getString(AllConstants.FoundConsts.FOUNDATION_NAME));
+        }
+        return tempFound;
+    }
+
+    private Oxid getOxidFromDB(String oxidName) throws SQLException, ClassNotFoundException { //with full possible states
+        Oxid tempOxid = new Oxid();
+        ResultSet rset = handler.getOxidByName(oxidName);
+        if (rset.next()){
+            tempOxid.setPossible_states(rset.getString(AllConstants.OxidConsts.POSSIBLE_STATES));
+            tempOxid.setOxid_name(rset.getString(AllConstants.OxidConsts.OXIDIZER_NAME));
+        }
+        return tempOxid;
+    }
+
 
     private Array<Boolean> getSimpleSwapAndAdditingReactionsPossibilities() {
         Array<Boolean> array = new Array<>();
@@ -302,15 +400,15 @@ public class ReactionHandler {
         int secondOxidAmount = oxidPool.get(oxids.get(1));
 
 
-        int firstOxid_OxidState = -Integer.parseInt(oxids.get(0).getPossible_states());
-        int secondOxid_OxidState = -Integer.parseInt(oxids.get(1).getPossible_states());
+        int firstOxid_OxidState = -Integer.parseInt(oxids.get(0).getPossible_states().split(";")[0]);
+        int secondOxid_OxidState = -Integer.parseInt(oxids.get(1).getPossible_states().split(";")[0]);
 
         int firstFoundationCurrentState, secondFoundationCurrentState;
 
         if (handler.getSubstanceType(foundations.get(0).getFoundation_name(),
                 oxids.get(0).getOxid_name()).equals("Свободный металл")){
 
-            firstFoundationCurrentState = Integer.parseInt(foundations.get(0).getPossible_states());
+            firstFoundationCurrentState = Integer.parseInt(foundations.get(0).getPossible_states().split(";")[0]);
 
         } else if (foundations.get(0).getFoundation_name().equals("0")) {
             firstFoundationCurrentState = 1;
@@ -320,7 +418,7 @@ public class ReactionHandler {
         if (handler.getSubstanceType(foundations.get(1).getFoundation_name(),
                 oxids.get(1).getOxid_name()).equals("Свободный металл")){
 
-            secondFoundationCurrentState = Integer.parseInt(foundations.get(1).getPossible_states());
+            secondFoundationCurrentState = Integer.parseInt(foundations.get(1).getPossible_states().split(";")[0]);
 
         } else if (foundations.get(1).getFoundation_name().equals("0")) {
             secondFoundationCurrentState = 1;

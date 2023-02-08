@@ -15,7 +15,14 @@ public class Substance extends Rectangle {
     private String oxid_amount;
     private String substanceNameInGame = "Ничего";
     private String substanceType;
+    private String unstable_type;
     public Substance() {
+    }
+    public String getUnstable_type() {
+        return unstable_type;
+    }
+    public void setUnstable_type(String unstable_type) {
+        this.unstable_type = unstable_type;
     }
     public String getSubstanceType() {
         return substanceType;
