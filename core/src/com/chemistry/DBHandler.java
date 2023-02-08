@@ -491,21 +491,6 @@ public class DBHandler extends Config{
 
         return i;
     }
-
-//    public boolean DoesThisSubstanceHaveSubstanceType(String substanceName) throws SQLException, ClassNotFoundException {
-//        Boolean check = false;
-
-//
-//        if (rset.next()){
-//            if (rset.getString(1).equals("")){
-//                check = true;
-//            }
-//        }
-//
-//        return check;
-//    }
-
-
 }
 
 

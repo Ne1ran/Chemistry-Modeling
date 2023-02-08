@@ -560,14 +560,20 @@ public class ReactionHandler {
         answerFirstPart = answerFirstPart.substring(0, answerFirstPart.length()-3);
 
         if (substances.get(0).getOxid().contains(substances.get(1).getOxid()) &&
-                substances.get(0).getSubstanceType().equals(AllConstants.ReactionHandlerUtility.OXID_ACID)){
+                (substances.get(0).getSubstanceType().equals(AllConstants.ReactionHandlerUtility.OXID_ACID) ||
+                substances.get(0).getSubstanceType().equals(AllConstants.ReactionHandlerUtility.WATER))){
             int matchedOxidAmount = Integer.parseInt(substances.get(0).getOxid_amount());
-
+            String newOxidName = "";
+            String foundName = "";
             matchedOxidAmount += Integer.parseInt(substances.get(1).getOxid_amount());
 
-            String newOxidName = substances.get(0).getFoundation() + substances.get(0).getOxid() + matchedOxidAmount; //add foundAmount??
-
-            String foundName = substances.get(1).getFoundation();
+            if (substances.get(0).getSubstanceType().equals(AllConstants.ReactionHandlerUtility.WATER)){
+                newOxidName = substances.get(1).getFoundation() + substances.get(1).getOxid() + matchedOxidAmount;
+                foundName = substances.get(0).getFoundation();
+            } else{
+                newOxidName = substances.get(0).getFoundation() + substances.get(0).getOxid() + matchedOxidAmount; //add foundAmount??
+                foundName = substances.get(1).getFoundation();
+            }
 
             int getOxidState = -handler.getOxidStateByName(newOxidName);
             int getFoundationState = handler.getFoundationStateByName(foundName);
@@ -584,14 +590,22 @@ public class ReactionHandler {
             answerSecondPart = compileSubstanceName(foundName, newOxidName, foundAmount, oxidAmount);
 
         } else if (substances.get(1).getOxid().contains(substances.get(0).getOxid()) &&
-                substances.get(1).getSubstanceType().equals(AllConstants.ReactionHandlerUtility.OXID_ACID)) {
+                (substances.get(1).getSubstanceType().equals(AllConstants.ReactionHandlerUtility.OXID_ACID)||
+                substances.get(1).getSubstanceType().equals(AllConstants.ReactionHandlerUtility.WATER))) {
 
             int matchedOxidAmount = Integer.parseInt(substances.get(1).getOxid_amount());
 
             matchedOxidAmount += Integer.parseInt(substances.get(0).getOxid_amount());
+            String newOxidName = "";
+            String foundName = "";
 
-            String newOxidName = substances.get(1).getFoundation() + substances.get(0).getOxid() + matchedOxidAmount; //add foundAmount??
-            String foundName = substances.get(0).getFoundation();
+            if (substances.get(1).getSubstanceType().equals(AllConstants.ReactionHandlerUtility.WATER)){
+                newOxidName = substances.get(0).getFoundation() + substances.get(0).getOxid() + matchedOxidAmount;
+                foundName = substances.get(1).getFoundation();
+            } else{
+                newOxidName = substances.get(1).getFoundation() + substances.get(1).getOxid() + matchedOxidAmount; //add foundAmount??
+                foundName = substances.get(0).getFoundation();
+            }
 
             int getOxidState = -handler.getOxidStateByName(newOxidName);
             int getFoundationState = handler.getFoundationStateByName(foundName);
