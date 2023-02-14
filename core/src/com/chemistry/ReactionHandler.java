@@ -73,7 +73,7 @@ public class ReactionHandler {
 
         int nullOxidsAmount = 0;
 
-        if (canOVRbeStarted){
+        if (canOVRbeStarted){ //add a check so next substance will be used as environment
             System.out.println("OVR - started");
             phrase += cause;
             StartOVR_Reaction("neutral");
@@ -221,16 +221,52 @@ public class ReactionHandler {
                         break;
                     }
                     case "acid": {
+                        Oxid acidOxid = new Oxid ();
+                        ResultSet rset = handler.getOxidByName("S_O4"); // we get it from acid itself
+                        if (rset.next()){
+                            acidOxid.setOxid_strength(rset.getString(AllConstants.OxidConsts.OXID_STRENGTH));
+                            acidOxid.setName(rset.getString(AllConstants.OxidConsts.NAME));
+                            acidOxid.setOxid_name(rset.getString(AllConstants.OxidConsts.OXIDIZER_NAME));
+                        }
+
+                        int acidOxidState = Integer.parseInt(acidOxid.getOxid_strength());
+
+                        String newSubstanceName = "";
+                        freeIonName = substance.getFoundation();
+
+                        Oxid oxid = getOxidFromDB(substance.getOxid());
+
+                        Foundation newFoundation = getFoundationFromDB(oxid.getOxid_name().split("_")[0]);
+
+                        int foundationWantState = 0;
+
+                        String foundationPossibleStates = newFoundation.getPossible_states();
+
+                        foundationWantState = Integer.parseInt(foundationPossibleStates.split(";")[0]);
+
+                        Array<String> tempArray = new Array<>(foundationPossibleStates.split(";")[1].split(","));
+
+                        int foundationActualState = Integer.parseInt(tempArray.get(tempArray.indexOf(String.valueOf(foundationWantState), false)-1));
+
+                        if (-acidOxidState == foundationActualState){
+                            reaction += newFoundation + acidOxid.getOxid_name() + " + ";
+                        } else if (-acidOxidState > foundationActualState) {
+                            int foundationAmount = -acidOxidState;
+                            int oxidAmount = foundationActualState;
+                            reaction += "(" + newFoundation + ")" + foundationAmount + "(" + acidOxid.getOxid_name() + ")" + oxidAmount;
+                        } else if (-acidOxidState < foundationActualState) {
+                            int foundationAmount = -acidOxidState;
+                            int oxidAmount = foundationActualState;
+                            reaction += "(" + newFoundation + ")" + foundationAmount + "(" + acidOxid.getOxid_name() + ")" + oxidAmount;
+                        } else System.out.println("erorere?");
+
+//                        int newOxidAmount = foundationWantState / -Integer.parseInt(newOxid.getPossible_states().split(";")[0]);
+//                        newSubstanceName = newFoundation.getFoundation_name() + newOxid.getOxid_name() + newOxidAmount;
+//                        receiverElectrons = Math.abs(foundationState - foundationWantState);
+
                         //making a salt with acid
                         reaction += "H2O" + " + ";
 
-//                    String[] tempArray = newFoundation.getPossible_states().split(";");
-//                    String baseState = tempArray[0];
-//                    Array<String> tempArray2 = new Array<>(tempArray[1].split(","));
-//                    int indexOfBaseState = tempArray2.lastIndexOf(baseState, false);
-//                    foundationWantState = Integer.parseInt(tempArray2.get(indexOfBaseState-1));
-//                    int newOxidAmount = foundationWantState / -Integer.parseInt(newOxid.getPossible_states().split(";")[0]);
-//                    newSubstanceName = newFoundation.getFoundation_name() + newOxid.getOxid_name() + newOxidAmount;
                         break;
                     }
                     case "alkaline": {
@@ -238,14 +274,6 @@ public class ReactionHandler {
                         reaction += "H2O" + " + ";
                         //Not creating an new oxidizer
 
-
-//                    String[] tempArray = newFoundation.getPossible_states().split(";");
-//                    String baseState = tempArray[0];
-//                    Array<String> tempArray2 = new Array<>(tempArray[1].split(","));
-//                    int indexOfBaseState = tempArray2.indexOf(baseState, false);
-//                    foundationWantState = Integer.parseInt(tempArray2.get(indexOfBaseState+1));
-//                    int newOxidAmount = foundationWantState / -Integer.parseInt(newOxid.getPossible_states().split(";")[0]);
-//                    newSubstanceName = newFoundation.getFoundation_name() + newOxid.getOxid_name() + newOxidAmount;
                         break;
                     }
                 }
@@ -270,15 +298,30 @@ public class ReactionHandler {
 
                 freeOxidizerName = newFoundation.getFoundation_name() + newOxid.getOxid_name() + newOxidAmount;
 
+                reaction += substance.getFoundation() + freeOxidizerName + " + ";
             } else {
                 System.out.println("Not really possible?");
             }
-
-
         }
 
         if (!freeIonName.equals("") && !freeOxidizerName.equals("")){
-            reaction += freeIonName + freeOxidizerName;
+            switch (environment){
+                case "neutral": {
+                    int ionState = handler.getFoundationStateByName(freeIonName);
+                    if (ionState > 1){
+                        reaction += freeIonName + "(OH)" + ionState + " + ";
+                    } else reaction += freeIonName + "OH + ";
+                    break;
+                }
+                case "acid": {
+                    reaction += freeIonName + "AcidOstatok";
+                    break;
+                }
+                case "alkaline": {
+                    //nothing. only h2o
+                }
+
+            }
         }
 
         return reaction;
