@@ -2,9 +2,7 @@ package com.chemistry;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.Array;
-import com.chemistry.dto.Equipment;
-import com.chemistry.dto.Experiment;
-import com.chemistry.dto.Substance;
+import com.chemistry.dto.*;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -102,22 +100,42 @@ public class DBHandler extends Config{
         return rset;
     }
 
-    public ResultSet getFoundationByName(String foundation) throws SQLException, ClassNotFoundException {
+    public Foundation getFoundationByName(String foundation) throws SQLException, ClassNotFoundException {
+        Foundation foundation1 = new Foundation();
+
         ResultSet rset = null;
         String select = "SELECT * FROM " + AllConstants.FoundConsts.FOUND_TABLE + " where " +
                 AllConstants.FoundConsts.FOUNDATION_NAME + "='" + foundation + "'";
         PreparedStatement prst = getConnection().prepareStatement(select);
         rset = prst.executeQuery();
-        return rset;
+
+        if (rset.next()){
+            foundation1.setFoundation_name(rset.getString(AllConstants.FoundConsts.FOUNDATION_NAME));
+            foundation1.setName(rset.getString(AllConstants.FoundConsts.NAME));
+            foundation1.setElectrochem_pos(rset.getString(AllConstants.FoundConsts.ELECTROCHEM_POSITION));
+            foundation1.setPossible_states(rset.getString(AllConstants.FoundConsts.POSSIBLE_STATES));
+        }
+
+        return foundation1;
     }
 
-    public ResultSet getOxidByName(String oxid) throws SQLException, ClassNotFoundException {
+    public Oxid getOxidByName(String oxid) throws SQLException, ClassNotFoundException {
+        Oxid oxid1 = new Oxid();
+
         ResultSet rset = null;
         String select = "SELECT * FROM " + AllConstants.OxidConsts.OXID_TABLE + " where " +
                 AllConstants.OxidConsts.OXIDIZER_NAME + "='" + oxid + "'";
         PreparedStatement prst = getConnection().prepareStatement(select);
         rset = prst.executeQuery();
-        return rset;
+
+        if (rset.next()){
+            oxid1.setOxid_name(rset.getString(AllConstants.OxidConsts.OXIDIZER_NAME));
+            oxid1.setName(rset.getString(AllConstants.OxidConsts.NAME));
+            oxid1.setOxid_strength(rset.getString(AllConstants.OxidConsts.OXID_STRENGTH));
+            oxid1.setPossible_states(rset.getString(AllConstants.OxidConsts.POSSIBLE_STATES));
+        }
+
+        return oxid1;
     }
 
     public String getExperimentNameById(int id) throws SQLException, ClassNotFoundException {
