@@ -59,9 +59,6 @@ public class ReactionHandler {
         if (canOVRbeStarted){ //add a check so next substance will be used as environment
             phrase = "Началась окислительно-восстановительная реакция. Выберите среду, в которой она будет происходить. Добавьте воду, кислоту или щелочь";
             waitForAddition = true;
-//            StartOVR_Reaction("neutral");
-//            StartOVR_Reaction("acid");
-//            StartOVR_Reaction("alkaline");
         } else {
             Array<Boolean> arrayOfEverythingCheckedAndAdditionReaction = getSimpleSwapAndAdditingReactionsPossibilities();
             if (arrayOfEverythingCheckedAndAdditionReaction.get(0)){
@@ -157,7 +154,7 @@ public class ReactionHandler {
         answerSecondPart = answerSecondPart.substring(0, answerSecondPart.length()-3);
 
         answer = answerFirstPart + " = " + answerSecondPart;
-        System.out.println("Уравнение ОВР реакции при какой-то среде: " + answer);
+        phrase = "Уравнение ОВР реакции при выбранной среде: " + answer;
     }
 
     public String iterationReaction(ArrayList<Substance> substances, Substance environmentSubstance) throws SQLException, ClassNotFoundException {
@@ -274,7 +271,7 @@ public class ReactionHandler {
 
                             oxid.setPossible_states(String.valueOf(endState));
 
-                            Foundation foundation = getFoundationFromDB(freeIonName);
+                            Foundation foundation = getFoundationFromDB(environmentSubstance.getFoundation()); // idk if there is electro_chem comparing but sure
 
                             String compiledStringAnswer = createSubstanceName(foundation, oxid);
 
@@ -379,7 +376,7 @@ public class ReactionHandler {
 
         if (oxidAmount > 1){
             if (handler.getIsOxidizerSimple(oxid.getOxid_name())) {
-                answer += oxid.getName() + oxidAmount;
+                answer += oxid.getOxid_name() + oxidAmount;
             } else {
                 answer += "(" + oxid.getOxid_name() + ")" + oxidAmount;
             }
