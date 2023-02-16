@@ -53,6 +53,7 @@ public class ExperimentWindow implements Screen {
     public static Boolean animationStarted = false;
     public static String phrase = "Для выхода на главный экран нажмите Esc";
     public static Substance animatedSubstance = new Substance();
+    public static Boolean waitForAddition = false;
     private Texture animationTexture;
     private static AnimationController animationController;
     public ExperimentWindow(ChemistryModelingGame game) throws SQLException, ClassNotFoundException {
@@ -252,7 +253,7 @@ public class ExperimentWindow implements Screen {
 
             for (Equipment equip: usedEquipment) {
                 if (equip.overlaps(mouseSpawnerRect)){
-                    if (inventorySlotIsPicked && equip.getSubstancesInside().size() < 2){
+                    if (inventorySlotIsPicked && equip.getSubstancesInside().size() < 2 || waitForAddition){
                         Substance substanceInSlotId = new Substance();
                         for (InventorySlot slot: inventory) {
                             if (slot.getThisSlotPicked()){
@@ -271,13 +272,22 @@ public class ExperimentWindow implements Screen {
 //                                new Vector2(equip.getX(), 720-equip.getY()), animationTexture);
 
                         // Need a normal check if substance is already added
-                        if (equip.getSubstancesInside().size()>=2){
+                    if (equip.getSubstancesInside().size()>=2){
+                        if (waitForAddition){
+                            try {
+                                reactionHandler.StartOVR_Reaction(substanceInSlotId);
+                            } catch (SQLException | ClassNotFoundException e) {
+                                throw new RuntimeException(e);
+                            }
+                            waitForAddition = false;
+                        } else {
                             try {
                                 reactionHandler.getSubstancesFromEquipment(equip);
                             } catch (SQLException | ClassNotFoundException throwables) {
                                 throwables.printStackTrace();
                             }
                         }
+                    }
 
                     } else {
                         reactionHandler.clearEquipment();

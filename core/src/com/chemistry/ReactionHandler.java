@@ -12,8 +12,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.chemistry.ExperimentWindow.phrase;
-import static com.chemistry.ExperimentWindow.usedEquipment;
+import static com.chemistry.ExperimentWindow.*;
 
 public class ReactionHandler {
     public ArrayList<Substance> substances;
@@ -58,11 +57,11 @@ public class ReactionHandler {
         int nullOxidsAmount = 0;
 
         if (canOVRbeStarted){ //add a check so next substance will be used as environment
-            System.out.println("OVR - started");
-            phrase += cause;
-            StartOVR_Reaction("neutral");
-            StartOVR_Reaction("acid");
-            StartOVR_Reaction("alkaline");
+            phrase = "Началась окислительно-восстановительная реакция. Выберите среду, в которой она будет происходить. Добавьте воду, кислоту или щелочь";
+            waitForAddition = true;
+//            StartOVR_Reaction("neutral");
+//            StartOVR_Reaction("acid");
+//            StartOVR_Reaction("alkaline");
         } else {
             Array<Boolean> arrayOfEverythingCheckedAndAdditionReaction = getSimpleSwapAndAdditingReactionsPossibilities();
             if (arrayOfEverythingCheckedAndAdditionReaction.get(0)){
@@ -142,7 +141,7 @@ public class ReactionHandler {
 
     }
 
-    private void StartOVR_Reaction(String environment) throws SQLException, ClassNotFoundException {
+    public void StartOVR_Reaction(Substance environment) throws SQLException, ClassNotFoundException {
         String answer = "";
         String answerFirstPart = "";
         String answerSecondPart = "";
@@ -161,7 +160,7 @@ public class ReactionHandler {
         System.out.println("Уравнение ОВР реакции при какой-то среде: " + answer);
     }
 
-    private String iterationReaction(ArrayList<Substance> substances, String environment) throws SQLException, ClassNotFoundException {
+    public String iterationReaction(ArrayList<Substance> substances, Substance environmentSubstance) throws SQLException, ClassNotFoundException {
         String reaction = "";
 
         int receiverElectrons = 0;
@@ -170,176 +169,181 @@ public class ReactionHandler {
         String freeIonName = "";
         String freeOxidizerName = "";
 
-        for (Substance substance : substances) {
+        String environment = getCurrentEnvironmentBySubstance(environmentSubstance);
 
-            if (substance.getUnstable_type().equals("1")) {
+        if (environment.equals("Щелочь") || environment.equals("Вода") || environment.equals("Кислота")){
+            for (Substance substance : substances) {
 
-                switch (environment) {
+                if (substance.getUnstable_type().equals("1")) {
 
-                    case "neutral": {
-                        String newSubstanceName = "";
-                        freeIonName = substance.getFoundation();
+                    switch (environment) {
+                        case "Вода": {
+                            String newSubstanceName = "";
+                            freeIonName = substance.getFoundation();
 
-                        Oxid oxid = getOxidFromDB(substance.getOxid());
+                            Oxid oxid = getOxidFromDB(substance.getOxid());
 
-                        int startState = Integer.parseInt(oxid.getPossible_states());
+                            int startState = Integer.parseInt(oxid.getPossible_states());
 
-                        Foundation newFoundation = getFoundationFromDB(oxid.getOxid_name().split("_")[0]);
-                        Array<String> oxidAndAmount = new Array<>(splitNumbersIfNeeded(oxid.getOxid_name().split("_")[1]));
-                        Oxid newOxid = getOxidFromDB(oxidAndAmount.get(0));
-                        int oxidAmount = Integer.parseInt(oxidAndAmount.get(1));
+                            Foundation newFoundation = getFoundationFromDB(oxid.getOxid_name().split("_")[0]);
+                            Array<String> oxidAndAmount = new Array<>(splitNumbersIfNeeded(oxid.getOxid_name().split("_")[1]));
+                            Oxid newOxid = getOxidFromDB(oxidAndAmount.get(0));
+                            int oxidAmount = Integer.parseInt(oxidAndAmount.get(1));
 
-                        int oxidState = Integer.parseInt(newOxid.getPossible_states().split(";")[0]) * oxidAmount;
+                            int oxidState = Integer.parseInt(newOxid.getPossible_states().split(";")[0]) * oxidAmount;
 
-                        int foundationState = -oxidState + startState; // + - = -, - - = +
+                            int foundationState = -oxidState + startState; // + - = -, - - = +
 
-                        int foundationWantState = 0;
+                            int foundationWantState = 0;
 
-                        foundationWantState = Integer.parseInt(newFoundation.getPossible_states().split(";")[0]);
-                        int newOxidAmount = foundationWantState / -Integer.parseInt(newOxid.getPossible_states().split(";")[0]);
-                        newSubstanceName = newFoundation.getFoundation_name() + newOxid.getOxid_name() + newOxidAmount;
-                        receiverElectrons = Math.abs(foundationState - foundationWantState);
+                            foundationWantState = Integer.parseInt(newFoundation.getPossible_states().split(";")[0]);
+                            int newOxidAmount = foundationWantState / -Integer.parseInt(newOxid.getPossible_states().split(";")[0]);
+                            newSubstanceName = newFoundation.getFoundation_name() + newOxid.getOxid_name() + newOxidAmount;
+                            receiverElectrons = Math.abs(foundationState - foundationWantState);
 
-                        reaction += newSubstanceName + " + ";
+                            reaction += newSubstanceName + " + ";
 
-                        break;
+                            break;
+                        }
+                        case "Кислота": {
+                            Oxid acidOxid = handler.getOxidByName(environmentSubstance.getOxid());
+
+                            int acidOxidState = Integer.parseInt(acidOxid.getPossible_states());
+
+                            String newSubstanceName = "";
+                            freeIonName = substance.getFoundation();
+
+                            Oxid oxid = getOxidFromDB(substance.getOxid());
+
+                            Foundation newFoundation = getFoundationFromDB(oxid.getOxid_name().split("_")[0]);
+
+                            int foundationWantState = 0;
+
+                            String foundationPossibleStates = newFoundation.getPossible_states();
+
+                            foundationWantState = Integer.parseInt(foundationPossibleStates.split(";")[0]);
+
+                            Array<String> tempArray = new Array<>(foundationPossibleStates.split(";")[1].split(","));
+
+                            int foundationActualState = Integer.parseInt(tempArray.get(tempArray.indexOf(String.valueOf(foundationWantState), false)-1));
+
+                            newFoundation.setPossible_states(String.valueOf(foundationActualState));
+
+                            String newSaline = createSubstanceName(newFoundation, acidOxid);
+
+                            reaction += newSaline + " + ";
+
+                            reaction += "H2O" + " + ";
+
+                            break;
+                        }
+                        case "Щелочь": {
+                            freeIonName = substance.getFoundation();
+                            reaction += "H2O" + " + ";
+
+                            String newSubstanceName = "";
+
+                            Oxid oxid = getOxidFromDB(substance.getOxid());
+
+                            int startState = Integer.parseInt(oxid.getPossible_states());
+
+                            int endState = 0;
+
+                            Foundation newFoundation = getFoundationFromDB(oxid.getOxid_name().split("_")[0]);
+                            Array<String> oxidAndAmount = new Array<>(splitNumbersIfNeeded(oxid.getOxid_name().split("_")[1]));
+                            Oxid newOxid = getOxidFromDB(oxidAndAmount.get(0));
+                            int oxidAmount = Integer.parseInt(oxidAndAmount.get(1));
+
+                            int oxidState = Integer.parseInt(newOxid.getPossible_states().split(";")[0]) * oxidAmount;
+
+                            int foundationState = -oxidState + startState; // + - = -, - - = +
+
+                            int foundationWantState = 0;
+
+                            String foundationPossibleStates = newFoundation.getPossible_states();
+
+                            foundationWantState = Integer.parseInt(newFoundation.getPossible_states().split(";")[0]);
+
+                            Array<String> tempArray = new Array<>(foundationPossibleStates.split(";")[1].split(","));
+
+                            int foundationActualState = Integer.parseInt(tempArray.get(tempArray.indexOf(String.valueOf(foundationWantState), false)+1));
+
+                            oxid.setOxid_name(oxid.getOxid_name().replaceAll("_", ""));
+
+                            endState = -(-oxidState - foundationActualState);
+
+                            oxid.setPossible_states(String.valueOf(endState));
+
+                            Foundation foundation = getFoundationFromDB(freeIonName);
+
+                            String compiledStringAnswer = createSubstanceName(foundation, oxid);
+
+                            receiverElectrons = Math.abs(foundationState - foundationWantState);
+
+                            reaction += compiledStringAnswer + " + ";
+
+                            break;
+                        }
                     }
-                    case "acid": {
-                        Oxid acidOxid = handler.getOxidByName("S_O4");
 
-                        int acidOxidState = Integer.parseInt(acidOxid.getPossible_states());
+                } else if (substance.getUnstable_type().equals("-1")) { //Restorer always becomes what we need (N +3 -> N +5)
+                    Oxid oxid = getOxidFromDB(substance.getOxid());
 
-                        String newSubstanceName = "";
-                        freeIonName = substance.getFoundation();
+                    int startState = Integer.parseInt(oxid.getPossible_states());
 
-                        Oxid oxid = getOxidFromDB(substance.getOxid());
+                    Foundation newFoundation = getFoundationFromDB(oxid.getOxid_name().split("_")[0]);
+                    Array<String> oxidAndAmount = new Array<>(splitNumbersIfNeeded(oxid.getOxid_name().split("_")[1]));
+                    Oxid newOxid = getOxidFromDB(oxidAndAmount.get(0));
+                    int oxidAmount = Integer.parseInt(oxidAndAmount.get(1));
 
-                        Foundation newFoundation = getFoundationFromDB(oxid.getOxid_name().split("_")[0]);
+                    int oxidState = Integer.parseInt(newOxid.getPossible_states().split(";")[0]) * oxidAmount;
 
-                        int foundationWantState = 0;
+                    int foundationState = -oxidState + startState; // + - = -, - - = +
+                    int foundationWantState = Integer.parseInt(newFoundation.getPossible_states().split(";")[0]);
+                    giverElectrons = Math.abs(foundationState - foundationWantState);
 
-                        String foundationPossibleStates = newFoundation.getPossible_states();
+                    int newOxidAmount = (foundationWantState + (-startState)) / -Integer.parseInt(newOxid.getPossible_states());
 
-                        foundationWantState = Integer.parseInt(foundationPossibleStates.split(";")[0]);
+                    freeOxidizerName = newFoundation.getFoundation_name() + "_" + newOxid.getOxid_name() + newOxidAmount;
 
-                        Array<String> tempArray = new Array<>(foundationPossibleStates.split(";")[1].split(","));
+                    String newSaline = createSubstanceName(handler.getFoundationByName(substance.getFoundation()), handler.getOxidByName(freeOxidizerName));
 
-                        int foundationActualState = Integer.parseInt(tempArray.get(tempArray.indexOf(String.valueOf(foundationWantState), false)-1));
-
-                        if (-acidOxidState == foundationActualState){
-                            reaction += newFoundation.getFoundation_name() + acidOxid.getOxid_name() + " + ";
-                        } else if (-acidOxidState > foundationActualState) {
-                            int foundationAmount = -acidOxidState;
-                            int oxidAmount = foundationActualState;
-                            reaction += "(" + newFoundation.getFoundation_name() + ")" + -foundationAmount + "(" + acidOxid.getOxid_name() + ")" + oxidAmount;
-                        } else if (-acidOxidState < foundationActualState) {
-                            int foundationAmount = -acidOxidState;
-                            int oxidAmount = foundationActualState;
-                            reaction += "(" + newFoundation.getFoundation_name() + ")" + -foundationAmount + "(" + acidOxid.getOxid_name() + ")" + oxidAmount;
-                        } else System.out.println("erorere?");
-
-                        reaction += "H2O" + " + ";
-
-                        break;
-                    }
-                    case "alkaline": {
-                        freeIonName = substance.getFoundation();
-                        reaction += "H2O" + " + ";
-
-                        String newSubstanceName = "";
-
-                        Oxid oxid = getOxidFromDB(substance.getOxid());
-
-                        int startState = Integer.parseInt(oxid.getPossible_states());
-
-                        int endState = 0;
-
-                        Foundation newFoundation = getFoundationFromDB(oxid.getOxid_name().split("_")[0]);
-                        Array<String> oxidAndAmount = new Array<>(splitNumbersIfNeeded(oxid.getOxid_name().split("_")[1]));
-                        Oxid newOxid = getOxidFromDB(oxidAndAmount.get(0));
-                        int oxidAmount = Integer.parseInt(oxidAndAmount.get(1));
-
-                        int oxidState = Integer.parseInt(newOxid.getPossible_states().split(";")[0]) * oxidAmount;
-
-                        int foundationState = -oxidState + startState; // + - = -, - - = +
-
-                        int foundationWantState = 0;
-
-                        String foundationPossibleStates = newFoundation.getPossible_states();
-
-                        foundationWantState = Integer.parseInt(newFoundation.getPossible_states().split(";")[0]);
-
-                        Array<String> tempArray = new Array<>(foundationPossibleStates.split(";")[1].split(","));
-
-                        int foundationActualState = Integer.parseInt(tempArray.get(tempArray.indexOf(String.valueOf(foundationWantState), false)+1));
-
-                        oxid.setOxid_name(oxid.getOxid_name().replaceAll("_", ""));
-
-                        endState = -(-oxidState - foundationActualState);
-
-                        oxid.setPossible_states(String.valueOf(endState));
-
-                        Foundation foundation = getFoundationFromDB(freeIonName);
-
-                        String compiledStringAnswer = createSubstanceName(foundation, oxid);
-
-                        receiverElectrons = Math.abs(foundationState - foundationWantState);
-
-                        reaction += compiledStringAnswer + " + ";
-
-                        break;
-                    }
+                    reaction += newSaline + " + ";
+                } else {
+                    System.out.println("Not really possible?");
                 }
-
-            } else if (substance.getUnstable_type().equals("-1")) { //Restorer always becomes what we need (N +3 -> N +5)
-                Oxid oxid = getOxidFromDB(substance.getOxid());
-
-                int startState = Integer.parseInt(oxid.getPossible_states());
-
-                Foundation newFoundation = getFoundationFromDB(oxid.getOxid_name().split("_")[0]);
-                Array<String> oxidAndAmount = new Array<>(splitNumbersIfNeeded(oxid.getOxid_name().split("_")[1]));
-                Oxid newOxid = getOxidFromDB(oxidAndAmount.get(0));
-                int oxidAmount = Integer.parseInt(oxidAndAmount.get(1));
-
-                int oxidState = Integer.parseInt(newOxid.getPossible_states().split(";")[0]) * oxidAmount;
-
-                int foundationState = -oxidState + startState; // + - = -, - - = +
-                int foundationWantState = Integer.parseInt(newFoundation.getPossible_states().split(";")[0]);
-                giverElectrons = Math.abs(foundationState - foundationWantState);
-
-                int newOxidAmount = (foundationWantState + (-startState)) / -Integer.parseInt(newOxid.getPossible_states());
-
-                freeOxidizerName = newFoundation.getFoundation_name() + newOxid.getOxid_name() + newOxidAmount;
-
-                reaction += substance.getFoundation() + freeOxidizerName + " + ";
-            } else {
-                System.out.println("Not really possible?");
             }
-        }
 
-        if (!freeIonName.equals("") && !freeOxidizerName.equals("")){
-            switch (environment){
-                case "neutral": {
-                    int ionState = handler.getFoundationStateByName(freeIonName);
-                    if (ionState > 1){
-                        reaction += freeIonName + "(OH)" + ionState + " + ";
-                    } else reaction += freeIonName + "OH + ";
-                    break;
-                }
-                case "acid": {
-                    String additionalSaline = createSubstanceName(handler.getFoundationByName(freeIonName), handler.getOxidByName("S_O4"));
-                    reaction += freeIonName + "2SO4 + "; //temp cause no case of swapping
-                    break;
-                }
-                case "alkaline": {
-                    //nothing. only h2o
+            if (!freeIonName.equals("") && !freeOxidizerName.equals("")){
+                switch (environment){
+                    case "Вода": {
+                        String additionalAlkaline = createSubstanceName(handler.getFoundationByName(freeIonName), handler.getOxidByName("O_H"));
+                        reaction += additionalAlkaline + " + ";
+                        break;
+                    }
+                    case "Кислота": {
+                        String additionalSaline = createSubstanceName(handler.getFoundationByName(freeIonName), handler.getOxidByName(environmentSubstance.getOxid()));
+                        reaction += additionalSaline + " + ";
+                        break;
+                    }
+                    case "Щелочь": {
+                        //nothing. only h2o
+                    }
                 }
             }
         }
         return reaction;
     }
 
-    private String createSubstanceName(Foundation foundation, Oxid oxid) throws SQLException, ClassNotFoundException {
+    private String getCurrentEnvironmentBySubstance(Substance environmentSubstance) throws SQLException, ClassNotFoundException {
+        String answer = "";
+
+        answer = handler.getSubstanceType(environmentSubstance.getFoundation(), environmentSubstance.getOxid());
+
+        return answer;
+    }
+
+    public String createSubstanceName(Foundation foundation, Oxid oxid) throws SQLException, ClassNotFoundException {
         String answer = "";
 
         int foundationState = Integer.parseInt(foundation.getPossible_states());
@@ -347,6 +351,10 @@ public class ReactionHandler {
 
         int foundAmount = 0;
         int oxidAmount = 0;
+
+        if (oxid.getOxid_name().contains("_")){
+            oxid.setOxid_name(oxid.getOxid_name().replaceAll("_", ""));
+        }
 
         if (foundationState == oxidState){
             foundAmount = 1;
@@ -382,7 +390,7 @@ public class ReactionHandler {
         return answer;
     }
 
-    private Array<String> splitNumbersIfNeeded(String str){
+    public Array<String> splitNumbersIfNeeded(String str){
         Array<String> array = new Array<>();
         String elem = "";
         String amount = "1";
@@ -403,17 +411,17 @@ public class ReactionHandler {
         return array;
     }
 
-    private Foundation getFoundationFromDB(String foundName) throws SQLException, ClassNotFoundException {
+    public Foundation getFoundationFromDB(String foundName) throws SQLException, ClassNotFoundException {
         return handler.getFoundationByName(foundName);
     }
 
-    private Oxid getOxidFromDB(String oxidName) throws SQLException, ClassNotFoundException { //with full possible states
+    public Oxid getOxidFromDB(String oxidName) throws SQLException, ClassNotFoundException { //with full possible states
         Oxid tempOxid = handler.getOxidByName(oxidName);
         return tempOxid;
     }
 
 
-    private Array<Boolean> getSimpleSwapAndAdditingReactionsPossibilities() {
+    public Array<Boolean> getSimpleSwapAndAdditingReactionsPossibilities() {
         Array<Boolean> array = new Array<>();
 
         String substance1type = substances.get(0).getSubstanceType();
@@ -508,7 +516,7 @@ public class ReactionHandler {
         return array;
     }
 
-    private boolean checkForOVR_Possibility() throws SQLException, ClassNotFoundException {
+    public boolean checkForOVR_Possibility() throws SQLException, ClassNotFoundException {
         int OVR_Oxidant = 0;
         int OVR_Reductant = 0;
 
