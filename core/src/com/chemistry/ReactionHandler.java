@@ -170,9 +170,7 @@ public class ReactionHandler {
 
         if (environment.equals("Щелочь") || environment.equals("Вода") || environment.equals("Кислота")){
             for (Substance substance : substances) {
-
                 if (substance.getUnstable_type().equals("1")) {
-
                     switch (environment) {
                         case "Вода": {
                             String newSubstanceName = "";
@@ -182,7 +180,10 @@ public class ReactionHandler {
 
                             int startState = Integer.parseInt(oxid.getPossible_states());
 
-                            Foundation newFoundation = getFoundationFromDB(oxid.getOxid_name().split("_")[0]);
+                            Array<String> newFoundAndAmount = new Array<>(splitNumbersIfNeeded(oxid.getOxid_name().split("_")[0]));
+                            Foundation newFoundation = getFoundationFromDB(newFoundAndAmount.get(0));
+                            int newFoundAmount = Integer.parseInt(newFoundAndAmount.get(1));
+
                             Array<String> oxidAndAmount = new Array<>(splitNumbersIfNeeded(oxid.getOxid_name().split("_")[1]));
                             Oxid newOxid = getOxidFromDB(oxidAndAmount.get(0));
                             int oxidAmount = Integer.parseInt(oxidAndAmount.get(1));
@@ -190,7 +191,6 @@ public class ReactionHandler {
                             int oxidState = Integer.parseInt(newOxid.getPossible_states().split(";")[0]) * oxidAmount;
 
                             int foundationState = -oxidState + startState; // + - = -, - - = +
-
                             int foundationWantState = 0;
 
                             foundationWantState = Integer.parseInt(newFoundation.getPossible_states().split(";")[0]);
@@ -778,6 +778,7 @@ public class ReactionHandler {
         answerSecondPart = answerSecondPart.replaceFirst("\\(0\\) 0", "");
         answerSecondPart = answerSecondPart.replaceAll("0", "").trim();
         answerSecondPart = answerSecondPart.replaceAll(" ", "").trim();
+        answerSecondPart = answerSecondPart.replaceAll("_", "").trim();
         answerSecondPart = answerSecondPart.replace("+", " + ");
 
         Array<String> tempArr = new Array<>(answerSecondPart.split(" \\+ "));
@@ -849,19 +850,7 @@ public class ReactionHandler {
                 foundName = substances.get(1).getFoundation();
             }
 
-            int getOxidState = -handler.getOxidStateByName(newOxidName);
-            int getFoundationState = handler.getFoundationStateByName(foundName);
-
-            int oxidAmount = 1;
-            int foundAmount = 1;
-
-            if (getOxidState % getFoundationState == 0){
-                foundAmount = getOxidState/getFoundationState;
-            } else if (getFoundationState % getOxidState == 0){
-                oxidAmount = getFoundationState/getOxidState;
-            }
-
-            answerSecondPart = compileSubstanceName(foundName, newOxidName, foundAmount, oxidAmount);
+            answerSecondPart = createSubstanceName(handler.getFoundationByName(foundName), handler.getOxidByName(newOxidName));
 
         } else if (substances.get(1).getOxid().contains(substances.get(0).getOxid()) &&
                 (substances.get(1).getSubstanceType().equals(AllConstants.ReactionHandlerUtility.OXID_ACID)||

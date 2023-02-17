@@ -1,6 +1,7 @@
 package com.chemistry;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import com.chemistry.dto.Substance;
 
@@ -10,46 +11,110 @@ public class AnimationController {
     Vector2 startPos;
     Vector2 currentPos;
     Vector2 endPos;
-    Texture animatedTexture;
+    Float speed;
+    int directionX;
+    int directionY;
+    float rotation = 5;
+    float endRotation = 135;
+    float startRotation;
+    Sprite textureSprite;
     boolean reachedX = false;
     boolean reachedY = false;
 
-    public AnimationController(Vector2 startPos, Vector2 endPos, Texture texture) {
+    public AnimationController(Vector2 startPos, Vector2 endPos, Sprite sprite) {
         this.startPos = startPos;
         this.endPos = endPos;
         this.currentPos = startPos;
-        this.animatedTexture = texture;
-        System.out.println(startPos.x + " - " + startPos.y + "\n" + endPos.x + " - " + endPos.y);
+        this.textureSprite = sprite;
+        this.startRotation = sprite.getRotation();
+        System.out.println(startRotation + "start rot");
         animationStarted = true;
     }
+
+    public void CalculateSpeed(){
+        Double x = (double) startPos.x - endPos.x;
+        Double y = (double) startPos.y - endPos.y;
+        float length;
+        length = (float) Math.sqrt(x * x + y * y);
+        speed = length / 100;
+    }
+
+    public void CalculateDirection(){
+        if (startPos.x > endPos.x){
+            directionX = -1;
+        } else if (startPos.x < endPos.x){
+            directionX = 1;
+        } else directionX = 0;
+
+        if (startPos.y > endPos.y){
+            directionY = 1;
+        } else if (startPos.y < endPos.y) {
+            directionY = -1;
+        } else directionY = 0;
+    }
+
     public Vector2 Move (){
-        if (currentPos.x > endPos.x){
-            currentPos.x--;
-        } else if (currentPos.x < endPos.x) {
-            currentPos.x++;
-        } else {
-            reachedX = true;
+
+        if (!reachedX) {
+            if (directionX == 1) {
+                if (currentPos.x < endPos.x) {
+                    currentPos.x += speed;
+                } else {
+                    reachedX = true;
+                }
+            } else if (directionX == -1) {
+                if (currentPos.x > endPos.x) {
+                    currentPos.x -= speed;
+                } else {
+                    reachedX = true;
+                }
+            } else {
+                //how?
+            }
         }
 
-        if (currentPos.y > endPos.y){
-            currentPos.y--;
-        } else if (currentPos.y < endPos.y) {
-            currentPos.y++;
-        } else {
-            reachedY = true;
+        if (!reachedY) {
+            if (directionY == 1) {
+                if (currentPos.y > endPos.y) {
+                    currentPos.y -= speed;
+                } else {
+                    reachedY = true;
+                }
+            } else if (directionY == -1) {
+                if (currentPos.y < endPos.y) {
+                    currentPos.y += speed;
+                } else {
+                    reachedY = true;
+                }
+            } else {
+                //how?
+            }
         }
-
-        System.out.println(startPos.x + " - " + startPos.y);
 
         if (reachedX && reachedY){
-            reachedX = false;
-            reachedY = false;
-            animationStarted = false;
-            currentPos = startPos;
-            animatedSubstance = new Substance();
+            StartRotation();
         }
 
         return new Vector2(startPos.x, startPos.y);
+    }
+
+    public void StartRotation(){
+        float currentRotation = animationTexture.getRotation();
+        if (!(currentRotation > endRotation)){
+            currentRotation += rotation;
+            if (currentRotation>360 || currentRotation<-360){
+                currentRotation = 0f;
+            }
+            animationTexture.setRotation(currentRotation);
+        } else StopAnimation();
+    }
+
+    public void StopAnimation(){
+        reachedX = false;
+        reachedY = false;
+        animationStarted = false;
+        currentPos = startPos;
+        animatedSubstance = new Substance();
     }
 
     public AnimationController(){

@@ -6,6 +6,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -54,7 +56,8 @@ public class ExperimentWindow implements Screen {
     public static String phrase = "Для выхода на главный экран нажмите Esc";
     public static Substance animatedSubstance = new Substance();
     public static Boolean waitForAddition = false;
-    private Texture animationTexture;
+    public static Sprite animationTexture;
+    public SpriteBatch animationBatch;
     private static AnimationController animationController;
     public ExperimentWindow(ChemistryModelingGame game) throws SQLException, ClassNotFoundException {
         this.game = game;
@@ -94,6 +97,8 @@ public class ExperimentWindow implements Screen {
         chemist = new Texture("chemist.png");
         dialogBg = new Texture("dialog.png");
         choosedSlotTexture = new Texture("choosedSlot.png");
+
+        animationBatch = new SpriteBatch();
 
         for (int i = 0; i<3; i++){
             InventorySlot slot = new InventorySlot();
@@ -160,7 +165,6 @@ public class ExperimentWindow implements Screen {
 
             usedEquipment.add(tempEquip);
         }
-
     }
 
         @Override
@@ -218,14 +222,11 @@ public class ExperimentWindow implements Screen {
             slotTextFont.draw(this.game.batch,slot.getSlotTexture(), slot.getX()+5, 720-slot.getY()-25);
         }
 
-//        if (animationStarted){
-//            Vector2 animatedXY = animationController.Move();
-//            animatedXY = animationController.Move();
-//            animatedXY = animationController.Move();
-//            animatedXY = animationController.Move();
-//            animatedXY = animationController.Move();
-//            game.batch.draw(animationTexture, animatedXY.x, animatedXY.y);
-//        }
+        if (animationStarted){
+            Vector2 animatedXY = animationController.Move();
+            animationTexture.setPosition(animatedXY.x, animatedXY.y);
+            animationTexture.draw(game.batch);
+        }
 
         game.batch.end();
         if(startSpawn){  //Checking overlapsing of mouseSpawnerRect and other thingies
@@ -246,10 +247,7 @@ public class ExperimentWindow implements Screen {
                         }
                     }
                 }
-
-
             }
-
 
             for (Equipment equip: usedEquipment) {
                 if (equip.overlaps(mouseSpawnerRect)){
@@ -265,11 +263,13 @@ public class ExperimentWindow implements Screen {
                         } //extended functiosubstanceInSlotIdns lower incoming... \|/
                         equip.addSubstance(substanceInSlotId);
                         phrase = "Добавил " + substanceInSlotId.getName() + " " + equip.getName() + "!";
-//                        animatedSubstance = substanceInSlotId;
-//                        animationTexture = animatedSubstance.getTexture();
-//                        animationController = new AnimationController(new Vector2
-//                                (substanceInSlotId.getX(), 720-substanceInSlotId.getY()-substanceInSlotId.getHeight()),
-//                                new Vector2(equip.getX(), 720-equip.getY()), animationTexture);
+                        animatedSubstance = substanceInSlotId;
+                        animationTexture = new Sprite(animatedSubstance.getTexture());
+                        animationController = new AnimationController(new Vector2
+                                (substanceInSlotId.getX(), 720-substanceInSlotId.getY()-substanceInSlotId.getHeight()),
+                                new Vector2(equip.getX(), 720-equip.getY()), animationTexture);
+                        animationController.CalculateSpeed();
+                        animationController.CalculateDirection();
 
                         // Need a normal check if substance is already added
                     if (equip.getSubstancesInside().size()>=2){
