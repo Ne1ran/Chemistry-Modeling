@@ -228,7 +228,9 @@ public class ReactionHandler {
 
                             String newSaline = createSubstanceName(newFoundation, acidOxid);
 
-                            reaction += newSaline + " + ";
+                            if (!reaction.contains(newSaline)){
+                                reaction += newSaline + " + ";
+                            }
 
                             reaction += "H2O" + " + ";
 
@@ -273,11 +275,15 @@ public class ReactionHandler {
 
                             Foundation foundation = getFoundationFromDB(environmentSubstance.getFoundation()); // idk if there is electro_chem comparing but sure
 
-                            String compiledStringAnswer = createSubstanceName(foundation, oxid);
+                            String compiledStringAnswer1 = createSubstanceName(foundation, oxid);
+
+                            String compiledStringAnswer2 = createSubstanceName(handler.getFoundationByName(freeIonName) ,oxid);
+
+                            if (compiledStringAnswer1.equals(compiledStringAnswer2)){
+                                reaction += compiledStringAnswer1 + " + ";
+                            } else reaction += compiledStringAnswer1 + " + " + compiledStringAnswer2 + " + ";
 
                             receiverElectrons = Math.abs(foundationState - foundationWantState);
-
-                            reaction += compiledStringAnswer + " + ";
 
                             break;
                         }
@@ -305,7 +311,9 @@ public class ReactionHandler {
 
                     String newSaline = createSubstanceName(handler.getFoundationByName(substance.getFoundation()), handler.getOxidByName(freeOxidizerName));
 
-                    reaction += newSaline + " + ";
+                    if (!reaction.contains(newSaline)){
+                        reaction += newSaline + " + ";
+                    }
                 } else {
                     System.out.println("Not really possible?");
                 }
@@ -315,12 +323,16 @@ public class ReactionHandler {
                 switch (environment){
                     case "Вода": {
                         String additionalAlkaline = createSubstanceName(handler.getFoundationByName(freeIonName), handler.getOxidByName("O_H"));
-                        reaction += additionalAlkaline + " + ";
+                        if (!reaction.contains(additionalAlkaline)){
+                            reaction += additionalAlkaline + " + ";
+                        }
                         break;
                     }
                     case "Кислота": {
                         String additionalSaline = createSubstanceName(handler.getFoundationByName(freeIonName), handler.getOxidByName(environmentSubstance.getOxid()));
-                        reaction += additionalSaline + " + ";
+                        if (!reaction.contains(additionalSaline)){
+                            reaction += additionalSaline + " + ";
+                        }
                         break;
                     }
                     case "Щелочь": {
