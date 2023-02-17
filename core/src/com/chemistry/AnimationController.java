@@ -3,11 +3,19 @@ package com.chemistry;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 import com.chemistry.dto.Substance;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.chemistry.ExperimentWindow.*;
 
 public class AnimationController {
+
+    public Map<String, Array<String>> effectsMap;
+
     Vector2 startPos;
     Vector2 currentPos;
     Vector2 endPos;
@@ -22,6 +30,8 @@ public class AnimationController {
     boolean reachedY = false;
 
     public AnimationController(Vector2 startPos, Vector2 endPos, Sprite sprite) {
+        fillEffectMap();
+
         this.startPos = startPos;
         this.endPos = endPos;
         this.currentPos = startPos;
@@ -98,6 +108,14 @@ public class AnimationController {
         return new Vector2(startPos.x, startPos.y);
     }
 
+    public void StartEffectAnimation(String effect){
+        for (String string : effectsMap.keySet()){
+            if (string.equals(effect)){
+                System.out.println("EFFECT STARTO");
+            }
+        }
+    }
+
     public void StartRotation(){
         float currentRotation = animationTexture.getRotation();
         if (!(currentRotation > endRotation)){
@@ -115,6 +133,12 @@ public class AnimationController {
         animationStarted = false;
         currentPos = startPos;
         animatedSubstance = new Substance();
+    }
+
+    public void fillEffectMap(){
+        effectsMap = new HashMap<>();
+        effectsMap.put("explosion", new Array<>("1,2,3,4,5".split(",")));
+        effectsMap.put("fire", new Array<>("1,2,3,4,5".split(",")));
     }
 
     public AnimationController(){

@@ -19,6 +19,7 @@ public class ReactionHandler {
     public Map<Foundation, Integer> foundPool;
     public Map<Oxid, Integer> oxidPool;
     public DBHandler handler = new DBHandler();
+    private Equipment equipment;
 
     public String cause = "";
 
@@ -26,6 +27,7 @@ public class ReactionHandler {
         substances = new ArrayList<>(equipment.getSubstancesInside());
         foundPool = new LinkedHashMap<>();
         oxidPool = new LinkedHashMap<>();
+        this.equipment = equipment;
         experimentPoolSetting(substances);
     }
 
