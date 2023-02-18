@@ -509,6 +509,21 @@ public class DBHandler extends Config{
 
         return i;
     }
+
+    public String getSubstanceColorById(String subId) throws SQLException, ClassNotFoundException {
+        String color = "";
+
+        String select = "SELECT color_in_equip FROM " + AllConstants.SubsConsts.SUBS_TABLE + " Where "
+                + AllConstants.SubsConsts.ID + " ='" + subId + "'";
+        PreparedStatement prst = getConnection().prepareStatement(select);
+        ResultSet rset = prst.executeQuery();
+        if (rset.next()){
+            color = rset.getString(1);
+        }
+
+
+        return color;
+    }
 }
 
 

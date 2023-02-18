@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.chemistry.dto.Substance;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -63,7 +64,7 @@ public class AnimationController {
         } else directionY = 0;
     }
 
-    public Vector2 Move (){
+    public Vector2 Move () throws SQLException, ClassNotFoundException {
 
         if (!reachedX) {
             if (directionX == 1) {
@@ -117,7 +118,7 @@ public class AnimationController {
         }
     }
 
-    public void StartRotation(){
+    public void StartRotation() throws SQLException, ClassNotFoundException {
         float currentRotation = animationTexture.getRotation();
         if (!(currentRotation > endRotation)){
             currentRotation += rotation;
@@ -130,12 +131,13 @@ public class AnimationController {
         }
     }
 
-    public void StopAnimation(){
+    public void StopAnimation() throws SQLException, ClassNotFoundException {
         reachedX = false;
         reachedY = false;
         animationStarted = false;
         currentPos = startPos;
         animatedSubstance = new Substance();
+        StartColorChangingInEquipment();
     }
 
     public void fillEffectMap(){

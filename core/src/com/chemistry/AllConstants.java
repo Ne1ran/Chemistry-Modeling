@@ -57,6 +57,7 @@ public class AllConstants {
         public static final String DISSOTIATION = "dissotiation_reaction";
         public static final String SUBSTANCE_TYPE = "substance_type";
         public static final String UNSTABLE_TYPE = "unstable_type";
+        public static final String COLOR_IN_EQUIPMENT = "color_in_equip";
     }
 
     public static class EquipConsts{

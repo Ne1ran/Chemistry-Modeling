@@ -62,6 +62,7 @@ public class ExperimentWindow implements Screen {
     public static Boolean waitForAddition = false;
     public static Sprite animationTexture;
     public static Array<String> effectsQueue = new Array<>();
+    public static DBHandler handler = new DBHandler();
     public SpriteBatch animationBatch;
     private static AnimationController animationController;
     public ExperimentWindow(ChemistryModelingGame game) throws SQLException, ClassNotFoundException {
@@ -228,7 +229,12 @@ public class ExperimentWindow implements Screen {
         }
 
         if (animationStarted){
-            Vector2 animatedXY = animationController.Move();
+            Vector2 animatedXY = null;
+            try {
+                animatedXY = animationController.Move();
+            } catch (SQLException | ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
             animationTexture.setPosition(animatedXY.x, animatedXY.y);
             animationTexture.draw(game.batch);
         }
@@ -294,12 +300,17 @@ public class ExperimentWindow implements Screen {
                         }
                     }
 
+
                     if (effectsQueue.size > 1){
                         //start effects animations
                     }
 
                     } else {
                         reactionHandler.clearEquipment();
+                        String equipTextureString = equip.getTexture_path().toString();
+                        equipTextureString = equipTextureString.replace(equipTextureString.substring(equipTextureString.indexOf("/"), equipTextureString.indexOf("_") + 1), "/");
+                        System.out.println(equipTextureString);
+                        equip.setTexture_path(new Texture(equipTextureString));
                         PlaySound("dispose");
                         phrase = "Выкинул все шо было";
                     }
@@ -408,6 +419,22 @@ public class ExperimentWindow implements Screen {
         }
         soundPlaying = Gdx.audio.newMusic(Gdx.files.internal("Sounds/" + sound + ".mp3"));
         soundPlaying.play();
+    }
+
+    public static void StartColorChangingInEquipment() throws SQLException, ClassNotFoundException {
+        for (Equipment equipment : usedEquipment){
+            if (equipment.getSubstancesInside().size() == 1){
+                if (equipment.getSubstancesInside().get(equipment.getSubstancesInside().size()-1).getSubstanceType().contains("Свободный металл")){
+                    System.out.println("Metal"); //need a different code if its single method, oxid or gas.
+                } else {
+                    String colorToBe = handler.getSubstanceColorById(equipment.getSubstancesInside().get(equipment.getSubstancesInside().size()-1).getSubId());
+                    if (!colorToBe.equals("0")){
+                        String compiledTextureString = "Textures/" + colorToBe + "_" + equipment.getTexture_path().toString().split("/")[1];
+                        equipment.setTexture_path(new Texture(compiledTextureString));
+                    } else System.out.println("no color");
+                }
+            }
+        }
     }
 
     @Override
