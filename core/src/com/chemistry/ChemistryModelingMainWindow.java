@@ -39,7 +39,7 @@ public class ChemistryModelingMainWindow implements Screen {
 
         startingScreenFont = game.font;
 
-        background = new Texture("main_bg.jpg");
+        background = new Texture("Textures/main_bg.jpg");
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 1280, 720);
 

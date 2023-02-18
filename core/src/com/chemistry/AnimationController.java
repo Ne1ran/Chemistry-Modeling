@@ -124,7 +124,10 @@ public class AnimationController {
                 currentRotation = 0f;
             }
             animationTexture.setRotation(currentRotation);
-        } else StopAnimation();
+        } else {
+            PlaySound("sound1");
+            StopAnimation();
+        }
     }
 
     public void StopAnimation(){

@@ -75,18 +75,18 @@ public class CustomExperimentWindow implements Screen {
     public CustomExperimentWindow(final ChemistryModelingGame game) throws SQLException, ClassNotFoundException {
         this.game = game;
 
-        background = new Texture("exp1_bg.jpg");
+        background = new Texture("Textures/" +"exp1_bg.jpg");
         OrthographicCamera camera = new OrthographicCamera();
         camera.setToOrtho(false, 1280, 720);
-        dialogBg = new Texture("dialog.png");
-        menu = new Texture("menu.png");
-        chemist = new Texture("chemist.png");
-        menuSlotTexture = new Texture("menuSlot.png");
-        menuSlotChoosen = new Texture("menuSlotChoosed.png");
-        equipMenu = new Texture("equipMenu.png");
-        equipMenuSlot = new Texture("equipMenuSlot.png");
-        equipMenuSlotChoosed = new Texture("equipMenuSlotChoosed.png");
-        Texture saveMenuTexture = new Texture("saveMenu.png");
+        dialogBg = new Texture("Textures/" +"dialog.png");
+        menu = new Texture("Textures/" +"menu.png");
+        chemist = new Texture("Textures/" +"chemist.png");
+        menuSlotTexture = new Texture("Textures/" +"menuSlot.png");
+        menuSlotChoosen = new Texture("Textures/" +"menuSlotChoosed.png");
+        equipMenu = new Texture("Textures/" +"equipMenu.png");
+        equipMenuSlot = new Texture("Textures/" +"equipMenuSlot.png");
+        equipMenuSlotChoosed = new Texture("Textures/" +"equipMenuSlotChoosed.png");
+        Texture saveMenuTexture = new Texture("Textures/" +"saveMenu.png");
 
         //optimization
         customScreenRect = new Rectangle();
@@ -519,7 +519,7 @@ public class CustomExperimentWindow implements Screen {
         ResultSet foundSubstance = handler.findSubstanceById(substanceId); // Finding substance with name (small_texture)
         if (foundSubstance.next()) {
             substancePicked.setSubId(foundSubstance.getString(AllConstants.SubsConsts.ID));
-            substancePicked.setTexture(new Texture(foundSubstance.getString(AllConstants.SubsConsts.TEXTURE_PATH)));
+            substancePicked.setTexture(new Texture("Textures/" + foundSubstance.getString(AllConstants.SubsConsts.TEXTURE_PATH)));
             substancePicked.setName(foundSubstance.getString(AllConstants.SubsConsts.NAME));
             substancePicked.setFoundation(foundSubstance.getString(AllConstants.SubsConsts.FOUND_PART_NAME));
             substancePicked.setOxid(foundSubstance.getString(AllConstants.SubsConsts.OXID_PART_NAME));
@@ -584,7 +584,7 @@ public class CustomExperimentWindow implements Screen {
         ResultSet foundEquip = handler.findEquipmentByItsName(equipName); // Finding substance with name (small_texture)
         if (foundEquip.next()) {
             equipPickedFromMenu.setId(foundEquip.getString(AllConstants.EquipConsts.ID));
-            equipPickedFromMenu.setTexture_path(new Texture(foundEquip.getString(AllConstants.EquipConsts.TEXTURE_PATH)));
+            equipPickedFromMenu.setTexture_path(new Texture("Textures/" + foundEquip.getString(AllConstants.EquipConsts.TEXTURE_PATH)));
             equipPickedFromMenu.setName(foundEquip.getString(AllConstants.EquipConsts.NAME));
             equipPickedFromMenu.setSize(equipPickedFromMenu.getTexture_path().getWidth(), equipPickedFromMenu.getTexture_path().getHeight());
             ResultSet equipExpConn = handler.getEquipmentByIDInEquipExpTable(foundEquip.getString(AllConstants.EquipConsts.ID));

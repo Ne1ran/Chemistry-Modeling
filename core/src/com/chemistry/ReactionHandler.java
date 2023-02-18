@@ -845,10 +845,10 @@ public class ReactionHandler {
             matchedOxidAmount += Integer.parseInt(substances.get(1).getOxid_amount());
 
             if (substances.get(0).getSubstanceType().equals(AllConstants.ReactionHandlerUtility.WATER)){
-                newOxidName = substances.get(1).getFoundation() + substances.get(1).getOxid() + matchedOxidAmount;
+                newOxidName = substances.get(1).getFoundation() + "_" + substances.get(1).getOxid() + matchedOxidAmount;
                 foundName = substances.get(0).getFoundation();
             } else{
-                newOxidName = substances.get(0).getFoundation() + substances.get(0).getOxid() + matchedOxidAmount; //add foundAmount??
+                newOxidName = substances.get(0).getFoundation() + "_" + substances.get(0).getOxid() + matchedOxidAmount; //add foundAmount??
                 foundName = substances.get(1).getFoundation();
             }
 

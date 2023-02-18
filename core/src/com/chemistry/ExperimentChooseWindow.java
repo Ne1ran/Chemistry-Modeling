@@ -32,7 +32,7 @@ public class ExperimentChooseWindow implements Screen {
     public ExperimentChooseWindow(final ChemistryModelingGame game) throws SQLException, ClassNotFoundException {
         this.game = game;
 
-        background = new Texture("main_bg.jpg");
+        background = new Texture("Textures/main_bg.jpg");
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 1280, 720);
         mainStage = new Stage();

@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 import com.chemistry.dto.Equipment;
 import com.chemistry.dto.InventorySlot;
 import com.chemistry.dto.Substance;
@@ -57,6 +58,7 @@ public class ExperimentWindow implements Screen {
     public static Substance animatedSubstance = new Substance();
     public static Boolean waitForAddition = false;
     public static Sprite animationTexture;
+    public static Array<String> effectsQueue = new Array<>();
     public SpriteBatch animationBatch;
     private static AnimationController animationController;
     public ExperimentWindow(ChemistryModelingGame game) throws SQLException, ClassNotFoundException {
@@ -92,11 +94,11 @@ public class ExperimentWindow implements Screen {
         mouseSpawnerRect.setPosition(-100,-100); //If nearby exists another rectangle - go methods.
         mouseSpawnerRect.setSize(3, 3);
 
-        experimentBackground = new Texture(choosenExperiment.getTexture_path());
-        inventoryTexture = new Texture("inventory.png");
-        chemist = new Texture("chemist.png");
-        dialogBg = new Texture("dialog.png");
-        choosedSlotTexture = new Texture("choosedSlot.png");
+        experimentBackground = new Texture("Textures/" + choosenExperiment.getTexture_path());
+        inventoryTexture = new Texture("Textures/" +"inventory.png");
+        chemist = new Texture("Textures/" +"chemist.png");
+        dialogBg = new Texture("Textures/" +"dialog.png");
+        choosedSlotTexture = new Texture("Textures/" +"choosedSlot.png");
 
         animationBatch = new SpriteBatch();
 
@@ -119,7 +121,7 @@ public class ExperimentWindow implements Screen {
             Substance tempSubstance = new Substance();
             if (substanceItself.next()){
                 tempSubstance.setSubId(substanceItself.getString(AllConstants.SubsConsts.ID));
-                tempSubstance.setTexture(new Texture(substanceItself.getString(AllConstants.SubsConsts.TEXTURE_PATH)));
+                tempSubstance.setTexture(new Texture("Textures/" + substanceItself.getString(AllConstants.SubsConsts.TEXTURE_PATH)));
                 tempSubstance.setName(substanceItself.getString(AllConstants.SubsConsts.NAME));
 
                 tempSubstance.setFoundation(substanceItself.getString(AllConstants.SubsConsts.FOUND_PART_NAME));
@@ -152,7 +154,7 @@ public class ExperimentWindow implements Screen {
             if (equipItself.next()){
                 tempEquip.setId(equipItself.getString(AllConstants.EquipConsts.ID));
                 tempEquip.setName(equipItself.getString(AllConstants.EquipConsts.NAME));
-                tempEquip.setTexture_path(new Texture(equipItself.getString(AllConstants.EquipConsts.TEXTURE_PATH)));
+                tempEquip.setTexture_path(new Texture("Textures/" + equipItself.getString(AllConstants.EquipConsts.TEXTURE_PATH)));
                 tempEquip.setSize(tempEquip.getTexture_path().getWidth(), tempEquip.getTexture_path().getHeight());
                 tempEquip.setSetOnPlace(false);
                 ResultSet equipExpConn = handler.getEquipmentByIDInEquipExpTableForExpWindow(
@@ -289,6 +291,10 @@ public class ExperimentWindow implements Screen {
                         }
                     }
 
+                    if (effectsQueue.size > 1){
+                        //start effects animations
+                    }
+
                     } else {
                         reactionHandler.clearEquipment();
                         phrase = "Выкинул все шо было";
@@ -390,6 +396,10 @@ public class ExperimentWindow implements Screen {
             newPhraseArr = new ArrayList<>();
         }
         phraseArray = newPhraseArr;
+    }
+
+    public static void PlaySound(String sound){
+
     }
 
     @Override
