@@ -102,6 +102,7 @@ public class AnimationController {
         }
 
         if (reachedX && reachedY){
+            PlaySound("addSubstance");
             StartRotation();
         }
 
@@ -125,7 +126,6 @@ public class AnimationController {
             }
             animationTexture.setRotation(currentRotation);
         } else {
-            PlaySound("sound1");
             StopAnimation();
         }
     }

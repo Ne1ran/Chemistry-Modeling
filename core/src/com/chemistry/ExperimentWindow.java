@@ -2,6 +2,8 @@ package com.chemistry;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -34,6 +36,7 @@ public class ExperimentWindow implements Screen {
     private final BitmapFont slotTextFont;
     private final Texture choosedSlotTexture;
     private final ReactionHandler reactionHandler = new ReactionHandler();
+    public static Music soundPlaying = Gdx.audio.newMusic(Gdx.files.internal("Sounds/dispose.mp3"));;
 
     private final Rectangle chemistRect;
 
@@ -297,6 +300,7 @@ public class ExperimentWindow implements Screen {
 
                     } else {
                         reactionHandler.clearEquipment();
+                        PlaySound("dispose");
                         phrase = "Выкинул все шо было";
                     }
                 }
@@ -399,7 +403,11 @@ public class ExperimentWindow implements Screen {
     }
 
     public static void PlaySound(String sound){
-
+        if (soundPlaying.isPlaying()) {
+            soundPlaying.stop();
+        }
+        soundPlaying = Gdx.audio.newMusic(Gdx.files.internal("Sounds/" + sound + ".mp3"));
+        soundPlaying.play();
     }
 
     @Override
