@@ -308,7 +308,7 @@ public class ExperimentWindow implements Screen {
                         animationTexture = new Sprite(animatedSubstance.getTexture());
                         animationController = new AnimationController(new Vector2
                                 (substanceInSlotId.getX(), 720 - substanceInSlotId.getY() - substanceInSlotId.getHeight()),
-                                new Vector2(equip.getX(), 720 - equip.getY()), animationTexture);
+                                new Vector2(equip.getX(), 720 - equip.getY()), animationTexture, equip);
                         animationController.CalculateSpeed();
                         animationController.CalculateDirection();
 
@@ -318,7 +318,7 @@ public class ExperimentWindow implements Screen {
                     }
 
                     } else {
-                        reactionHandler.clearEquipment();
+                        reactionHandler.clearEquipment(equip);
                         try {
                             equip.setTexture_path(new Texture("Textures/" + handler.getEquipmentTexturePathById(equip.getId())));
                         } catch (SQLException | ClassNotFoundException e) {
@@ -434,22 +434,20 @@ public class ExperimentWindow implements Screen {
         soundPlaying.play();
     }
 
-    public static void StartColorChangingInEquipment() throws SQLException, ClassNotFoundException {
-        for (Equipment equipment : usedEquipment){
-            if (equipment.getSubstancesInside().size() == 1){
-                if (equipment.getSubstancesInside().get(equipment.getSubstancesInside().size()-1).getSubstanceType().contains("Свободный металл")){
-                    System.out.println("Metal"); //need a different code if its single method, oxid or gas.
-                } else {
-                    String colorToBe = handler.getSubstanceColorById(equipment.getSubstancesInside().get(equipment.getSubstancesInside().size()-1).getSubId());
-                    if (!colorToBe.equals("0")){
-                        String compiledTextureString = "Textures/" + colorToBe + "_" + equipment.getTexture_path().toString().split("/")[1];
-                        equipment.setTexture_path(new Texture(compiledTextureString));
-                    } else System.out.println("no color");
-                }
-            } else if (equipment.getSubstancesInside().size() > 1){
-                if (substancesColors.size > 0){
-                    animationController.colorChangeInEquipment(equipment);
-                }
+    public static void StartColorChangingInEquipment(Equipment equipment) throws SQLException, ClassNotFoundException {
+        if (equipment.getSubstancesInside().size() == 1){
+            if (equipment.getSubstancesInside().get(equipment.getSubstancesInside().size()-1).getSubstanceType().contains("Свободный металл")){
+                System.out.println("Metal"); //need a different code if its single method, oxid or gas.
+            } else {
+                String colorToBe = handler.getSubstanceColorById(equipment.getSubstancesInside().get(equipment.getSubstancesInside().size()-1).getSubId());
+                if (!colorToBe.equals("0")){
+                    String compiledTextureString = "Textures/" + colorToBe + "_" + equipment.getTexture_path().toString().split("/")[1];
+                    equipment.setTexture_path(new Texture(compiledTextureString));
+                } else System.out.println("no color");
+            }
+        } else if (equipment.getSubstancesInside().size() > 1){
+            if (substancesColors.size > 0){
+                animationController.colorChangeInEquipment(equipment);
             }
         }
     }

@@ -33,8 +33,10 @@ public class AnimationController {
     boolean reachedY = false;
     static boolean startColorChange = false;
 
+    Equipment currentlyUsedEquip;
 
-    public AnimationController(Vector2 startPos, Vector2 endPos, Sprite sprite) {
+
+    public AnimationController(Vector2 startPos, Vector2 endPos, Sprite sprite, Equipment equipment) {
         fillEffectMap();
 
         this.startPos = startPos;
@@ -42,6 +44,7 @@ public class AnimationController {
         this.currentPos = startPos;
         this.textureSprite = sprite;
         this.startRotation = sprite.getRotation();
+        this.currentlyUsedEquip = equipment;
         System.out.println(startRotation + "start rot");
         animationStarted = true;
     }
@@ -142,7 +145,7 @@ public class AnimationController {
         currentPos = startPos;
         animatedSubstance = new Substance();
         isSomethingBeingAnimated = false;
-        StartColorChangingInEquipment();
+        StartColorChangingInEquipment(currentlyUsedEquip);
     }
 
     public void fillEffectMap(){

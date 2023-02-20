@@ -932,11 +932,8 @@ public class ReactionHandler {
         return dissociated;
     }
 
-    public void clearEquipment(){
-        for (Equipment equip : usedEquipment) {
-            //need a check here if equipment is fulled with substances
-            equip.setSubstancesInside(new ArrayList<Substance>());
-            cause = "";
-        }
+    public void clearEquipment(Equipment equip){
+        equip.setSubstancesInside(new ArrayList<Substance>());
+        cause = "";
     }
 }
