@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.chemistry.dto.Equipment;
 import com.chemistry.dto.Substance;
 
 import java.sql.SQLException;
@@ -12,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.chemistry.ExperimentWindow.*;
+import static com.chemistry.ReactionHandler.substancesColors;
 
 public class AnimationController {
 
@@ -148,5 +150,27 @@ public class AnimationController {
 
     public AnimationController(){
 
+    }
+
+    public void colorChangeInEquipment(Equipment equipment) throws SQLException, ClassNotFoundException {
+        String equipmentTexturePath = handler.getEquipmentTexturePathById(equipment.getId());
+
+        String colors = String.join(" ", substancesColors).replaceAll("0", "").trim();
+        String pickedColor = "";
+        String[] colorsArray = colors.split(" ");
+        if (colorsArray.length == 0){
+            //no color
+        } else if (colorsArray.length == 1){
+            pickedColor = colorsArray[0] + "_";
+            //we have it
+        } else {
+            //roll random
+        }
+
+        equipmentTexturePath = "Textures/" + pickedColor + equipmentTexturePath;
+
+        equipment.setTexture_path(new Texture(equipmentTexturePath));
+
+        substancesColors = new Array<>();
     }
 }

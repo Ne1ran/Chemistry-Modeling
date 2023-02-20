@@ -63,8 +63,9 @@ public class ExperimentWindow implements Screen {
     public static Sprite animationTexture;
     public static Array<String> effectsQueue = new Array<>();
     public static DBHandler handler = new DBHandler();
+    public static String equipmentAndItsColor = "";
     public SpriteBatch animationBatch;
-    private static AnimationController animationController;
+    public static AnimationController animationController;
     public ExperimentWindow(ChemistryModelingGame game) throws SQLException, ClassNotFoundException {
         this.game = game;
 
@@ -240,7 +241,7 @@ public class ExperimentWindow implements Screen {
         }
 
         game.batch.end();
-        if(startSpawn){  //Checking overlapsing of mouseSpawnerRect and other thingies
+        if(startSpawn){  //Checking overlapsing of mouseSpawnerRect and other things
             if (mouseSpawnerRect.overlaps(chemistRect)){
                 for (Substance substance : usedSubstances){
                     for (Substance substance1 : usedSubstances){
@@ -294,12 +295,12 @@ public class ExperimentWindow implements Screen {
                         } else {
                             try {
                                 reactionHandler.getSubstancesFromEquipment(equip);
+                                animationController.colorChangeInEquipment(equip);
                             } catch (SQLException | ClassNotFoundException throwables) {
                                 throwables.printStackTrace();
                             }
                         }
                     }
-
 
                     if (effectsQueue.size > 1){
                         //start effects animations

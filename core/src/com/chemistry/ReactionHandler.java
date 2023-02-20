@@ -1,12 +1,12 @@
 package com.chemistry;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.Array;
 import com.chemistry.dto.Equipment;
 import com.chemistry.dto.Foundation;
 import com.chemistry.dto.Oxid;
 import com.chemistry.dto.Substance;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -19,6 +19,7 @@ public class ReactionHandler {
     public Map<Foundation, Integer> foundPool;
     public Map<Oxid, Integer> oxidPool;
     public DBHandler handler = new DBHandler();
+    public static Array<String> substancesColors = new Array<>();
     private Equipment equipment;
 
     public String cause = "";
@@ -29,6 +30,7 @@ public class ReactionHandler {
         oxidPool = new LinkedHashMap<>();
         this.equipment = equipment;
         experimentPoolSetting(substances);
+
     }
 
 
@@ -614,6 +616,9 @@ public class ReactionHandler {
 
         secondSubstanceOxidSwap += foundations.get(1).getFoundation_name() + " ";
         secondSubstanceOxidSwap += oxids.get(0).getOxid_name();
+
+        substancesColors.add(handler.foundSubstanceColorByFoundationAndOxid(firstSubstanceOxidSwap.split(" ")[0], firstSubstanceOxidSwap.split(" ")[1]));
+        substancesColors.add(handler.foundSubstanceColorByFoundationAndOxid(secondSubstanceOxidSwap.split(" ")[0], secondSubstanceOxidSwap.split(" ")[1]));
 
         //Afterswap calculatings
 

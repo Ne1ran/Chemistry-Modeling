@@ -524,6 +524,35 @@ public class DBHandler extends Config{
 
         return color;
     }
+
+    public String foundSubstanceColorByFoundationAndOxid(String found, String oxid) throws SQLException, ClassNotFoundException {
+        String color = "0";
+
+        String select = "SELECT color_in_equip FROM " + AllConstants.SubsConsts.SUBS_TABLE + " Where "
+                + AllConstants.SubsConsts.FOUND_PART_NAME + " ='" + found + "' AND " +
+                AllConstants.SubsConsts.OXID_PART_NAME + " ='" + oxid + "'";
+        PreparedStatement prst = getConnection().prepareStatement(select);
+        ResultSet rset = prst.executeQuery();
+        if (rset.next()){
+            color = rset.getString(1);
+        }
+
+        return color;
+    }
+
+    public String getEquipmentTexturePathById(String id) throws SQLException, ClassNotFoundException {
+        String answer = "";
+
+        String select = "SELECT texture_path FROM " + AllConstants.EquipConsts.EQUIP_TABLE + " Where "
+                + AllConstants.EquipConsts.ID + " ='" + id + "'";
+        PreparedStatement prst = getConnection().prepareStatement(select);
+        ResultSet rset = prst.executeQuery();
+        if (rset.next()){
+            answer = rset.getString(1);
+        }
+
+        return answer;
+    }
 }
 
 
