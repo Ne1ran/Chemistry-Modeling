@@ -24,6 +24,7 @@ import java.util.ArrayList;
 
 import static com.chemistry.CustomExperimentWindow.createInGameNameForSubstance;
 import static com.chemistry.ExperimentChooseWindow.choosenExperiment;
+import static com.chemistry.ReactionHandler.substancesColors;
 
 public class ExperimentWindow implements Screen {
     final ChemistryModelingGame game;
@@ -64,6 +65,7 @@ public class ExperimentWindow implements Screen {
     public static Array<String> effectsQueue = new Array<>();
     public static DBHandler handler = new DBHandler();
     public static String equipmentAndItsColor = "";
+    public static Boolean isSomethingBeingAnimated = false;
     public SpriteBatch animationBatch;
     public static AnimationController animationController;
     public ExperimentWindow(ChemistryModelingGame game) throws SQLException, ClassNotFoundException {
@@ -275,43 +277,53 @@ public class ExperimentWindow implements Screen {
                         } //extended functiosubstanceInSlotIdns lower incoming... \|/
                         equip.addSubstance(substanceInSlotId);
                         phrase = "Добавил " + substanceInSlotId.getName() + " " + equip.getName() + "!";
-                        animatedSubstance = substanceInSlotId;
-                        animationTexture = new Sprite(animatedSubstance.getTexture());
-                        animationController = new AnimationController(new Vector2
-                                (substanceInSlotId.getX(), 720-substanceInSlotId.getY()-substanceInSlotId.getHeight()),
-                                new Vector2(equip.getX(), 720-equip.getY()), animationTexture);
-                        animationController.CalculateSpeed();
-                        animationController.CalculateDirection();
 
                         // Need a normal check if substance is already added
-                    if (equip.getSubstancesInside().size()>=2){
-                        if (waitForAddition){
+                        if (equip.getSubstancesInside().size()>=2){
+                            if (waitForAddition){
+                                try {
+                                    reactionHandler.StartOVR_Reaction(substanceInSlotId);
+                                } catch (SQLException | ClassNotFoundException e) {
+                                    throw new RuntimeException(e);
+                                }
+                                waitForAddition = false;
+                            } else {
+                                try {
+                                    reactionHandler.getSubstancesFromEquipment(equip);
+                                } catch (SQLException | ClassNotFoundException throwables) {
+                                    throwables.printStackTrace();
+                                }
+                            }
+                        }
+
+                        if (isSomethingBeingAnimated) {
                             try {
-                                reactionHandler.StartOVR_Reaction(substanceInSlotId);
+                                animationController.StopAnimation();
                             } catch (SQLException | ClassNotFoundException e) {
                                 throw new RuntimeException(e);
                             }
-                            waitForAddition = false;
-                        } else {
-                            try {
-                                reactionHandler.getSubstancesFromEquipment(equip);
-                                animationController.colorChangeInEquipment(equip);
-                            } catch (SQLException | ClassNotFoundException throwables) {
-                                throwables.printStackTrace();
-                            }
                         }
-                    }
+                        isSomethingBeingAnimated = true;
+                        animatedSubstance = substanceInSlotId;
+                        animationTexture = new Sprite(animatedSubstance.getTexture());
+                        animationController = new AnimationController(new Vector2
+                                (substanceInSlotId.getX(), 720 - substanceInSlotId.getY() - substanceInSlotId.getHeight()),
+                                new Vector2(equip.getX(), 720 - equip.getY()), animationTexture);
+                        animationController.CalculateSpeed();
+                        animationController.CalculateDirection();
 
-                    if (effectsQueue.size > 1){
+                        if (effectsQueue.size > 1){
                         //start effects animations
+                        System.out.println("got some effects!");
                     }
 
                     } else {
                         reactionHandler.clearEquipment();
-                        String equipTextureString = equip.getTexture_path().toString();
-                        equipTextureString = equipTextureString.replace(equipTextureString.substring(equipTextureString.indexOf("/"), equipTextureString.indexOf("_") + 1), "/");
-                        System.out.println(equipTextureString);
-                        equip.setTexture_path(new Texture(equipTextureString));
+                        try {
+                            equip.setTexture_path(new Texture("Textures/" + handler.getEquipmentTexturePathById(equip.getId())));
+                        } catch (SQLException | ClassNotFoundException e) {
+                            throw new RuntimeException(e);
+                        }
                         PlaySound("dispose");
                         phrase = "Выкинул все шо было";
                     }
@@ -433,6 +445,10 @@ public class ExperimentWindow implements Screen {
                         String compiledTextureString = "Textures/" + colorToBe + "_" + equipment.getTexture_path().toString().split("/")[1];
                         equipment.setTexture_path(new Texture(compiledTextureString));
                     } else System.out.println("no color");
+                }
+            } else if (equipment.getSubstancesInside().size() > 1){
+                if (substancesColors.size > 0){
+                    animationController.colorChangeInEquipment(equipment);
                 }
             }
         }

@@ -30,7 +30,6 @@ public class ReactionHandler {
         oxidPool = new LinkedHashMap<>();
         this.equipment = equipment;
         experimentPoolSetting(substances);
-
     }
 
 

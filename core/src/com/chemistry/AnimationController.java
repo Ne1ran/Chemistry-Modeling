@@ -31,6 +31,8 @@ public class AnimationController {
     Sprite textureSprite;
     boolean reachedX = false;
     boolean reachedY = false;
+    static boolean startColorChange = false;
+
 
     public AnimationController(Vector2 startPos, Vector2 endPos, Sprite sprite) {
         fillEffectMap();
@@ -139,6 +141,7 @@ public class AnimationController {
         animationStarted = false;
         currentPos = startPos;
         animatedSubstance = new Substance();
+        isSomethingBeingAnimated = false;
         StartColorChangingInEquipment();
     }
 
