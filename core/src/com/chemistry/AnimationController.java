@@ -14,6 +14,7 @@ import java.util.Map;
 
 import static com.chemistry.ExperimentWindow.*;
 import static com.chemistry.ReactionHandler.substancesColors;
+import static com.chemistry.ReactionHandler.substancesEffects;
 
 public class AnimationController {
 
@@ -146,6 +147,7 @@ public class AnimationController {
         animatedSubstance = new Substance();
         isSomethingBeingAnimated = false;
         StartColorChangingInEquipment(currentlyUsedEquip);
+        StartEffectPlaying(currentlyUsedEquip);
     }
 
     public void fillEffectMap(){
@@ -173,10 +175,29 @@ public class AnimationController {
             //roll random
         }
 
-        equipmentTexturePath = "Textures/" + pickedColor + equipmentTexturePath;
+        if (!pickedColor.equals("_")) {
+            equipmentTexturePath = "Textures/" + pickedColor + equipmentTexturePath;
 
-        equipment.setTexture_path(new Texture(equipmentTexturePath));
+            equipment.setTexture_path(new Texture(equipmentTexturePath));
 
-        substancesColors = new Array<>();
+            substancesColors = new Array<>();
+        }
+    }
+
+    public void startEffect() {
+        String effects = String.join(" ", substancesEffects).replaceAll("0", "").trim();
+
+        String pickedEffect = "";
+        String[] effectsArray = effects.split(" ");
+        if (effectsArray.length == 0){
+            //no effects
+        } else if (effectsArray.length == 1){
+            pickedEffect = effectsArray[0];
+        } else {
+            //check for speciality
+        }
+        System.out.println("ima here");
+        PlayEffectSound(pickedEffect);
+        substancesEffects = new Array<>();
     }
 }

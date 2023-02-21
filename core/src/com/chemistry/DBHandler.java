@@ -1,6 +1,5 @@
 package com.chemistry;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.Array;
 import com.chemistry.dto.*;
 
@@ -525,7 +524,7 @@ public class DBHandler extends Config{
         return color;
     }
 
-    public String foundSubstanceColorByFoundationAndOxid(String found, String oxid) throws SQLException, ClassNotFoundException {
+    public String findSubstanceColorByFoundationAndOxid(String found, String oxid) throws SQLException, ClassNotFoundException {
         String color = "0";
 
         String select = "SELECT color_in_equip FROM " + AllConstants.SubsConsts.SUBS_TABLE + " Where "
@@ -552,6 +551,21 @@ public class DBHandler extends Config{
         }
 
         return answer;
+    }
+
+    public String findSubstanceEffectByFoundationAndOxid(String found, String oxid) throws SQLException, ClassNotFoundException {
+        String effect = "0";
+
+        String select = "SELECT effects FROM " + AllConstants.SubsConsts.SUBS_TABLE + " Where "
+                + AllConstants.SubsConsts.FOUND_PART_NAME + " ='" + found + "' AND " +
+                AllConstants.SubsConsts.OXID_PART_NAME + " ='" + oxid + "'";
+        PreparedStatement prst = getConnection().prepareStatement(select);
+        ResultSet rset = prst.executeQuery();
+        if (rset.next()){
+            effect = rset.getString(1);
+        }
+
+        return effect;
     }
 }
 

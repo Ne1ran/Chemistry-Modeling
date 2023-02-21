@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import static com.chemistry.CustomExperimentWindow.createInGameNameForSubstance;
 import static com.chemistry.ExperimentChooseWindow.choosenExperiment;
 import static com.chemistry.ReactionHandler.substancesColors;
+import static com.chemistry.ReactionHandler.substancesEffects;
 
 public class ExperimentWindow implements Screen {
     final ChemistryModelingGame game;
@@ -38,6 +39,7 @@ public class ExperimentWindow implements Screen {
     private final Texture choosedSlotTexture;
     private final ReactionHandler reactionHandler = new ReactionHandler();
     public static Music soundPlaying = Gdx.audio.newMusic(Gdx.files.internal("Sounds/dispose.mp3"));;
+    public static Music effectSoundPlaying = Gdx.audio.newMusic(Gdx.files.internal("Sounds/gurgling.mp3"));
 
     private final Rectangle chemistRect;
 
@@ -434,6 +436,18 @@ public class ExperimentWindow implements Screen {
         soundPlaying.play();
     }
 
+    public static void PlayEffectSound(String sound){
+        if (!sound.equals("")) {
+            if (sound.equals("")) {
+                System.out.println("No effect");
+            } else if (effectSoundPlaying.isPlaying()) {
+                effectSoundPlaying.stop();
+            }
+            effectSoundPlaying = Gdx.audio.newMusic(Gdx.files.internal("Sounds/" + sound + ".mp3"));
+            effectSoundPlaying.play();
+        }
+    }
+
     public static void StartColorChangingInEquipment(Equipment equipment) throws SQLException, ClassNotFoundException {
         if (equipment.getSubstancesInside().size() == 1){
             if (equipment.getSubstancesInside().get(equipment.getSubstancesInside().size()-1).getSubstanceType().contains("Свободный металл")){
@@ -448,6 +462,14 @@ public class ExperimentWindow implements Screen {
         } else if (equipment.getSubstancesInside().size() > 1){
             if (substancesColors.size > 0){
                 animationController.colorChangeInEquipment(equipment);
+            }
+        }
+    }
+
+    public static void StartEffectPlaying(Equipment equipment){
+        if (equipment.getSubstancesInside().size()>1){
+            if (substancesEffects.size > 0){
+                animationController.startEffect();
             }
         }
     }

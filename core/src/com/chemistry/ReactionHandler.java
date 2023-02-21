@@ -1,6 +1,5 @@
 package com.chemistry;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.Array;
 import com.chemistry.dto.Equipment;
 import com.chemistry.dto.Foundation;
@@ -20,7 +19,7 @@ public class ReactionHandler {
     public Map<Oxid, Integer> oxidPool;
     public DBHandler handler = new DBHandler();
     public static Array<String> substancesColors = new Array<>();
-    private Equipment equipment;
+    public static Array<String> substancesEffects = new Array<>();
 
     public String cause = "";
 
@@ -28,7 +27,6 @@ public class ReactionHandler {
         substances = new ArrayList<>(equipment.getSubstancesInside());
         foundPool = new LinkedHashMap<>();
         oxidPool = new LinkedHashMap<>();
-        this.equipment = equipment;
         experimentPoolSetting(substances);
     }
 
@@ -616,9 +614,11 @@ public class ReactionHandler {
         secondSubstanceOxidSwap += foundations.get(1).getFoundation_name() + " ";
         secondSubstanceOxidSwap += oxids.get(0).getOxid_name();
 
-        substancesColors.add(handler.foundSubstanceColorByFoundationAndOxid(firstSubstanceOxidSwap.split(" ")[0], firstSubstanceOxidSwap.split(" ")[1]));
-        substancesColors.add(handler.foundSubstanceColorByFoundationAndOxid(secondSubstanceOxidSwap.split(" ")[0], secondSubstanceOxidSwap.split(" ")[1]));
+        substancesColors.add(handler.findSubstanceColorByFoundationAndOxid(firstSubstanceOxidSwap.split(" ")[0], firstSubstanceOxidSwap.split(" ")[1]));
+        substancesColors.add(handler.findSubstanceColorByFoundationAndOxid(secondSubstanceOxidSwap.split(" ")[0], secondSubstanceOxidSwap.split(" ")[1]));
 
+        substancesEffects.add(handler.findSubstanceEffectByFoundationAndOxid(firstSubstanceOxidSwap.split(" ")[0], firstSubstanceOxidSwap.split(" ")[1]));
+        substancesEffects.add(handler.findSubstanceEffectByFoundationAndOxid(secondSubstanceOxidSwap.split(" ")[0], secondSubstanceOxidSwap.split(" ")[1]));
         //Afterswap calculatings
 
         int tempSecondOxidAmount = secondOxidAmount;
@@ -781,17 +781,46 @@ public class ReactionHandler {
             } else answerSecondPart = firstSubstanceOxidSwap + " + " + secondSubstanceOxidSwap;
         }
 
-        answerSecondPart = answerSecondPart.replaceFirst("\\(0\\) 0", "");
-        answerSecondPart = answerSecondPart.replaceAll("0", "").trim();
-        answerSecondPart = answerSecondPart.replaceAll(" ", "").trim();
-        answerSecondPart = answerSecondPart.replaceAll("_", "").trim();
-        answerSecondPart = answerSecondPart.replace("+", " + ");
+        String newAnswerSecondPart = "";
+        for (String string : answerSecondPart.split(" \\+ ")){
+            if (string.contains("0")){
+                string = string.replace("0", "").trim();
+                boolean doWeNeedToDouble = false;
+                String foundType = handler.getSubstanceType(string, "0");
+                String oxidType = handler.getSubstanceType("0", string);
 
-        Array<String> tempArr = new Array<>(answerSecondPart.split(" \\+ "));
+                if (foundType.equals("Газ") || oxidType.equals("Газ")){
+                    doWeNeedToDouble = true;
+                }
+
+                boolean check = false;
+
+                if (!foundType.equals("")){
+                    check = handler.getIsFoundationSimple(string);
+                } else if (!oxidType.equals("")){
+                    check = handler.getIsOxidizerSimple(string);
+                }
+
+                if (doWeNeedToDouble){
+                    if (check) {
+                        newAnswerSecondPart += string + "2 + ";
+                    } else newAnswerSecondPart += "(" + string + ")" + "2";
+                }
+            } else newAnswerSecondPart += string + " + ";
+        }
+
+        newAnswerSecondPart = newAnswerSecondPart.substring(0, newAnswerSecondPart.length()-3);
+        newAnswerSecondPart = newAnswerSecondPart.replaceFirst("\\(0\\) 0", "");
+        newAnswerSecondPart = newAnswerSecondPart.replaceAll("0", "").trim();
+        newAnswerSecondPart = newAnswerSecondPart.replaceAll(" ", "").trim();
+        newAnswerSecondPart = newAnswerSecondPart.replaceAll("_", "").trim();
+        newAnswerSecondPart = newAnswerSecondPart.replace("+", " + ");
+
+        Array<String> tempArr = new Array<>(newAnswerSecondPart.split(" \\+ "));
         if (tempArr.size == 1){
-            answerSecondPart = tempArr.get(0);
+            newAnswerSecondPart = tempArr.get(0);
         } else if (tempArr.size == 2 && tempArr.get(0).equals("")){
-            answerSecondPart = tempArr.get(1);
+            newAnswerSecondPart = tempArr.get(1);
         }
 
         if (!canReactionBeMade){ // check if one of the substance is either h2o or gas or osadok
@@ -807,7 +836,7 @@ public class ReactionHandler {
         }
 
         answer.add(answerFirstPart);
-        answer.add(answerSecondPart);
+        answer.add(newAnswerSecondPart);
 
         if (canReactionBeMade){
             phrase = "Какой итог мы получили:    " + String.join(" = ", answer) + ".    Емкость очищена";
