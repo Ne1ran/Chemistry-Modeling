@@ -429,11 +429,13 @@ public class ExperimentWindow implements Screen {
     }
 
     public static void PlaySound(String sound){
-        if (soundPlaying.isPlaying()) {
-            soundPlaying.stop();
+        if (!sound.equals("")) {
+            if (soundPlaying.isPlaying()) {
+                soundPlaying.stop();
+            }
+            soundPlaying = Gdx.audio.newMusic(Gdx.files.internal("Sounds/" + sound + ".mp3"));
+            soundPlaying.play();
         }
-        soundPlaying = Gdx.audio.newMusic(Gdx.files.internal("Sounds/" + sound + ".mp3"));
-        soundPlaying.play();
     }
 
     public static void PlayEffectSound(String sound){

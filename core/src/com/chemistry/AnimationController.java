@@ -177,9 +177,7 @@ public class AnimationController {
 
         if (!pickedColor.equals("_")) {
             equipmentTexturePath = "Textures/" + pickedColor + equipmentTexturePath;
-
             equipment.setTexture_path(new Texture(equipmentTexturePath));
-
             substancesColors = new Array<>();
         }
     }

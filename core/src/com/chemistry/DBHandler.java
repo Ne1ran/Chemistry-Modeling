@@ -137,18 +137,6 @@ public class DBHandler extends Config{
         return oxid1;
     }
 
-    public String getExperimentNameById(int id) throws SQLException, ClassNotFoundException {
-        ResultSet rset = null;
-        String select = "SELECT name FROM " + AllConstants.ExpConsts.EXP_TABLE + " where " +
-                AllConstants.ExpConsts.EXP_ID + "='" + id + "'";
-        PreparedStatement preparedStatement = getConnection().prepareStatement(select);
-        rset = preparedStatement.executeQuery();
-        if (rset.next()){
-            return rset.getString(AllConstants.ExpConsts.NAME);
-        }
-        return "Name not detected...";
-    }
-
     public ArrayList<Substance> getAllSubstances() throws SQLException, ClassNotFoundException {
         ArrayList<Substance> substancesNames = new ArrayList<>();
         ResultSet rset = null;
@@ -566,6 +554,14 @@ public class DBHandler extends Config{
         }
 
         return effect;
+    }
+
+    public void deleteCustomExperiment(String exp_id) throws SQLException, ClassNotFoundException {
+        ResultSet rset = null;
+        String delete = "DELETE FROM " + AllConstants.ExpConsts.EXP_TABLE + " WHERE " +
+                AllConstants.ExpConsts.EXP_ID + " ='" + exp_id + "'";
+        PreparedStatement prst = getConnection().prepareStatement(delete);
+        prst.executeUpdate();
     }
 }
 
