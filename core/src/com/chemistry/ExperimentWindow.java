@@ -125,6 +125,8 @@ public class ExperimentWindow implements Screen {
 
         DBHandler handler = new DBHandler();
         ResultSet substancesIDS = handler.getUsingSubstancesIDs(choosenExperiment.getExp_id()); // Setting all usable substances
+
+        String subs_connect_id = "";
         while (substancesIDS.next()){
             ResultSet substanceItself = handler.getSubstanceByID(substancesIDS.getString(AllConstants.SubsExpConsts.SUBS_EXP_ID));
             Substance tempSubstance = new Substance();
@@ -147,16 +149,21 @@ public class ExperimentWindow implements Screen {
                 tempSubstance.setUnstable_type(substanceItself.getString(AllConstants.SubsConsts.UNSTABLE_TYPE));
                 ResultSet substanceExpConn = handler.getSubstanceByIDInSubsExpsTableForExpWindow(
                         substanceItself.getString(AllConstants.SubsConsts.ID), choosenExperiment.getExp_id());
-                if (substanceExpConn.next()){
-                    tempSubstance.setX(Float.parseFloat(substanceExpConn.getString(AllConstants.SubsExpConsts.SUBS_X)));
-                    tempSubstance.setY(720 - Float.parseFloat(substanceExpConn.getString(AllConstants.SubsExpConsts.SUBS_Y)) - tempSubstance.getTexture().getHeight());
+                while (substanceExpConn.next()){
+                    if (!subs_connect_id.contains(substanceExpConn.getString(AllConstants.SubsExpConsts.CONN_ID))){
+                        subs_connect_id += substanceExpConn.getString(AllConstants.SubsExpConsts.CONN_ID) + " ";
+
+                        tempSubstance.setX(Float.parseFloat(substanceExpConn.getString(AllConstants.SubsExpConsts.SUBS_X)));
+                        tempSubstance.setY(720 - Float.parseFloat(substanceExpConn.getString(AllConstants.SubsExpConsts.SUBS_Y)) - tempSubstance.getTexture().getHeight());
+                        break;
+                    }
                 }
+                usedSubstances.add(tempSubstance);
             }
-            usedSubstances.add(tempSubstance);
         }
 
         ResultSet equipmentIDS = handler.getUsingEquipmentIDs(choosenExperiment.getExp_id()); // Setting equipment
-
+        String equip_connect_ids = "";
         while (equipmentIDS.next()){
             ResultSet equipItself = handler.getEquipmentByID(equipmentIDS.getString(AllConstants.EquipExpConsts.EQUIP_EXP_ID));
             Equipment tempEquip = new Equipment();
@@ -168,13 +175,18 @@ public class ExperimentWindow implements Screen {
                 tempEquip.setSetOnPlace(false);
                 ResultSet equipExpConn = handler.getEquipmentByIDInEquipExpTableForExpWindow(
                         equipItself.getString(AllConstants.EquipConsts.ID), choosenExperiment.getExp_id());
-                if (equipExpConn.next()){
-                    tempEquip.setX(Float.parseFloat(equipExpConn.getString(AllConstants.EquipExpConsts.EQUIP_X)));
-                    tempEquip.setY(720 - Float.parseFloat(equipExpConn.getString(AllConstants.EquipExpConsts.EQUIP_Y)) - tempEquip.getHeight());
-                }
-            }
+                while (equipExpConn.next()){
+                    if (!equip_connect_ids.contains(equipExpConn.getString(AllConstants.EquipExpConsts.CONNECT_ID))) {
 
-            usedEquipment.add(tempEquip);
+                        equip_connect_ids += equipExpConn.getString(AllConstants.EquipExpConsts.CONNECT_ID) + " ";
+
+                        tempEquip.setX(Float.parseFloat(equipExpConn.getString(AllConstants.EquipExpConsts.EQUIP_X)));
+                        tempEquip.setY(720 - Float.parseFloat(equipExpConn.getString(AllConstants.EquipExpConsts.EQUIP_Y)) - tempEquip.getHeight());
+                        break;
+                    }
+                }
+                usedEquipment.add(tempEquip);
+            }
         }
     }
 

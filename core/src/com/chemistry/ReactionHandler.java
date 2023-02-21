@@ -47,7 +47,7 @@ public class ReactionHandler {
         }
         chemicalReaction(foundPool, oxidPool);
     }
-//add normal causes
+
     public void chemicalReaction(Map<Foundation, Integer> foundPool, Map<Oxid, Integer> oxidPool) throws SQLException, ClassNotFoundException {
         ArrayList<Foundation> foundationsFirstIteration = new ArrayList<>();
         ArrayList<Oxid> oxidFirstIteration = new ArrayList<>();
@@ -430,7 +430,6 @@ public class ReactionHandler {
         return tempOxid;
     }
 
-
     public Array<Boolean> getSimpleSwapAndAdditingReactionsPossibilities() {
         Array<Boolean> array = new Array<>();
 
@@ -543,7 +542,6 @@ public class ReactionHandler {
 
         return OVR_Oxidant == OVR_Reductant && OVR_Reductant == 1;
     }
-
 
     public void StartSimpleSwapReaction() throws SQLException, ClassNotFoundException {
         Array<String> answer = new Array<>(); // All answer
@@ -749,8 +747,7 @@ public class ReactionHandler {
         } else {
 
             if (Integer.parseInt(firstFoundAfterSwapStrength) > 8 && Integer.parseInt(firstOxidAfterSwapStrength) > 12){ //Dissotiation possibility
-//                String dissociatedFirstSubstance = dissociate(tempArrayFirstSubstance);
-                String dissociatedFirstSubstance = firstSubstanceOxidSwap;
+                String dissociatedFirstSubstance = dissociate(tempArrayFirstSubstance);
                 canReactionBeMade = true;
 
                 if (dissociatedFirstSubstance != null) { //if there is something
@@ -764,8 +761,7 @@ public class ReactionHandler {
                 }
 
             } else if (Integer.parseInt(secondFoundAfterSwapStrength) > 8 && Integer.parseInt(secondOxidAfterSwapStrength) > 13){
-//                String dissociatedSecondSubstance = dissociate(tempArraySecondSubstance); its hard to do
-                String dissociatedSecondSubstance = secondSubstanceOxidSwap;
+                String dissociatedSecondSubstance = dissociate(tempArraySecondSubstance);
                 canReactionBeMade = true;
 
                 if (dissociatedSecondSubstance != null) {
