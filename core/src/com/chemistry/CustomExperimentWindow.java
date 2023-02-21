@@ -121,7 +121,7 @@ public class CustomExperimentWindow implements Screen {
         equipSlot.setSlotId(0);
 
         placeSpace = new Rectangle();
-        placeSpace.setPosition(40, 0);
+        placeSpace.setPosition(100, 0);
         placeSpace.setSize(850,550);
 
         final CustomExperimentInputListener inputListener = new CustomExperimentInputListener();

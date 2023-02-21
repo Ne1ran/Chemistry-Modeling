@@ -166,7 +166,7 @@ public class AnimationController {
         String colors = String.join(" ", substancesColors).replaceAll("0", "").trim();
         String pickedColor = "";
         String[] colorsArray = colors.split(" ");
-        if (colorsArray.length == 0){
+        if (colors.equals("")){
             //no color
         } else if (colorsArray.length == 1){
             pickedColor = colorsArray[0] + "_";
@@ -187,14 +187,13 @@ public class AnimationController {
 
         String pickedEffect = "";
         String[] effectsArray = effects.split(" ");
-        if (effectsArray.length == 0){
+        if (effects.equals("")){
             //no effects
         } else if (effectsArray.length == 1){
             pickedEffect = effectsArray[0];
         } else {
             //check for speciality
         }
-        System.out.println("ima here");
         PlayEffectSound(pickedEffect);
         substancesEffects = new Array<>();
     }
