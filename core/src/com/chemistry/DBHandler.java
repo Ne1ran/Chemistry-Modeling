@@ -34,7 +34,7 @@ public class DBHandler extends Config{
     }
 
     public boolean authorize(String email, String password) throws SQLException, ClassNotFoundException {
-        ResultSet rset = null;
+        ResultSet rset;
         String select = "SELECT DISTINCT * FROM " + AllConstants.UserConsts.USERS_TABLE + " where " + AllConstants.UserConsts.EMAIL
                 + "='" + email + "' and " + AllConstants.UserConsts.PASSWORD + "='" + password + "'";
         PreparedStatement prst = getConnection().prepareStatement(select);
@@ -49,7 +49,7 @@ public class DBHandler extends Config{
         } else return false;
     }
     public void setChoosenExperiment(String id) throws SQLException, ClassNotFoundException {
-        ResultSet rset = null;
+        ResultSet rset;
         String select = "SELECT * FROM " + AllConstants.ExpConsts.EXP_TABLE + " where " + AllConstants.ExpConsts.EXP_ID
                 + "='" + id + "'";
         PreparedStatement prst = getConnection().prepareStatement(select);
@@ -63,7 +63,7 @@ public class DBHandler extends Config{
     }
 
     public ResultSet getUsingSubstancesIDs(String exp_id) throws SQLException, ClassNotFoundException {
-        ResultSet rset = null;
+        ResultSet rset;
         String select = "SELECT * FROM " + AllConstants.SubsExpConsts.SUBS_EXP_TABLE + " where " +
                 AllConstants.SubsExpConsts.EXP_ID + "='" + exp_id + "'";
         PreparedStatement prst = getConnection().prepareStatement(select);
@@ -73,7 +73,7 @@ public class DBHandler extends Config{
     }
 
     public ResultSet getSubstanceByID(String id) throws SQLException, ClassNotFoundException {
-        ResultSet rset = null;
+        ResultSet rset;
         String select = "SELECT * FROM " + AllConstants.SubsConsts.SUBS_TABLE + " where " +
                 AllConstants.SubsConsts.ID + "='" + id + "'";
         PreparedStatement prst = getConnection().prepareStatement(select);
@@ -82,7 +82,7 @@ public class DBHandler extends Config{
     }
 
     public ResultSet getUsingEquipmentIDs(String exp_id) throws SQLException, ClassNotFoundException {
-        ResultSet rset = null;
+        ResultSet rset;
         String select = "SELECT * FROM " + AllConstants.EquipExpConsts.EQUIP_EXP_TABLE + " where " +
                 AllConstants.EquipExpConsts.EXP4_ID + "='" + exp_id + "'";
         PreparedStatement prst = getConnection().prepareStatement(select);
@@ -91,7 +91,7 @@ public class DBHandler extends Config{
     }
 
     public ResultSet getEquipmentByID(String id) throws SQLException, ClassNotFoundException {
-        ResultSet rset = null;
+        ResultSet rset;
         String select = "SELECT * FROM " + AllConstants.EquipConsts.EQUIP_TABLE + " where " +
                 AllConstants.EquipConsts.ID + "='" + id + "'";
         PreparedStatement prst = getConnection().prepareStatement(select);
@@ -102,7 +102,7 @@ public class DBHandler extends Config{
     public Foundation getFoundationByName(String foundation) throws SQLException, ClassNotFoundException {
         Foundation foundation1 = new Foundation();
 
-        ResultSet rset = null;
+        ResultSet rset;
         String select = "SELECT * FROM " + AllConstants.FoundConsts.FOUND_TABLE + " where " +
                 AllConstants.FoundConsts.FOUNDATION_NAME + "='" + foundation + "'";
         PreparedStatement prst = getConnection().prepareStatement(select);
@@ -121,7 +121,7 @@ public class DBHandler extends Config{
     public Oxid getOxidByName(String oxid) throws SQLException, ClassNotFoundException {
         Oxid oxid1 = new Oxid();
 
-        ResultSet rset = null;
+        ResultSet rset;
         String select = "SELECT * FROM " + AllConstants.OxidConsts.OXID_TABLE + " where " +
                 AllConstants.OxidConsts.OXIDIZER_NAME + "='" + oxid + "'";
         PreparedStatement prst = getConnection().prepareStatement(select);
@@ -139,7 +139,7 @@ public class DBHandler extends Config{
 
     public ArrayList<Substance> getAllSubstances() throws SQLException, ClassNotFoundException {
         ArrayList<Substance> substancesNames = new ArrayList<>();
-        ResultSet rset = null;
+        ResultSet rset;
         String select = "SELECT * FROM " + AllConstants.SubsConsts.SUBS_TABLE;
         PreparedStatement prst = getConnection().prepareStatement(select);
         rset = prst.executeQuery();
@@ -162,7 +162,7 @@ public class DBHandler extends Config{
     }
 
     public ResultSet getSubstanceByIDInSubsExpsTable(String subsId) throws SQLException, ClassNotFoundException {
-        ResultSet rset = null;
+        ResultSet rset;
         String select = "SELECT * FROM " + AllConstants.SubsExpConsts.SUBS_EXP_TABLE + " Where "
                 + AllConstants.SubsExpConsts.SUBS_EXP_ID + " ='" + subsId + "'";
         PreparedStatement prst = getConnection().prepareStatement(select);
@@ -171,7 +171,7 @@ public class DBHandler extends Config{
     }
 
     public ResultSet getSubstanceByIDInSubsExpsTableForExpWindow(String subsId, String expId) throws SQLException, ClassNotFoundException {
-        ResultSet rset = null;
+        ResultSet rset;
         String select = "SELECT * FROM " + AllConstants.SubsExpConsts.SUBS_EXP_TABLE + " Where "
                 + AllConstants.SubsExpConsts.SUBS_EXP_ID + " ='" + subsId + "'"
                 + "AND " + AllConstants.SubsExpConsts.EXP_ID + " ='" + expId + "'";
@@ -181,7 +181,7 @@ public class DBHandler extends Config{
     }
 
     public ResultSet getEquipmentByIDInEquipExpTable(String equipId) throws SQLException, ClassNotFoundException {
-        ResultSet rset = null;
+        ResultSet rset;
         String select = "SELECT * FROM " + AllConstants.EquipExpConsts.EQUIP_EXP_TABLE + " Where "
                 + AllConstants.EquipExpConsts.EQUIP_EXP_ID + " ='" + equipId + "'";
         PreparedStatement prst = getConnection().prepareStatement(select);
@@ -190,7 +190,7 @@ public class DBHandler extends Config{
     }
 
     public ResultSet getEquipmentByIDInEquipExpTableForExpWindow(String equipId, String expId) throws SQLException, ClassNotFoundException {
-        ResultSet rset = null;
+        ResultSet rset;
         String select = "SELECT * FROM " + AllConstants.EquipExpConsts.EQUIP_EXP_TABLE + " Where "
                 + AllConstants.EquipExpConsts.EQUIP_EXP_ID + " ='" + equipId + "'"
                 + "AND " + AllConstants.EquipExpConsts.EXP4_ID + " ='" + expId + "'";
@@ -201,7 +201,7 @@ public class DBHandler extends Config{
 
     public ArrayList<String> getAllEquipmentsNames() throws SQLException, ClassNotFoundException {
         ArrayList<String> equipments = new ArrayList<>();
-        ResultSet rset = null;
+        ResultSet rset;
         String select = "SELECT name FROM " + AllConstants.EquipConsts.EQUIP_TABLE;
         PreparedStatement prst = getConnection().prepareStatement(select);
         rset = prst.executeQuery();
@@ -212,7 +212,7 @@ public class DBHandler extends Config{
     }
 
     public ResultSet findEquipmentByItsName(String equipName) throws SQLException, ClassNotFoundException {
-        ResultSet rset = null;
+        ResultSet rset;
         String select = "SELECT * FROM " + AllConstants.EquipConsts.EQUIP_TABLE + " Where "
                 + AllConstants.EquipConsts.NAME + " ='" + equipName + "'";
         PreparedStatement prst = getConnection().prepareStatement(select);
@@ -230,7 +230,7 @@ public class DBHandler extends Config{
         prst.setString(3, currentUser.getFIO());
         prst.executeUpdate();
 
-        ResultSet rset = null;
+        ResultSet rset;
         String select = "SELECT exp_id FROM " + AllConstants.ExpConsts.EXP_TABLE + " Where "
                 + AllConstants.ExpConsts.NAME + " ='" + thisExperiment.getName() + "'"
                 + "AND " + AllConstants.ExpConsts.CREATOR + " ='" + currentUser.getFIO() + "'" ;
@@ -245,7 +245,7 @@ public class DBHandler extends Config{
 
     public int findSystemExperiments() throws SQLException, ClassNotFoundException {
         int num = 0;
-        ResultSet rset = null;
+        ResultSet rset;
         String select = "SELECT * FROM " + AllConstants.ExpConsts.EXP_TABLE + " Where "
                 + AllConstants.ExpConsts.CREATOR + " ='SYSTEM'";
         PreparedStatement prst = getConnection().prepareStatement(select);
@@ -258,7 +258,7 @@ public class DBHandler extends Config{
 
     public ArrayList<Experiment> getAllSystemExperiments() throws SQLException, ClassNotFoundException {
         ArrayList<Experiment> experiments = new ArrayList<>();
-        ResultSet rset = null;
+        ResultSet rset;
         String select = "SELECT * FROM " + AllConstants.ExpConsts.EXP_TABLE + " Where "
                 + AllConstants.ExpConsts.CREATOR + " ='SYSTEM'";
         PreparedStatement prst = getConnection().prepareStatement(select);
@@ -273,7 +273,7 @@ public class DBHandler extends Config{
     }
     public ArrayList<Experiment> getAllCustomExperiments(String fio) throws SQLException, ClassNotFoundException {
         ArrayList<Experiment> experiments = new ArrayList<>();
-        ResultSet rset = null;
+        ResultSet rset;
         String select = "SELECT * FROM " + AllConstants.ExpConsts.EXP_TABLE + " Where "
                 + AllConstants.ExpConsts.CREATOR + " ='" + fio + "'";
         PreparedStatement prst = getConnection().prepareStatement(select);
@@ -288,7 +288,7 @@ public class DBHandler extends Config{
     }
     public int findCustomExperimentsOfThisUser(String fio) throws SQLException, ClassNotFoundException {
         int num = 0;
-        ResultSet rset = null;
+        ResultSet rset;
         String select = "SELECT * FROM " + AllConstants.ExpConsts.EXP_TABLE + " Where "
                 + AllConstants.ExpConsts.CREATOR + " ='" + fio + "'";
         PreparedStatement prst = getConnection().prepareStatement(select);
@@ -335,7 +335,7 @@ public class DBHandler extends Config{
 
     public String getFoundationStrengthByName(String name) throws SQLException, ClassNotFoundException {
         String strength = "0";
-        ResultSet rset = null;
+        ResultSet rset;
         String select = "SELECT electrochem_position FROM " + AllConstants.FoundConsts.FOUND_TABLE + " Where "
                 + AllConstants.FoundConsts.FOUNDATION_NAME + " ='" + name + "'";
         PreparedStatement prst = getConnection().prepareStatement(select);
@@ -351,7 +351,7 @@ public class DBHandler extends Config{
 
     public String getOxidStrengthByName(String name) throws SQLException, ClassNotFoundException {
         String strength = "0";
-        ResultSet rset = null;
+        ResultSet rset;
         String select = "SELECT oxid_strength FROM " + AllConstants.OxidConsts.OXID_TABLE + " Where "
                 + AllConstants.OxidConsts.OXIDIZER_NAME + " ='" + name + "'";
         PreparedStatement prst = getConnection().prepareStatement(select);
@@ -366,7 +366,7 @@ public class DBHandler extends Config{
     }
 
     public ResultSet findSubstanceById(String subId) throws SQLException, ClassNotFoundException {
-        ResultSet rset = null;
+        ResultSet rset;
         String select = "SELECT * FROM " + AllConstants.SubsConsts.SUBS_TABLE + " WHERE " +
                 AllConstants.SubsConsts.ID + " ='" + subId + "'";
         PreparedStatement prst = getConnection().prepareStatement(select);
@@ -375,7 +375,7 @@ public class DBHandler extends Config{
     }
 
     public boolean getIsFoundationSimple(String elementName) throws SQLException, ClassNotFoundException {
-        ResultSet rset = null;
+        ResultSet rset;
         String select = "SELECT isSimple FROM " + AllConstants.FoundConsts.FOUND_TABLE + " WHERE " +
                 AllConstants.FoundConsts.FOUNDATION_NAME + " ='" + elementName + "'";
         PreparedStatement prst = getConnection().prepareStatement(select);
@@ -389,7 +389,7 @@ public class DBHandler extends Config{
     }
 
     public boolean getIsOxidizerSimple(String elementName) throws SQLException, ClassNotFoundException {
-        ResultSet rset = null;
+        ResultSet rset;
         String select = "SELECT isSimple FROM " + AllConstants.OxidConsts.OXID_TABLE + " WHERE " +
                 AllConstants.OxidConsts.OXIDIZER_NAME + " ='" + elementName + "'";
         PreparedStatement prst = getConnection().prepareStatement(select);
@@ -403,8 +403,8 @@ public class DBHandler extends Config{
     }
 
     public boolean CheckIfReactionPossible(Array<String> tempArrayFirstSubstance) throws SQLException, ClassNotFoundException {
-        Boolean check = false;
-        ResultSet rset = null;
+        boolean check = false;
+        ResultSet rset;
         String select = "SELECT checkToStartReaction FROM " + AllConstants.SubsConsts.SUBS_TABLE +
                 " WHERE " + AllConstants.SubsConsts.FOUND_PART_NAME + " ='" + tempArrayFirstSubstance.get(0)
                 + "' AND " + AllConstants.SubsConsts.OXID_PART_NAME + " ='" + tempArrayFirstSubstance.get(1) + "'";
@@ -421,7 +421,7 @@ public class DBHandler extends Config{
 
     public String getDissotiationReaction(Array<String> substance) throws SQLException, ClassNotFoundException {
         String reaction = "";
-        ResultSet rset = null;
+        ResultSet rset;
         String select = "SELECT dissotiation_reaction FROM " + AllConstants.SubsConsts.SUBS_TABLE + " Where "
                 + AllConstants.SubsConsts.FOUND_PART_NAME + " ='" + substance.get(0) + "' AND " +
                 AllConstants.SubsConsts.OXID_PART_NAME + " ='" + substance.get(1) + "'";
@@ -436,7 +436,7 @@ public class DBHandler extends Config{
     }
 
     public String getSubstanceType(String foundationName, String oxidName) throws SQLException, ClassNotFoundException {
-        ResultSet rset = null;
+        ResultSet rset;
         String select = "SELECT substance_type FROM " + AllConstants.SubsConsts.SUBS_TABLE + " Where "
                 + AllConstants.SubsConsts.FOUND_PART_NAME + " ='" + foundationName + "' AND " +
                 AllConstants.SubsConsts.OXID_PART_NAME + " ='" + oxidName + "'";
@@ -557,7 +557,6 @@ public class DBHandler extends Config{
     }
 
     public void deleteCustomExperiment(String exp_id) throws SQLException, ClassNotFoundException {
-        ResultSet rset = null;
         String delete = "DELETE FROM " + AllConstants.ExpConsts.EXP_TABLE + " WHERE " +
                 AllConstants.ExpConsts.EXP_ID + " ='" + exp_id + "'";
         PreparedStatement prst = getConnection().prepareStatement(delete);

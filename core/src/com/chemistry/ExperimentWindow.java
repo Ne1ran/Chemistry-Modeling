@@ -288,15 +288,19 @@ public class ExperimentWindow implements Screen {
                                     break;
                                 }
                             }
-                        } //extended functiosubstanceInSlotIdns lower incoming... \|/
+                        } //extended functions lower incoming... \|/
+
+                        if (substanceInSlotId.getSubstanceNameInGame().equals("Ничего")) {
+                            break;
+                        }
                         equip.addSubstance(substanceInSlotId);
-                        phrase = "Добавил " + substanceInSlotId.getName() + " " + equip.getName() + "!";
+                        phrase = "Добавил " + substanceInSlotId.getName() + " в " + equip.getName() + "!";
 
                         // Need a normal check if substance is already added
                         if (equip.getSubstancesInside().size()>=2){
                             if (waitForAddition){
                                 try {
-                                    reactionHandler.StartOVR_Reaction(substanceInSlotId);
+                                    reactionHandler.StartOVR_Reaction(substanceInSlotId); // for OVR | вырезано
                                 } catch (SQLException | ClassNotFoundException e) {
                                     throw new RuntimeException(e);
                                 }
@@ -319,16 +323,18 @@ public class ExperimentWindow implements Screen {
                         }
                         isSomethingBeingAnimated = true;
                         animatedSubstance = substanceInSlotId;
-                        animationTexture = new Sprite(animatedSubstance.getTexture());
-                        animationController = new AnimationController(new Vector2
-                                (substanceInSlotId.getX(), 720 - substanceInSlotId.getY() - substanceInSlotId.getHeight()),
-                                new Vector2(equip.getX(), 720 - equip.getY()), animationTexture, equip);
-                        animationController.CalculateSpeed();
-                        animationController.CalculateDirection();
 
-                        if (effectsQueue.size > 1){
-                        //start effects animations
-                        System.out.println("got some effects!");
+                        if (!animatedSubstance.getSubstanceNameInGame().equals("Ничего")) {
+                            animationTexture = new Sprite(animatedSubstance.getTexture());
+                            animationController = new AnimationController(new Vector2
+                                    (substanceInSlotId.getX(), 720 - substanceInSlotId.getY() - substanceInSlotId.getHeight()),
+                                    new Vector2(equip.getX(), 720 - equip.getY()), animationTexture, equip);
+                            animationController.CalculateSpeed();
+                            animationController.CalculateDirection();
+
+                            if (effectsQueue.size > 1) {
+                                //start effects animations
+                            }
                     }
 
                     } else {
@@ -339,7 +345,7 @@ public class ExperimentWindow implements Screen {
                             throw new RuntimeException(e);
                         }
                         PlaySound("dispose");
-                        phrase = "Выкинул все шо было";
+                        phrase = "Выкинул все содержимое в " + equip.getName() + "!";
                     }
                 }
             }

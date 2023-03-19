@@ -14,6 +14,14 @@ import java.util.regex.Pattern;
 import static com.chemistry.ExperimentWindow.*;
 
 public class ReactionHandler {
+
+    public static final String phraseResult = "Какой итог мы получили:    ";
+    public static final String causeBalanced = " Вещества находятся в правильном балансе. ";
+    public static final String phraseNoReaction = "Реакция не пошла...     ";
+    public static final String phraseClean = " Очистите емкость повторным нажатием.";
+    public static final String causeConditions = " Неподходящие условия.";
+
+    public static final String causeCause = " Причина: ";
     public ArrayList<Substance> substances;
     public Map<Foundation, Integer> foundPool;
     public Map<Oxid, Integer> oxidPool;
@@ -92,7 +100,7 @@ public class ReactionHandler {
 
                 if (isFirstFoundStronger == isFirstOxidStronger){
                     startBasicSwapReaction = false; //reaction won't start because strong elements are already combined fine
-                    cause += "Вещества находятся в правильном балансе. ";
+                    cause += causeCause + causeBalanced;
                 }
 
                 if (secondFound <= 7 && firstFound <= 7 && (firstFound - secondFound > 1 || secondFound - firstFound > 1)
@@ -125,15 +133,14 @@ public class ReactionHandler {
                             + oxidFirstIteration.get(0).getOxid_name() + " + " +
                             foundationsFirstIteration.get(1).getFoundation_name()
                             + oxidFirstIteration.get(1).getOxid_name());
-                    phrase = "Реакция не пошла... Очистите емкость повторным нажатием. Причина: ";
+                    phrase = phraseNoReaction + phraseClean;
                     phrase += cause;
                 }
             } else if (arrayOfEverythingCheckedAndAdditionReaction.get(1)){
-                phrase = "Addition reaction has started!!";
-                System.out.println("Addition reaction has started!!!");
                 StartAdditingReaction();
             } else {
-                phrase = "No reaction at all";
+                cause = causeBalanced;
+                phrase = phraseNoReaction + cause;
             }
         }
 
@@ -519,6 +526,19 @@ public class ReactionHandler {
             ) {
                 everyThingChecked = true;
             }
+        } else if (substance1type.contains(AllConstants.ReactionHandlerUtility.GAS) &&
+                substance2type.contains(AllConstants.ReactionHandlerUtility.GAS) && !substances.get(0).equals(substances.get(1))) {
+            Substance substance1 = substances.get(0);
+            Substance substance2 = substances.get(1);
+            if (substance1.getOxid().equals("0") && substance2.getOxid().equals("0")){
+                isReactionAdditing = true;
+            } else if (substance1.getOxid().equals("0") && substance2.getFoundation().equals("0")) {
+                isReactionAdditing = true;
+            } else if (substance1.getFoundation().equals("0") && substance2.getFoundation().equals("0")) {
+                isReactionAdditing = true;
+            } else if (substance1.getFoundation().equals("0") && substance2.getOxid().equals("0")) {
+                isReactionAdditing = true;
+            }
         }
         array.add(everyThingChecked);
         array.add(isReactionAdditing);
@@ -529,8 +549,6 @@ public class ReactionHandler {
         int OVR_Oxidant = 0;
         int OVR_Reductant = 0;
 
-
-
         for (Substance substance : substances){
             int OVRSubstanceType = handler.getUnstableTypeById(substance.getSubId());
             if (OVRSubstanceType == 1){
@@ -540,7 +558,8 @@ public class ReactionHandler {
             }
         }
 
-        return OVR_Oxidant == OVR_Reductant && OVR_Reductant == 1;
+//        return OVR_Oxidant == OVR_Reductant && OVR_Reductant == 1;
+        return false; // вырезано
     }
 
     public void StartSimpleSwapReaction() throws SQLException, ClassNotFoundException {
@@ -750,7 +769,7 @@ public class ReactionHandler {
                 String dissociatedFirstSubstance = dissociate(tempArrayFirstSubstance);
                 canReactionBeMade = true;
 
-                if (dissociatedFirstSubstance != null) { //if there is something
+                if (dissociatedFirstSubstance != null && !dissociatedFirstSubstance.equals("")) { //if there is something
                     answerSecondPart = dissociatedFirstSubstance + " + " + secondSubstanceOxidSwap;
                 } else { //if not
                     if (firstSubstanceOxidSwap.contains("H (OH)")){ //change hoh -> h2o
@@ -764,7 +783,7 @@ public class ReactionHandler {
                 String dissociatedSecondSubstance = dissociate(tempArraySecondSubstance);
                 canReactionBeMade = true;
 
-                if (dissociatedSecondSubstance != null) {
+                if (dissociatedSecondSubstance != null && !dissociatedSecondSubstance.equals("")) {
                     answerSecondPart = firstSubstanceOxidSwap + " + " + dissociatedSecondSubstance;
                 } else {
                     if (secondSubstanceOxidSwap.contains("H (OH)")){
@@ -835,10 +854,9 @@ public class ReactionHandler {
         answer.add(newAnswerSecondPart);
 
         if (canReactionBeMade){
-            phrase = "Какой итог мы получили:    " + String.join(" = ", answer) + ".    Емкость очищена";
+            phrase = phraseResult + String.join(" = ", answer) + "." + phraseClean;
 //            cause = "";
-            System.out.println("Реакция успешна: " + String.join(" = ", answer));
-        } else phrase = "Реакция не пошла(";
+        } else phrase = phraseNoReaction + cause;
     }
 
     public void StartAdditingReaction() throws SQLException, ClassNotFoundException {
@@ -865,40 +883,49 @@ public class ReactionHandler {
         }
         answerFirstPart = answerFirstPart.substring(0, answerFirstPart.length()-3);
 
-        if (substances.get(0).getOxid().contains(substances.get(1).getOxid()) &&
-                (substances.get(0).getSubstanceType().equals(AllConstants.ReactionHandlerUtility.OXID_ACID) ||
-                substances.get(0).getSubstanceType().equals(AllConstants.ReactionHandlerUtility.WATER))){
-            int matchedOxidAmount = Integer.parseInt(substances.get(0).getOxid_amount());
+        Substance substance = substances.get(0);
+        Substance substance1 = substances.get(1);
+
+        if (substance.getOxid().equals("0") && substance1.getFoundation().equals("0")){
+            answerSecondPart = createSubstanceName(handler.getFoundationByName(substance.getFoundation()), handler.getOxidByName(substance1.getOxid()));
+        } else if (substance.getFoundation().equals("0") && substance1.getOxid().equals("0")){
+            answerSecondPart = createSubstanceName(handler.getFoundationByName(substance1.getFoundation()), handler.getOxidByName(substance.getOxid()));
+        }
+
+        if (substance.getOxid().contains(substance1.getOxid()) &&
+                (substance.getSubstanceType().equals(AllConstants.ReactionHandlerUtility.OXID_ACID) ||
+                substance.getSubstanceType().equals(AllConstants.ReactionHandlerUtility.WATER))){
+            int matchedOxidAmount = Integer.parseInt(substance.getOxid_amount());
             String newOxidName = "";
             String foundName = "";
-            matchedOxidAmount += Integer.parseInt(substances.get(1).getOxid_amount());
+            matchedOxidAmount += Integer.parseInt(substance1.getOxid_amount());
 
-            if (substances.get(0).getSubstanceType().equals(AllConstants.ReactionHandlerUtility.WATER)){
-                newOxidName = substances.get(1).getFoundation() + "_" + substances.get(1).getOxid() + matchedOxidAmount;
-                foundName = substances.get(0).getFoundation();
+            if (substance.getSubstanceType().equals(AllConstants.ReactionHandlerUtility.WATER)){
+                newOxidName = substance1.getFoundation() + "_" + substance1.getOxid() + matchedOxidAmount;
+                foundName = substance.getFoundation();
             } else{
-                newOxidName = substances.get(0).getFoundation() + "_" + substances.get(0).getOxid() + matchedOxidAmount; //add foundAmount??
-                foundName = substances.get(1).getFoundation();
+                newOxidName = substance.getFoundation() + "_" + substance.getOxid() + matchedOxidAmount; //add foundAmount??
+                foundName = substance1.getFoundation();
             }
 
             answerSecondPart = createSubstanceName(handler.getFoundationByName(foundName), handler.getOxidByName(newOxidName));
 
-        } else if (substances.get(1).getOxid().contains(substances.get(0).getOxid()) &&
-                (substances.get(1).getSubstanceType().equals(AllConstants.ReactionHandlerUtility.OXID_ACID)||
-                substances.get(1).getSubstanceType().equals(AllConstants.ReactionHandlerUtility.WATER))) {
+        } else if (substance1.getOxid().contains(substance.getOxid()) &&
+                (substance1.getSubstanceType().equals(AllConstants.ReactionHandlerUtility.OXID_ACID)||
+                substance1.getSubstanceType().equals(AllConstants.ReactionHandlerUtility.WATER))) {
 
-            int matchedOxidAmount = Integer.parseInt(substances.get(1).getOxid_amount());
+            int matchedOxidAmount = Integer.parseInt(substance1.getOxid_amount());
 
-            matchedOxidAmount += Integer.parseInt(substances.get(0).getOxid_amount());
+            matchedOxidAmount += Integer.parseInt(substance.getOxid_amount());
             String newOxidName = "";
             String foundName = "";
 
-            if (substances.get(1).getSubstanceType().equals(AllConstants.ReactionHandlerUtility.WATER)){
-                newOxidName = substances.get(0).getFoundation() + substances.get(0).getOxid() + matchedOxidAmount;
-                foundName = substances.get(1).getFoundation();
+            if (substance1.getSubstanceType().equals(AllConstants.ReactionHandlerUtility.WATER)){
+                newOxidName = substance.getFoundation() + substance.getOxid() + matchedOxidAmount;
+                foundName = substance1.getFoundation();
             } else{
-                newOxidName = substances.get(1).getFoundation() + substances.get(1).getOxid() + matchedOxidAmount; //add foundAmount??
-                foundName = substances.get(0).getFoundation();
+                newOxidName = substance1.getFoundation() + substance1.getOxid() + matchedOxidAmount; //add foundAmount??
+                foundName = substance.getFoundation();
             }
 
             int getOxidState = -handler.getOxidStateByName(newOxidName);
@@ -920,8 +947,7 @@ public class ReactionHandler {
         answer.add(answerFirstPart);
         answer.add(answerSecondPart);
 
-        phrase = "Какой итог мы получили:    " + String.join(" = ", answer) + ".    Емкость очищена";
-        System.out.println("Реакция успешна: " + String.join(" = ", answer));
+        phrase = phraseResult + String.join(" = ", answer) + "." + phraseClean;
     }
 
     public String compileSubstanceName(String foundation, String oxid, int foundAmount, int oxidAmount) throws SQLException, ClassNotFoundException {
