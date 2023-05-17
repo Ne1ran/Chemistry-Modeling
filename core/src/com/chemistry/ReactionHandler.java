@@ -800,26 +800,33 @@ public class ReactionHandler {
         for (String string : answerSecondPart.split(" \\+ ")){
             if (string.contains("0")){
                 string = string.replace("0", "").trim();
-                boolean doWeNeedToDouble = false;
-                String foundType = handler.getSubstanceType(string, "0");
-                String oxidType = handler.getSubstanceType("0", string);
-
-                if (foundType.equals("Газ") || oxidType.equals("Газ")){
-                    doWeNeedToDouble = true;
-                }
-
-                boolean check = false;
-
-                if (!foundType.equals("")){
-                    check = handler.getIsFoundationSimple(string);
-                } else if (!oxidType.equals("")){
-                    check = handler.getIsOxidizerSimple(string);
-                }
-
-                if (doWeNeedToDouble){
-                    if (check) {
+                if (handler.getIsFoundationSimple(string)) {
+                    String foundType = handler.getSubstanceType(string, "0");
+                    if (foundType.equals("Газ") ){
                         newAnswerSecondPart += string + "2 + ";
-                    } else newAnswerSecondPart += "(" + string + ")" + "2";
+                    } else newAnswerSecondPart += string + " + ";
+                } else {
+                    boolean doWeNeedToDouble = false;
+                    String foundType = handler.getSubstanceType(string, "0");
+                    String oxidType = handler.getSubstanceType("0", string);
+
+                    if (foundType.equals("Газ") || oxidType.equals("Газ")){
+                        doWeNeedToDouble = true;
+                    }
+
+                    boolean check = false;
+
+                    if (!foundType.equals("")){
+                        check = handler.getIsFoundationSimple(string);
+                    } else if (!oxidType.equals("")){
+                        check = handler.getIsOxidizerSimple(string);
+                    }
+
+                    if (doWeNeedToDouble){
+                        if (check) {
+                            newAnswerSecondPart += string + "2 + ";
+                        } else newAnswerSecondPart += "(" + string + ")" + "2";
+                    }
                 }
             } else newAnswerSecondPart += string + " + ";
         }

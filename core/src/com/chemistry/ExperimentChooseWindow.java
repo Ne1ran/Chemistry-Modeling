@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -63,7 +64,7 @@ public class ExperimentChooseWindow implements Screen {
 
         int y_start = 500;
         int x_start = 125;
-        for (int i = 0; i < systemExperimentsAmount; i++){
+        for (int i = 0; i < systemExperimentsAmount && i <= 10; i++){
             TextButton tempBtn = null;
             tempBtn = new TextButton(systemExperiments.get(i).getName(), buttonStyle);
             tempBtn.setPosition(x_start, y_start - (i * 40));
@@ -106,7 +107,7 @@ public class ExperimentChooseWindow implements Screen {
             ArrayList<Experiment> customExperimentsNames = handler.getAllCustomExperiments(currentUser.getFIO());
             x_start = 675;
 
-            for (int i = 0; i < customExperimentsAmount; i++) {
+            for (int i = 0; i < customExperimentsAmount && i <= 10; i++) {
                 TextButton tempBtn = null;
                 tempBtn = new TextButton(customExperimentsNames.get(i).getName(), buttonStyle);
                 tempBtn.setPosition(x_start, y_start - (i * 40));
@@ -141,6 +142,16 @@ public class ExperimentChooseWindow implements Screen {
                 mainStage.addActor(closeBtn);
             }
         }
+
+        Button exitButton = new TextButton("Выйти на главное меню?", buttonStyle);
+        exitButton.setPosition(50, 650);
+        exitButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                game.setScreen(new ChemistryModelingMainWindow(game));
+            }
+        });
+        mainStage.addActor(exitButton);
     }
 
     @Override

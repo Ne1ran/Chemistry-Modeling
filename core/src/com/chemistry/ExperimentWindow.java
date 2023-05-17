@@ -458,9 +458,7 @@ public class ExperimentWindow implements Screen {
 
     public static void PlayEffectSound(String sound){
         if (!sound.equals("")) {
-            if (sound.equals("")) {
-                System.out.println("No effect");
-            } else if (effectSoundPlaying.isPlaying()) {
+            if (effectSoundPlaying.isPlaying()) {
                 effectSoundPlaying.stop();
             }
             effectSoundPlaying = Gdx.audio.newMusic(Gdx.files.internal("Sounds/" + sound + ".mp3"));

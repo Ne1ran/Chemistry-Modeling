@@ -69,9 +69,8 @@ public class CustomExperimentWindow implements Screen {
     private final TextField saveMenuExpNameTF;
     private int substanceMenuRowPicked = 0;
 
-    //OPTIMIZATION (YESSSSSSSSSSS)
     private final Rectangle customScreenRect;
-    //end of it
+
     public CustomExperimentWindow(final ChemistryModelingGame game) throws SQLException, ClassNotFoundException {
         this.game = game;
 
@@ -213,18 +212,13 @@ public class CustomExperimentWindow implements Screen {
         saveButtonLabel.setAlignment(1);
         saveButtonLabel.setPosition(1050, 200);
 
-        final Button dismissBtn = new TextButton("Отменить?", buttonStyle);
-        saveMenuStage.addActor(dismissBtn);
-        dismissBtn.setPosition(470, 300);
-
-        dismissBtn.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                saveMenuEnabled = false;
-                Gdx.input.setInputProcessor(inputListener);
-                saveMenuExpNameTF.setText("");
-            }
-        });
+        final Label messageLabel = new Label("", labelStyle);
+        messageLabel.setColor(new Color(1f, 0f, 0f, 1));
+        messageLabel.setPosition(925, 425);
+        messageLabel.setSize(300, 250);
+        messageLabel.setAlignment(1);
+        messageLabel.setWrap(true);
+        saveMenuStage.addActor(messageLabel);
 
         final Button acceptBtn = new TextButton("Подтвердить!", buttonStyle);
         saveMenuStage.addActor(acceptBtn);
@@ -232,7 +226,22 @@ public class CustomExperimentWindow implements Screen {
         acceptBtn.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (substancesPlaced.size!=0 && equipmentPlaced.size!=0) {
+                String expName = saveMenuExpNameTF.getText().trim();
+                if (expName.equals("")) {
+                    messageLabel.setText("Вы не ввели название эксперимента");
+                    return;
+                }
+
+                try {
+                    if (handler.getExperimentByName(expName)) {
+                        messageLabel.setText("Такое название уже используется другим экспериментом!");
+                        return;
+                    }
+                } catch (SQLException | ClassNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
+
+                if (substancesPlaced.size >= 2 && equipmentPlaced.size != 0) {
                     Experiment thisExperiment = new Experiment();
                     thisExperiment.setName(saveMenuExpNameTF.getText());
                     thisExperiment.setTexture_path("exp1_bg.jpg");
@@ -243,20 +252,27 @@ public class CustomExperimentWindow implements Screen {
                     } catch (SQLException | ClassNotFoundException e) {
                         throw new RuntimeException(e);
                     }
+                    messageLabel.setText("");
                     game.setScreen(new ChemistryModelingMainWindow(game));
                 } else {
-                    System.out.println("Nothing placed at all");
+                    messageLabel.setText("Вы не поставили оборудование и вещества!");
                 }
-
             }
         });
 
-        final Label messageLabel = new Label("", labelStyle);
-        messageLabel.setColor(new Color(1f, 0f, 0f, 1));
-        messageLabel.setPosition(100, 500);
-        messageLabel.setSize(100, 150);
-        messageLabel.setAlignment(1);
-        saveMenuStage.addActor(messageLabel);
+        final Button dismissBtn = new TextButton("Отменить?", buttonStyle);
+        saveMenuStage.addActor(dismissBtn);
+        dismissBtn.setPosition(470, 300);
+
+        dismissBtn.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                saveMenuEnabled = false;
+                Gdx.input.setInputProcessor(inputListener);
+                saveMenuExpNameTF.setText("");
+                messageLabel.setText("");
+            }
+        });
 
         equipMenuLabel = new Label("", labelStyle);
         equipMenuLabel.setSize(140,110);

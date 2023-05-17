@@ -136,18 +136,39 @@ public class ChemistryModelingMainWindow implements Screen {
             public void changed(ChangeEvent event, Actor actor) {
                 System.out.println("Name " + userName.getText() + "\n Password " + userPassword.getText() +
                         "\n Email " + userEmail.getText());
+                String fio = userName.getText().trim();
+                String email = userEmail.getText().trim();
+                String password = userPassword.getText().trim();
+
+                if (email.equals("") || password.equals("") || fio.equals("")) {
+                    message = "Вы не ввели необходимые данные";
+                    return;
+                }
+
+                try {
+                    if (handler.getUserByEmailAndPassword(email, password)) {
+                        message = "Такой пользователь уже существует!";
+                        return;
+                    }
+                } catch (SQLException | ClassNotFoundException e) {
+                    message = "Ошибка базы данных";
+                }
+
                 User newUser = new User();
-                newUser.setFIO(userName.getText().trim());
-                newUser.setEmail(userEmail.getText().trim());
-                newUser.setPassword(userPassword.getText().trim());
+                newUser.setFIO(fio);
+                newUser.setEmail(email);
+                newUser.setPassword(password);
                 newUser.setCurrent_exp("1");
                 newUser.setExps_completed("0");
+
                 try {
                     handler.addNewUser(newUser);
-                    message = "Вы успешно зарегистрировались!";
                 } catch (SQLException | ClassNotFoundException throwables) {
                     throwables.printStackTrace();
+                }  finally {
+                    message = "Вы успешно зарегистрировались!";
                 }
+
                 userPassword.setText("");
                 userEmail.setText("");
                 userName.setText("");

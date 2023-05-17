@@ -11,12 +11,20 @@ import static com.chemistry.CustomExperimentWindow.createInGameNameForSubstance;
 import static com.chemistry.ExperimentChooseWindow.choosenExperiment;
 
 public class DBHandler extends Config{
-    Connection connection;
+    private Connection connection;
 
-    public Connection getConnection() throws ClassNotFoundException, SQLException {
+    public Connection getConnection() {
+        if (connection != null) {
+            return connection;
+        }
+
         String connStr = "jdbc:mysql://"+ Host + ":" + Port + "/" + Name;
-        Class.forName("com.mysql.cj.jdbc.Driver");
-        connection = DriverManager.getConnection(connStr, User, Password);
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            connection = DriverManager.getConnection(connStr, User, Password);
+        } catch (SQLException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
         return connection;
     }
 
@@ -48,6 +56,16 @@ public class DBHandler extends Config{
             return true;
         } else return false;
     }
+
+    public boolean getUserByEmailAndPassword(String email, String password) throws SQLException, ClassNotFoundException {
+        ResultSet rset;
+        String select = "SELECT * FROM " + AllConstants.UserConsts.USERS_TABLE + " where " + AllConstants.UserConsts.EMAIL
+                + "='" + email + "' and " + AllConstants.UserConsts.PASSWORD + "='" + password + "'";
+        PreparedStatement prst = getConnection().prepareStatement(select);
+        rset = prst.executeQuery();
+        return rset.next();
+    }
+
     public void setChoosenExperiment(String id) throws SQLException, ClassNotFoundException {
         ResultSet rset;
         String select = "SELECT * FROM " + AllConstants.ExpConsts.EXP_TABLE + " where " + AllConstants.ExpConsts.EXP_ID
@@ -70,6 +88,14 @@ public class DBHandler extends Config{
         rset = prst.executeQuery();
 
         return rset;
+    }
+
+    public boolean getExperimentByName(String name) throws SQLException, ClassNotFoundException {
+        String select = "SELECT * FROM " + AllConstants.ExpConsts.EXP_TABLE + " where " +
+                AllConstants.ExpConsts.NAME + "='" + name + "'";
+        PreparedStatement prst = getConnection().prepareStatement(select);
+        ResultSet rset = prst.executeQuery();
+        return rset.next();
     }
 
     public ResultSet getSubstanceByID(String id) throws SQLException, ClassNotFoundException {

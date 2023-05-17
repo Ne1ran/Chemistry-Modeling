@@ -10,7 +10,6 @@ public class ExperimentWindowInputListener implements InputProcessor {
 
     @Override
     public boolean keyDown(int keycode) {
-        System.out.println(keycode);
         if (keycode == 111){
             closeWindow = true;
         }
