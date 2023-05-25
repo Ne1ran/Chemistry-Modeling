@@ -224,7 +224,7 @@ public class ExperimentWindow implements Screen {
         game.batch.draw(dialogBg, 1270-40-345, 270); // available space - 390-160(y) 920-1190(x)
 
         for (int i = 0; i<=phraseArray.size()-1; i++){
-            expFont.draw(this.game.batch, phraseArray.get(i), 920, 720 - 160 - i * 35);
+            expFont.draw(this.game.batch, phraseArray.get(i), 915, 720 - 160 - i * 35);
         }
 
         for (Substance subs : usedSubstances){
@@ -374,7 +374,7 @@ public class ExperimentWindow implements Screen {
                         } else {
                             slot.setSubstanceInSlot(new Substance());
                             slot.setSlotTexture("");
-                            phrase = "Убрал содержимое слота номер " + slot.getSlotId()+1;
+                            phrase = "Убрал содержимое слота номер " + (slot.getSlotId() + 1);
                             if (slot.getThisSlotPicked()){
                                 inventorySlotIsPicked = false;
                                 slot.setThisSlotPicked(false);

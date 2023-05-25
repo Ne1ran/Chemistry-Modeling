@@ -61,6 +61,8 @@ public class CustomExperimentWindow implements Screen {
     private final Array<Array<Substance>> subtancesInMenu;
     private int equipmentPlacedElementId;
     private final Label saveButtonLabel;
+
+    private final Label messageLabel;
     private final Rectangle saveRect;
     private Substance substancePicked;
     private Equipment equipPickedFromMenu;
@@ -210,15 +212,14 @@ public class CustomExperimentWindow implements Screen {
         saveButtonLabel = new Label("Сохранить?", labelStyle);
         saveButtonLabel.setSize(100,30);
         saveButtonLabel.setAlignment(1);
-        saveButtonLabel.setPosition(1050, 200);
+        saveButtonLabel.setPosition(915, 135);
 
-        final Label messageLabel = new Label("", labelStyle);
+        messageLabel = new Label("Для выхода на окно выбора нажмите Esc", labelStyle);
         messageLabel.setColor(new Color(1f, 0f, 0f, 1));
         messageLabel.setPosition(925, 425);
         messageLabel.setSize(300, 250);
         messageLabel.setAlignment(1);
         messageLabel.setWrap(true);
-        saveMenuStage.addActor(messageLabel);
 
         final Button acceptBtn = new TextButton("Подтвердить!", buttonStyle);
         saveMenuStage.addActor(acceptBtn);
@@ -319,6 +320,7 @@ public class CustomExperimentWindow implements Screen {
         game.batch.draw(dialogBg, 1270 - 40 - 345, 270);
         game.batch.draw(menu, 38, 0);
         game.batch.draw(equipMenu, 905, 720-equipMenu.getHeight());
+        messageLabel.draw(this.game.batch, 1f);
         saveButtonLabel.draw(this.game.batch, 1f);
         for (MenuSlot slot : substancesMenu) {
             if (slot.getThisSlotPicked()) {
