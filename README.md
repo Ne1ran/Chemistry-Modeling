@@ -2,7 +2,9 @@
 
 Это обучающая игра на базе Java + LibGDX.
 
-Скачать можно тут: https://disk.yandex.ru/d/KeULaoUH_ox9mg
+Видео: https://disk.yandex.ru/i/5An4igAdXDi1gg
 
-Важно. Для работы необходима база данных на SQL - Postgres.
+Архив с самой игрой (.jar) и скрипт для создания бд: https://disk.yandex.ru/d/y1GvDUQyFUZ1yA
+
+Важно. Для работы необходима база данных на SQL - Postgres. В архиве есть скрипт, который необходимо запустить для создания базы данных.
 
