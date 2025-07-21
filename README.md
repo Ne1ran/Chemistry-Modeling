@@ -4,5 +4,5 @@
 
 Скачать можно тут: https://disk.yandex.ru/d/KeULaoUH_ox9mg
 
-Важно. Для работы необходима база данный на SQL - Postgres.
+Важно. Для работы необходима база данных на SQL - Postgres.
 
